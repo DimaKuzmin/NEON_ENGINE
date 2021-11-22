@@ -23,8 +23,11 @@ protected:
 	CUIScrollView*					m_pTextDesc;
 	xr_vector<CUIStatix*>		m_pImages;
 
+	CUIStatix* Image_AdminTeam;
+
 public:
 	void										Init();
+	virtual void 	Update();
 	virtual void						SendMessage(CUIWindow *pWnd, s16 msg, void *pData);
 };
 
