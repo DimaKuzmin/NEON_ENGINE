@@ -2596,7 +2596,7 @@ public:
 
 class CCC_AdmUnlimatedAmmo : public IConsole_Command {
 public:
-	CCC_AdmUnlimatedAmmo(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+	CCC_AdmUnlimatedAmmo(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
 
 	virtual void Execute(LPCSTR args)
 	{
@@ -2631,13 +2631,11 @@ public:
 			{
 				if (!CL->ps->testFlag(GAME_PLAYER_MP_NO_UNLIMATED_AMMO))
 				{	 
-					Msg("set unlimated ammo");
-					CL->ps->setFlag(GAME_PLAYER_MP_NO_UNLIMATED_AMMO);
+ 					CL->ps->setFlag(GAME_PLAYER_MP_NO_UNLIMATED_AMMO);
 				}
 				else
 				{
-					Msg("remove unlimated ammo");
-					CL->ps->resetFlag(GAME_PLAYER_MP_NO_UNLIMATED_AMMO);
+ 					CL->ps->resetFlag(GAME_PLAYER_MP_NO_UNLIMATED_AMMO);
 				}
 
 				srv->signal_Syncronize();
