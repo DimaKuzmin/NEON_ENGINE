@@ -2205,6 +2205,11 @@ void CActor::On_SetEntity()
 }
 
 bool CActor::unlimited_ammo()
-{
-	return !!psActorFlags.test(AF_UNLIMITEDAMMO);
+{							
+	if (!g_Alive())
+		return false;
+
+	game_PlayerState* ps = Game().GetPlayerByGameID(ID());
+	return (ps && ps->testFlag(GAME_PLAYER_MP_NO_CLIP));
+ 
 }

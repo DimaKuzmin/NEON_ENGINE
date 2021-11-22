@@ -1730,17 +1730,17 @@ void CWeapon::render_item_ui()
 
 bool CWeapon::unlimited_ammo() 
 { 
-	if (IsGameTypeSingle())
+	//if (IsGameTypeSingle())
 	{
 		if(m_pInventory)
 		{
 			return inventory_owner().unlimited_ammo() && m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited);
-		}else
+		}
+		else
 			return false;
 	}
 
-	return ((GameID() == eGameIDDeathmatch) && 
-			m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited)); 
+	//return ((GameID() == eGameIDDeathmatch) && m_DefaultCartridge.m_flags.test(CCartridge::cfCanBeUnlimited)); 
 			
 };
 

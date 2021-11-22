@@ -2593,6 +2593,73 @@ public:
 	}
 };
 
+
+class CCC_AdmUnlimatedAmmo : public IConsole_Command {
+public:
+	CCC_AdmUnlimatedAmmo(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
+	virtual void Execute(LPCSTR args)
+	{
+		if (OnServer())
+		{
+			if (!g_pGameLevel || !Level().Server)
+				return;
+
+			game_sv_mp* srv = smart_cast<game_sv_mp*>(Level().Server->game);
+			
+			if (!srv)
+				return;
+
+			string1024 buff;
+			exclude_raid_from_args(args, buff, sizeof(buff));
+
+			ClientID client_id(0);
+			u32 tmp_client_id;
+ 
+			if (sscanf_s(buff, "%u", &tmp_client_id) != 1)
+			{
+				Msg("! ERROR: bad command parameters.");
+				Msg("Set god mode for player. Format: \"adm_unlimated_ammo <player session id>\"");
+				return;
+			}
+
+			client_id.set(tmp_client_id);
+
+			xrClientData* CL = static_cast<xrClientData*>(Level().Server->GetClientByID(client_id));
+
+			if (CL && CL->ps && (CL != Level().Server->GetServerClient()) )
+			{
+				if (!CL->ps->testFlag(GAME_PLAYER_MP_NO_UNLIMATED_AMMO))
+				{	 
+					Msg("set unlimated ammo");
+					CL->ps->setFlag(GAME_PLAYER_MP_NO_UNLIMATED_AMMO);
+				}
+				else
+				{
+					Msg("remove unlimated ammo");
+					CL->ps->resetFlag(GAME_PLAYER_MP_NO_UNLIMATED_AMMO);
+				}
+
+				srv->signal_Syncronize();
+			}
+			else
+			{
+				Msg("! Can't set god mode for player with client id %u", client_id.value());
+			}
+		}
+		else
+		{
+			NET_Packet P;
+			P.w_begin(M_REMOTE_CONTROL_CMD);
+			string128 str;
+			xr_sprintf(str, "adm_unlimated_ammo %u", Game().local_svdpnid.value());
+			P.w_stringZ(str);
+			Level().Send(P, net_flags(TRUE, TRUE));
+		}
+	}
+};
+
+
 void register_mp_console_commands()
 {
 	CMD1(CCC_SpawnToInventory,		"sv_spawn_to_player_inv");
@@ -2608,6 +2675,7 @@ void register_mp_console_commands()
 	CMD1(CCC_AdmNoClip,				"adm_no_clip"			);
 	CMD1(CCC_AdmInvis,				"adm_invis"				);
 	CMD1(CCC_AdmGodMode,			"adm_god_mode"			);
+	CMD1(CCC_AdmUnlimatedAmmo,      "adm_unlimated_ammo");
 
 
 	CMD1(CCC_MovePlayerToRPoint,	"sv_move_player_to_rpoint");
