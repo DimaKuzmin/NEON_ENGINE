@@ -2210,6 +2210,5 @@ bool CActor::unlimited_ammo()
 		return false;
 
 	game_PlayerState* ps = Game().GetPlayerByGameID(ID());
-	return (ps && ps->testFlag(GAME_PLAYER_MP_NO_CLIP));
- 
+	return (ps && ps->testFlag(GAME_PLAYER_MP_NO_UNLIMATED_AMMO));
 }

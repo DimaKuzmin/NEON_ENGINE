@@ -2631,6 +2631,7 @@ public:
 			{
 				if (!CL->ps->testFlag(GAME_PLAYER_MP_NO_UNLIMATED_AMMO))
 				{	 
+					Msg("set Unlimated Ammo");
  					CL->ps->setFlag(GAME_PLAYER_MP_NO_UNLIMATED_AMMO);
 				}
 				else
