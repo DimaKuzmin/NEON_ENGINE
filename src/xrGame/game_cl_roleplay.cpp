@@ -9,6 +9,7 @@
 game_cl_roleplay::game_cl_roleplay()
 {
 	m_uTeamCount = (u8)READ_IF_EXISTS(pSettings, r_u32, "roleplay_settings", "team_count", 0);
+	m_admin_team = (u8)READ_IF_EXISTS(pSettings, r_u32, "roleplay_settings", "team_admin", 0);
 }
 
 game_cl_roleplay::~game_cl_roleplay()

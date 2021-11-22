@@ -14,7 +14,10 @@ class game_sv_roleplay : public game_sv_freemp
 
 private:
 	xr_map<u16, TeamSpawnSect> m_teamSettings;
+
+	TeamSpawnSect m_teamAdmin;
 	u8 m_uTeamCount = 0;
+	u8 m_uTeamAdmin = 0;
 
 private:
 	void									LoadSettings();

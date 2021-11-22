@@ -8,24 +8,26 @@ class game_cl_roleplay : public game_cl_freemp
 	typedef game_cl_freemp inherited;
 
 private:
-	CUIGameRP									*m_game_ui;
-	u8												m_uTeamCount = 0;
+	CUIGameRP								*m_game_ui;
+	u8										m_uTeamCount = 0;
+	u8										m_admin_team = 0;
 
 protected:
-	bool											m_bTeamSelected = false;
+	bool									m_bTeamSelected = false;
 
 private:
-	void											TryShowSpawnMenu();
-	void											TrySwitchJumpCaption();
+	void									TryShowSpawnMenu();
+	void									TrySwitchJumpCaption();
 
 protected:
-	bool											CanRespawn();
+	bool									CanRespawn();
 
 public:
-														game_cl_roleplay();
-	virtual										~game_cl_roleplay();
+											game_cl_roleplay();
+	virtual									~game_cl_roleplay();
 
 	virtual u8								GetTeamCount() { return m_uTeamCount; };
+	virtual u8								GetAdminTeam() { return m_admin_team; };
 
 	virtual CUIGameCustom*		createGameUI();
 	virtual void							SetGameUI(CUIGameCustom*);

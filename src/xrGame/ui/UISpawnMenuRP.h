@@ -16,11 +16,14 @@ public:
 	virtual ~CUISpawnMenuRP();
 
 protected:
-	u8											team_buttons_count = 0;
+	u8							team_buttons_count = 0;
+	u8							team_admin = 0;
 
-	CUIStatic*							m_pCaption;
-	CUIStatic*							m_pBackground;
-	CUIScrollView*					m_pTextDesc;
+	CUIStatic*					m_pCaption;
+	CUIStatic*					m_pBackground;
+	CUIScrollView*				m_pTextDesc;
+
+
 	xr_vector<CUIStatix*>		m_pImages;
 
 	CUIStatix* Image_AdminTeam;

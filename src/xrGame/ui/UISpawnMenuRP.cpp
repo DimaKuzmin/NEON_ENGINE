@@ -12,10 +12,15 @@
 #include "uigamecustom.h"
 #include "game_cl_roleplay.h"
 
+#include "game_sv_roleplay.h"
+
 CUISpawnMenuRP::CUISpawnMenuRP()
 {
 	game_cl_mp* game = smart_cast<game_cl_mp*>(&Game());
 	team_buttons_count = game->GetTeamCount();
+
+	game_cl_roleplay* game_roleplay = smart_cast<game_cl_roleplay*>(&Game());
+	team_admin = game_roleplay->GetAdminTeam();
 
 	m_pBackground = xr_new<CUIStatic>();
 	m_pBackground->SetAutoDelete(true);
@@ -101,7 +106,7 @@ void CUISpawnMenuRP::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 		if (pWnd == Image_AdminTeam)
 		if (Image_AdminTeam->IsShown())
 		{
-			game->OnTeamSelect(i + 1);
+			game->OnTeamSelect(team_admin);
 		}
 
 		HideDialog();

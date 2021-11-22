@@ -26,6 +26,7 @@ void game_sv_roleplay::LoadSettings()
 	m_teamSettings.clear();
 
 	m_uTeamCount = (u8)READ_IF_EXISTS(pSettings, r_u32, "roleplay_settings", "team_count", 0);
+	m_uTeamAdmin = (u8)READ_IF_EXISTS(pSettings, r_u32, "roleplay_settings", "team_admin", 0);
 
 	for (u8 team_index = 1; team_index < m_uTeamCount + 1; team_index++)
 	{
@@ -50,6 +51,30 @@ void game_sv_roleplay::LoadSettings()
 			m_teamSettings[team_index].DefaultItems.push_back(item_name);
 		};
 	}
+	
+	{
+		xr_sprintf(sect, "roleplay_team_admin");
+
+		s32 money = pSettings->r_s32(sect, "start_money");
+		m_teamAdmin.StartMoney = money;
+
+		xr_strcpy(items_str, pSettings->r_string(sect, "start_items"));
+		u32 count = _GetItemCount(items_str);
+		for (u32 t = 0; t < count; ++t)
+		{
+			_GetItem(items_str, t, item_name);
+			m_teamAdmin.StartItems.push_back(item_name);
+		};
+
+		xr_strcpy(items_str, pSettings->r_string(sect, "default_items"));
+		count = _GetItemCount(items_str);
+		for (u32 t = 0; t < count; ++t)
+		{
+			_GetItem(items_str, t, item_name);
+			m_teamAdmin.DefaultItems.push_back(item_name);
+		};
+	}
+
 }
 
 void game_sv_roleplay::OnEvent(NET_Packet & tNetPacket, u16 type, u32 time, ClientID sender)
@@ -78,6 +103,21 @@ void game_sv_roleplay::OnPlayerSelectTeam(NET_Packet& P, ClientID sender)
 	CSE_ALifeCreatureActor	*pA = smart_cast<CSE_ALifeCreatureActor*>(xrCData->owner);
 	if (!pA) return;
 
+	if (m_uTeamAdmin == ps->team)
+	{
+		for (auto item : m_teamAdmin.StartItems)
+		{
+			SpawnItemToActor(pA->ID, item.c_str());
+		}
+		
+		// set start money
+		ps->money_for_round = m_teamAdmin.StartMoney;
+
+		signal_Syncronize();
+
+		return;
+	}
+
 	if (m_teamSettings.count(ps->team) == 0) return;
 		
 	auto teamSettings = m_teamSettings[ps->team];
@@ -87,9 +127,10 @@ void game_sv_roleplay::OnPlayerSelectTeam(NET_Packet& P, ClientID sender)
 	{
 		SpawnItemToActor(pA->ID, item.c_str());
 	}
+
 	// set start money
 	ps->money_for_round = teamSettings.StartMoney;
-
+	 
 	signal_Syncronize();
 }
 
@@ -114,10 +155,20 @@ void game_sv_roleplay::RespawnPlayer(ClientID id_who, bool NoSpectator)
 	
 	SpawnItemToActor(pA->ID, "mp_players_rukzak");
 
-	if (m_teamSettings.count(ps->team) == 0) return;
+	if (ps->team == m_uTeamAdmin)
+	{
+		for (auto& item : m_teamAdmin.DefaultItems)
+			SpawnItemToActor(pA->ID, item.c_str());
+		
+		return;
+	}
+
+	if (m_teamSettings.count(ps->team) == 0)
+		return;
 
 	auto teamSettings = m_teamSettings[ps->team];
-	for (auto &item : teamSettings.DefaultItems)
+
+ 	for (auto& item : teamSettings.DefaultItems)
 	{
 		SpawnItemToActor(pA->ID, item.c_str());
 	}
