@@ -337,11 +337,16 @@ BOOL CInventoryItem::net_Spawn			(CSE_Abstract* DC)
 
 	//!!!
 	m_fCondition = pSE_InventoryItem->m_fCondition;
-	
+
+	if (pSE_InventoryItem->slot != 0)
+		m_ItemCurrPlace.value = pSE_InventoryItem->slot;
+
+
 	if ( IsGameTypeSingle() )
 	{
 		net_Spawn_install_upgrades( pSE_InventoryItem->m_upgrades );
 	}
+ 
 
 	if (GameID() != eGameIDSingle)
 		object().processing_activate();

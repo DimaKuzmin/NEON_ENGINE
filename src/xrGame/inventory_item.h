@@ -163,6 +163,7 @@ public:
 			u16					BaseSlot			()  const					{return m_ItemCurrPlace.base_slot_id;}
 			u16					CurrSlot			()  const					{return m_ItemCurrPlace.slot_id;}
 			u16					CurrPlace			()  const					{return m_ItemCurrPlace.type;}
+			u16					CurrValue			()  const					{ return m_ItemCurrPlace.value;};
 
 			bool				Belt				()							{return !!m_flags.test(Fbelt);}
 			void				Belt				(bool on_belt)				{m_flags.set(Fbelt,on_belt);}
