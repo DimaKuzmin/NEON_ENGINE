@@ -83,15 +83,18 @@ void CUISpawnMenuRP::Init()
 
 void CUISpawnMenuRP::Update()
 {
-	if (Game().local_player->testFlag(GAME_PLAYER_HAS_ADMIN_RIGHTS))
+	if (team_admin != 0)
 	{
-		if (!Image_AdminTeam->IsShown())
-			Image_AdminTeam->Show(true);
-		
-	}
-	else
-	{
-		Image_AdminTeam->Show(false);
+		if (Game().local_player->testFlag(GAME_PLAYER_HAS_ADMIN_RIGHTS))
+		{
+			if (!Image_AdminTeam->IsShown())
+				Image_AdminTeam->Show(true);
+
+		}
+		else
+		{
+			Image_AdminTeam->Show(false);
+		}
 	}
 
 	inherited::Update();
