@@ -2416,12 +2416,14 @@ public:
 		ClientID client_id(0);
 		u32 tmp_client_id;
 		u32 value;
+		
 		if (sscanf_s(buff, "%u %u", &tmp_client_id, &value) != 2)
 		{
 			Msg("! ERROR: bad command parameters.");
 			Msg("Set no clip for player. Format: \"sv_set_invis <player session id> <value>\"");
 			return;
 		}
+
 		client_id.set(tmp_client_id);
 
 		xrClientData* CL = static_cast<xrClientData*>(Level().Server->GetClientByID(client_id));
@@ -2631,7 +2633,7 @@ public:
 			{
 				if (!CL->ps->testFlag(GAME_PLAYER_MP_NO_UNLIMATED_AMMO))
 				{	 
-					Msg("set Unlimated Ammo");
+					//Msg("set Unlimated Ammo");
  					CL->ps->setFlag(GAME_PLAYER_MP_NO_UNLIMATED_AMMO);
 				}
 				else
