@@ -52,6 +52,7 @@ void game_sv_roleplay::LoadSettings()
 		};
 	}
 	
+	if (m_uTeamAdmin != 0)
 	{
 		xr_sprintf(sect, "roleplay_team_admin");
 
@@ -103,6 +104,7 @@ void game_sv_roleplay::OnPlayerSelectTeam(NET_Packet& P, ClientID sender)
 	CSE_ALifeCreatureActor	*pA = smart_cast<CSE_ALifeCreatureActor*>(xrCData->owner);
 	if (!pA) return;
 
+	if (m_uTeamAdmin != 0)
 	if (m_uTeamAdmin == ps->team)
 	{
 		for (auto item : m_teamAdmin.StartItems)
@@ -154,7 +156,8 @@ void game_sv_roleplay::RespawnPlayer(ClientID id_who, bool NoSpectator)
 	if (!pA) return;
 	
 	SpawnItemToActor(pA->ID, "mp_players_rukzak");
-
+	 
+	if (m_uTeamAdmin != 0)
 	if (ps->team == m_uTeamAdmin)
 	{
 		for (auto& item : m_teamAdmin.DefaultItems)

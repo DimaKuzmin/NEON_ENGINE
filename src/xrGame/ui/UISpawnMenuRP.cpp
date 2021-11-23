@@ -40,8 +40,12 @@ CUISpawnMenuRP::CUISpawnMenuRP()
 		AttachChild(m_pImages.back());
 	}
 
-	Image_AdminTeam = xr_new<CUIStatix>();
-	AttachChild(Image_AdminTeam);
+	if (team_admin != 0) 
+	{
+		Image_AdminTeam = xr_new<CUIStatix>();
+		AttachChild(Image_AdminTeam);
+	}
+
 }
 
 CUISpawnMenuRP::~CUISpawnMenuRP()
@@ -69,9 +73,11 @@ void CUISpawnMenuRP::Init()
 		CUIXmlInit::InitStatic(xml_doc, node, 0, m_pImages[i - 1]);
 	}
 
-	CUIXmlInit::InitStatic(xml_doc, "team_selector:image_admin", 0, Image_AdminTeam);
-
-	Image_AdminTeam->Show(false);
+	if (team_admin != 0) 
+	{
+		CUIXmlInit::InitStatic(xml_doc, "team_selector:image_admin", 0, Image_AdminTeam);
+		Image_AdminTeam->Show(false);
+	}
 
 }
 
@@ -103,6 +109,7 @@ void CUISpawnMenuRP::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 				game->OnTeamSelect(i + 1);
 		}
 
+		if (team_admin != 0)
 		if (pWnd == Image_AdminTeam)
 		if (Image_AdminTeam->IsShown())
 		{
