@@ -89,6 +89,7 @@ void CSE_ALifeInventoryItem::STATE_Write	(NET_Packet &tNetPacket)
 	tNetPacket.w_float			(m_fCondition);
 	save_data					(m_upgrades, tNetPacket);
 	State.position				= base()->o_Position;
+	tNetPacket.w_u16(slot);
 }
 
 void CSE_ALifeInventoryItem::STATE_Read		(NET_Packet &tNetPacket, u16 size)
@@ -103,6 +104,7 @@ void CSE_ALifeInventoryItem::STATE_Read		(NET_Packet &tNetPacket, u16 size)
 	}
 
 	State.position				= base()->o_Position;
+	tNetPacket.r_u16(slot);
 }
 
 static inline bool check (const u8 &mask, const u8 &test)

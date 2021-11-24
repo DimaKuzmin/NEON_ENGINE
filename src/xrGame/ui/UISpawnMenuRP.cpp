@@ -52,7 +52,8 @@ CUISpawnMenuRP::~CUISpawnMenuRP()
 {
 	for (u32 i = 0; i < m_pImages.size(); i++)
 		xr_delete(m_pImages[i]);
-
+	
+	if (team_admin != 0)
 	xr_delete(Image_AdminTeam);
 }
 														     

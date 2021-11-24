@@ -5,9 +5,16 @@
 
 class game_sv_freemp : public game_sv_mp, private pure_relcase
 {
+
 	typedef game_sv_mp inherited;
 
+protected:
+	xr_vector<u16> inventory_boxes;
+
+
 public:
+
+
 									game_sv_freemp();
 	virtual							~game_sv_freemp();
 	
@@ -40,4 +47,15 @@ public:
 
 	virtual		void				OnPlayerTrade(NET_Packet &P, ClientID const & clientID);
 	virtual		void				OnTransferMoney(NET_Packet &P, ClientID const & clientID);
+
+	virtual		void				RespawnPlayer(ClientID id_who, bool NoSpectator);
+
+
+	virtual     void				SavePlayer(game_PlayerState* ps, CInifile* file);
+	virtual     bool				LoadPlayer(game_PlayerState* ps, CInifile* file);
+	virtual		bool				HasSaveFile(game_PlayerState* ps);
+
+	virtual		void				SaveInvBox(CSE_ALifeInventoryBox* box, CInifile* file);
+	virtual		void				LoadInvBox(CSE_ALifeInventoryBox* box, CInifile* file);
+
 };

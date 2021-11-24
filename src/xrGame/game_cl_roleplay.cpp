@@ -14,6 +14,8 @@ game_cl_roleplay::game_cl_roleplay()
 
 game_cl_roleplay::~game_cl_roleplay()
 {
+	send_respawn = false;
+	m_bTeamSelected = false;
 }
 
 CUIGameCustom * game_cl_roleplay::createGameUI()
@@ -46,8 +48,11 @@ bool game_cl_roleplay::CanRespawn()
 {
 	CGameObject *pObject = smart_cast<CGameObject*>(Level().CurrentEntity());
 	if (!pObject) return false;
-	
+
 	// If we are an actor and we are dead
+	if (!local_player->testFlag(GAME_PLAYER_MP_SAVE_LOADED))
+		return true;
+
 	return !!smart_cast<CActor*>(pObject) &&
 					local_player &&
 					local_player->testFlag(GAME_PLAYER_FLAG_VERY_VERY_DEAD);
@@ -56,6 +61,12 @@ bool game_cl_roleplay::CanRespawn()
 void game_cl_roleplay::TryShowSpawnMenu()
 {
 	if (g_dedicated_server)
+		return;
+
+	if (!local_player->testFlag(GAME_PLAYER_FLAG_READY))
+		return;
+
+	if (!local_player->testFlag(GAME_PLAYER_MP_SAVE_LOADED))
 		return;
 
 	if (!m_bTeamSelected && !m_game_ui->SpawnMenu()->IsShown())
@@ -116,7 +127,8 @@ bool game_cl_roleplay::OnKeyboardPress(int key)
 		}
 		return true;
 	}
-	else if (kJUMP == key)
+	else
+	if (kJUMP == key)
 	{
 		if (CanRespawn())
 		{
@@ -125,10 +137,10 @@ bool game_cl_roleplay::OnKeyboardPress(int key)
 			GO->u_EventGen(P, GE_GAME_EVENT, GO->ID());
 			P.w_u16(GAME_EVENT_PLAYER_READY);
 			GO->u_EventSend(P);
+			m_bTeamSelected = true;
 			return true;
 		}
-		return false;
-	}
+ 	}
 	return inherited::OnKeyboardPress(key);
 }
 

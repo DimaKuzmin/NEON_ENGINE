@@ -133,7 +133,7 @@ void game_sv_roleplay::OnDetachPlayersBag(CSE_ActorMP *actor, CSE_Abstract *item
 		}
 		else
 		{
-			if (!smart_cast<CSE_ALifeItemCustomOutfit*>(e_item) && e_item->m_tClassID != CLSID_OBJECT_PLAYERS_BAG)
+			if (/*!smart_cast<CSE_ALifeItemCustomOutfit*>(e_item) && */ e_item->m_tClassID != CLSID_OBJECT_PLAYERS_BAG)
 			{
 				to_transfer.push_back(e_item);
 			}
@@ -163,3 +163,5 @@ void game_sv_roleplay::OnDetachPlayersBag(CSE_ActorMP *actor, CSE_Abstract *item
 	for (const auto& el : to_reject)
 		RejectGameItem(el);
 }
+
+

@@ -125,6 +125,7 @@ void game_sv_roleplay::OnPlayerSelectTeam(NET_Packet& P, ClientID sender)
 	auto teamSettings = m_teamSettings[ps->team];
 
 	// spawn start items
+	if (ps->testFlag(GAME_PLAYER_MP_SAVE_LOADED))
 	for (auto &item : teamSettings.StartItems)
 	{
 		SpawnItemToActor(pA->ID, item.c_str());
@@ -132,7 +133,9 @@ void game_sv_roleplay::OnPlayerSelectTeam(NET_Packet& P, ClientID sender)
 
 	// set start money
 	ps->money_for_round = teamSettings.StartMoney;
-	 
+
+	ps->setFlag(GAME_PLAYER_MP_SAVE_LOADED);
+
 	signal_Syncronize();
 }
 
@@ -165,16 +168,38 @@ void game_sv_roleplay::RespawnPlayer(ClientID id_who, bool NoSpectator)
 		
 		return;
 	}
-
+	
+	if (ps->team == 0)
+	{
+		ps->team = 8;
+	}
+ 
 	if (m_teamSettings.count(ps->team) == 0)
 		return;
 
 	auto teamSettings = m_teamSettings[ps->team];
 
+	if (ps->testFlag(GAME_PLAYER_MP_SAVE_LOADED))
  	for (auto& item : teamSettings.DefaultItems)
 	{
 		SpawnItemToActor(pA->ID, item.c_str());
 	}
+
+	if (ps && !ps->testFlag(GAME_PLAYER_MP_SAVE_LOADED))
+	{
+		string_path file_name;
+		string32 filename;
+		xr_strcpy(filename, ps->getName());
+		xr_strcat(filename, ".ltx");
+
+		FS.update_path(file_name, "$mp_saves$", filename);
+
+		CInifile* file = xr_new<CInifile>(file_name, true);
+		LoadPlayer(ps, file);
+		ps->setFlag(GAME_PLAYER_MP_SAVE_LOADED);
+ 	}
+
+	signal_Syncronize();
 }
 
 BOOL game_sv_roleplay::OnTouch(u16 eid_who, u16 eid_what, BOOL bForced)
@@ -207,8 +232,37 @@ void game_sv_roleplay::OnDetach(u16 eid_who, u16 eid_what)
 		return;
 	
 	// drop players bag
-	if (e_entity->m_tClassID == CLSID_OBJECT_PLAYERS_BAG)
+ 	xrClientData* data = (xrClientData*) get_client(eid_who);
+
+ 	if (e_entity->m_tClassID == CLSID_OBJECT_PLAYERS_BAG )
 	{
-		OnDetachPlayersBag(e_who, e_entity);
+		if (data)
+			OnDetachPlayersBag(e_who, e_entity);
+		else
+			//DestroyGameItem(e_entity);
+			to_destroy.push_back(e_entity);
 	}
 }
+
+void game_sv_roleplay::OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID)
+{
+	inherited::OnPlayerDisconnect(id_who, Name, GameID);
+}
+
+void game_sv_roleplay::Update()
+{
+	inherited::Update();
+
+	if (!to_destroy.empty() && Device.dwFrame % 60 == 0)
+	{
+ 		for ( auto ent : to_destroy)
+		{	
+			if (ent)
+				DestroyGameItem(ent);
+		}
+
+		to_destroy.clear();
+	}
+
+}
+

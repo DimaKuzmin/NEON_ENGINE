@@ -14,6 +14,8 @@ private:
 
 protected:
 	bool									m_bTeamSelected = false;
+	bool									send_respawn = false;
+
 
 private:
 	void									TryShowSpawnMenu();

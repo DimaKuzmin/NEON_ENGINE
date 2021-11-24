@@ -14,6 +14,7 @@ class game_sv_roleplay : public game_sv_freemp
 
 private:
 	xr_map<u16, TeamSpawnSect> m_teamSettings;
+	xr_vector<CSE_Abstract*> to_destroy;
 
 	TeamSpawnSect m_teamAdmin;
 	u8 m_uTeamCount = 0;
@@ -26,7 +27,7 @@ public:
 												game_sv_roleplay();
 	virtual								~game_sv_roleplay();
 
-	virtual LPCSTR				type_name() const { return "roleplay"; };
+	virtual LPCSTR					type_name() const { return "roleplay"; };
 
 	virtual void					Create(shared_str &options);
 
@@ -41,7 +42,12 @@ public:
 
 	// drop items after death
 	virtual		void				FillDeathActorRejectItems(CSE_ActorMP *actor, xr_vector<CSE_Abstract*> & to_reject);
-						BOOL				OnTouchPlayersBag(CSE_ActorMP *actor, CSE_Abstract *item);
-						void				OnDetachPlayersBag(CSE_ActorMP *actor, CSE_Abstract *item);
+				BOOL				OnTouchPlayersBag(CSE_ActorMP *actor, CSE_Abstract *item);
+				void				OnDetachPlayersBag(CSE_ActorMP *actor, CSE_Abstract *item);
+
+	virtual		void				OnPlayerDisconnect(ClientID id_who, LPSTR Name, u16 GameID);
+	virtual		void				Update();
+
+	
 };
 
