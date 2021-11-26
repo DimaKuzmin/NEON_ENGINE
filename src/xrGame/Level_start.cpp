@@ -40,10 +40,14 @@ BOOL CLevel::net_Start	( LPCSTR op_server, LPCSTR op_client )
 	{
 		xr_strcpy( player_name, xr_strlen(Core.UserName) ? Core.UserName : Core.CompName );
 	}
+
 	VERIFY( xr_strlen(player_name) );
 
 	//make Client Name if options doesn't have it
 	LPCSTR	NameStart	= strstr(op_client,"/name=");
+
+
+
 	if (!NameStart)
 	{
 		string512 tmp;

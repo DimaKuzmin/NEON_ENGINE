@@ -215,17 +215,52 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 	u64 _our		=	FS.auth_get();
 	u64 _him		=	P.r_u64();
 
-#ifdef USE_DEBUG_AUTH
-	Msg("_our = %d", _our);
-	Msg("_him = %d", _him);
-	_our = MP_DEBUG_AUTH;
-#endif // USE_DEBUG_AUTH
+	shared_str login, password;  
+	P.r_stringZ(login);
+	P.r_stringZ(password);
 
-	if ( _our != _him )
+	string_path path_xray;
+	FS.update_path(path_xray, "$mp_saves_logins$", "logins.ltx");
+
+	CInifile* file = xr_new<CInifile>(path_xray, true);
+
+	if (!CL->flags.bLocal)
 	{
-		SendConnectResult( CL, 0, ecr_data_verification_failed, "Data verification failed. Cheater?" );
+		if (file->section_exist(login))
+		{
+			shared_str pass_check;
+
+			if (file->line_exist(login, "password"))
+				pass_check = file->r_string(login, "password");
+
+			if (!xr_strcmp(pass_check, password))
+			{
+				SendConnectResult(CL, 0, ecr_data_verification_failed, "Проверьте пароль.");
+				return;
+			}
+
+			if (file->line_exist(login, "banned"))
+			{
+				SendConnectResult(CL, 0, ecr_data_verification_failed, "Вы забанены.");
+				return;
+			}
+
+			for (auto pl : Game().players)
+			{
+				if (!xr_strcmp(pl.second->getName(), login))
+				{
+					SendConnectResult(CL, 0, ecr_data_verification_failed, "Повторный вход с одного аккаунта.");
+					return;
+				}
+			}
+		}
+		else
+		{
+			SendConnectResult(CL, 0, ecr_data_verification_failed, "Неверный логин");
+			return;
+		}
 	}
-	else
+
 	{				
 		bool bAccessUser = false;
 		string512 res_check;
@@ -237,8 +272,7 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 				
 		if( CL->flags.bLocal || bAccessUser )
 		{
-			//Check_BuildVersion_Success( CL );
-			RequestClientDigest(CL);
+ 			RequestClientDigest(CL);
 		}
 		else
 		{

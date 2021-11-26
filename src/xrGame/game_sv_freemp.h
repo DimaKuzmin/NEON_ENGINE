@@ -10,7 +10,7 @@ class game_sv_freemp : public game_sv_mp, private pure_relcase
 
 protected:
 	xr_vector<u16> inventory_boxes;
-
+	xr_map<u16, u32> inv_box;
 
 public:
 

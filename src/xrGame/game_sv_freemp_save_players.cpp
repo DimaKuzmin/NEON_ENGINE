@@ -163,6 +163,9 @@ void game_sv_freemp::SaveInvBox(CSE_ALifeInventoryBox* box, CInifile* file)
 
 		CInventoryItem* item = smart_cast<CInventoryItem*>( Level().Objects.net_Find(id));
 
+		if (!item)
+			return;
+
 		file->w_string(itemID, "section", item->m_section_id.c_str());
  
 		if (item->GetCondition() < 1)
@@ -182,6 +185,8 @@ void game_sv_freemp::SaveInvBox(CSE_ALifeInventoryBox* box, CInifile* file)
 			file->w_u8(itemID, "addon_State", wpn->GetAddonsState());
 			file->w_u8(itemID, "cur_scope", wpn->m_cur_scope);
 		}
+
+		
 	}
 
 	file->w_u32("box", "items_count", ids);
@@ -193,9 +198,12 @@ void game_sv_freemp::LoadInvBox(CSE_ALifeInventoryBox* box, CInifile* file)
 	if (!file->section_exist("box"))
 		return;
 
+	if (!box)
+		return;
+
 	u32 count = file->r_u32("box", "items_count");
 
-	Msg("[game_sv_freemp] LoadInvBox [%d] items[%d]", box->ID, count);
+	// Msg("[game_sv_freemp] LoadInvBox [%d] items[%d]", box->ID, count);
     
 	for (u32 id = 1; id != count + 1; id++)
 	{
@@ -204,8 +212,7 @@ void game_sv_freemp::LoadInvBox(CSE_ALifeInventoryBox* box, CInifile* file)
  
 		if (file->section_exist(itemID))
 		{
-			LPCSTR name = file->r_string(itemID, "section");
-
+			LPCSTR name = file->r_string(itemID, "section");				
 			CSE_Abstract* E = spawn_begin(name);
 
 			E->ID_Parent = box->ID;
@@ -242,5 +249,4 @@ void game_sv_freemp::LoadInvBox(CSE_ALifeInventoryBox* box, CInifile* file)
 		}
 	}
 }
-
 

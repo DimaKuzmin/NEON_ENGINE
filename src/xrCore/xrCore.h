@@ -299,6 +299,7 @@ public:
 	string_path	ApplicationPath;
 	string_path	WorkingPath;
 	string64	UserName;
+	string64	Password;
 	string64	CompName;
 	string512	Params;
 	DWORD		dwFrame;

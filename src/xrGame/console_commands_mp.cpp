@@ -2659,7 +2659,114 @@ public:
 		}
 	}
 };
+ 
+class CCC_AdmRegisterAccount : public IConsole_Command {
+public:
+	CCC_AdmRegisterAccount(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
 
+	virtual void Execute(LPCSTR args)
+	{
+		if (OnServer())
+		{
+			string_path filepath;
+
+			FS.update_path(filepath, "$mp_saves_logins$", "logins.ltx");
+
+			CInifile* file = xr_new<CInifile>(filepath, false, true);
+
+			string256 tmp, login, password;
+			exclude_raid_from_args(args, tmp, sizeof(tmp));
+
+			sscanf(tmp, "%s %s", &login, &password);
+
+			if (file)
+			{
+				file->w_string(login, "password", password);
+			}
+
+			file->save_as(filepath);
+		}
+		else
+		{
+			NET_Packet P;
+			P.w_begin(M_REMOTE_CONTROL_CMD);
+			string128 str;
+			xr_sprintf(str, "adm_register_account %s %s", Core.UserName, Core.Password);
+			P.w_stringZ(str);
+			Level().Send(P, net_flags(TRUE, TRUE));
+		}
+	}
+};
+
+class CCC_AdmBanAccount : public IConsole_Command
+{
+public:
+	CCC_AdmBanAccount(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
+	virtual void Execute(LPCSTR args)
+	{
+		if (OnServer())
+		{
+			string_path filepath;
+			FS.update_path(filepath, "$mp_saves_logins$", "logins.ltx");
+			CInifile* file = xr_new<CInifile>(filepath, false, true);
+
+			string256 tmp, login;
+			exclude_raid_from_args(args, tmp, sizeof(tmp));
+
+			sscanf(tmp, "%s", &login);
+
+			if (file && file->section_exist(login))
+				file->w_bool(login, "banned", true);
+
+			file->save_as(filepath);
+		}
+		else
+		{
+			NET_Packet P;
+			P.w_begin(M_REMOTE_CONTROL_CMD);
+			string128 str;
+			xr_sprintf(str, "adm_ban_account %s", Core.UserName);
+			P.w_stringZ(str);
+			Level().Send(P, net_flags(TRUE, TRUE));
+		}
+	}
+};
+
+class CCC_AdmUnBanAccount : public IConsole_Command
+{
+public:
+	CCC_AdmUnBanAccount(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
+	virtual void Execute(LPCSTR args)
+	{
+		if (OnServer())
+		{
+			string_path filepath;
+			FS.update_path(filepath, "$mp_saves_logins$", "logins.ltx");
+			CInifile* file = xr_new<CInifile>(filepath, false, true);
+
+			string256 tmp, login;
+			exclude_raid_from_args(args, tmp, sizeof(tmp));
+
+			sscanf(tmp, "%s", &login);
+
+			if (file && file->section_exist(login))
+				file->remove_line(login, "banned");
+
+			file->save_as(filepath);
+		}
+		else
+		{
+			NET_Packet P;
+			P.w_begin(M_REMOTE_CONTROL_CMD);
+			string128 str;
+			xr_sprintf(str, "adm_unban_account %s", Core.UserName);
+			P.w_stringZ(str);
+			Level().Send(P, net_flags(TRUE, TRUE));
+		}
+	}
+};
 
 void register_mp_console_commands()
 {
@@ -2678,6 +2785,9 @@ void register_mp_console_commands()
 	CMD1(CCC_AdmGodMode,			"adm_god_mode"			);
 	CMD1(CCC_AdmUnlimatedAmmo,      "adm_unlimated_ammo");
 
+	CMD1(CCC_AdmRegisterAccount,	"adm_register_account");
+	CMD1(CCC_AdmBanAccount,			"adm_ban_account");
+	CMD1(CCC_AdmUnBanAccount,		"adm_unban_account");
 
 	CMD1(CCC_MovePlayerToRPoint,	"sv_move_player_to_rpoint");
 
