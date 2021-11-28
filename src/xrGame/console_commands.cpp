@@ -109,6 +109,8 @@ void register_mp_console_commands();
 		BOOL	g_bCheckTime			= FALSE;
 		int		net_cl_inputupdaterate	= 50;
 		Flags32	g_mt_config				= {mtLevelPath | mtDetailPath | mtObjectHandler | mtSoundPlayer | mtAiVision | mtBullets | mtLUA_GC | mtLevelSounds | mtALife | mtMap};
+
+
 #ifdef DEBUG
 		Flags32	dbg_net_Draw_Flags		= {0};
 #endif
@@ -122,6 +124,7 @@ extern	BOOL	g_bDrawFirstBulletCrosshair;
 
 		float	debug_on_frame_gather_stats_frequency	= 0.f;
 #endif
+
 #ifdef DEBUG 
 extern LPSTR	dbg_stalker_death_anim;
 extern BOOL		b_death_anim_velocity;
@@ -131,6 +134,7 @@ extern BOOL		dbg_imotion_draw_velocity;
 extern BOOL		dbg_imotion_collide_debug;
 extern float	dbg_imotion_draw_velocity_scale;
 #endif
+
 int g_AI_inactive_time = 0;
 Flags32 g_uCommonFlags;
 enum E_COMMON_FLAGS{
