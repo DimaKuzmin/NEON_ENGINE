@@ -526,6 +526,15 @@ void CUIGameCustom::StartTalk(bool disable_break)
 	TalkMenu->ShowDialog(true);
 }
 
+void CUIGameCustom::StartUpgrade(CInventoryOwner* pActorInv, CInventoryOwner* pMech)
+{
+	m_ActorMenu->SetActor(pActorInv);
+	m_ActorMenu->SetPartner(pMech);
+
+	m_ActorMenu->SetMenuMode(mmUpgrade);
+	m_ActorMenu->ShowDialog(true);
+}
+
 void  CUIGameCustom::StartTrade(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner)
 {
 	//.	if( MainInputReceiver() )	return;

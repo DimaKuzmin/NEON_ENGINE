@@ -448,24 +448,6 @@
     <Filter Include="AI\ALife\saved_game_wrapper">
       <UniqueIdentifier>{f9646122-ec92-44f8-8dc4-38ac8c45697c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="AI\ALife\inventory_upgrade">
-      <UniqueIdentifier>{cc270f2f-a8cd-4edb-b4f2-c535a4d03ffa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI\ALife\inventory_upgrade\upgrade_base">
-      <UniqueIdentifier>{6a970a04-f8c4-4aaa-8e5a-c4cd34d039d1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI\ALife\inventory_upgrade\upgrade_group">
-      <UniqueIdentifier>{ab20e3d1-ea49-4709-b45c-7e1b2620be91}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI\ALife\inventory_upgrade\upgrade">
-      <UniqueIdentifier>{6d76ce96-0403-42f5-bf9f-a6351fbf4cef}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI\ALife\inventory_upgrade\upgrade_root">
-      <UniqueIdentifier>{c9148593-0e8b-41b4-98a6-cc68ff2be0d5}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="AI\ALife\inventory_upgrade\property">
-      <UniqueIdentifier>{f5e0ea33-ab64-4f60-a9bc-c712f764f078}</UniqueIdentifier>
-    </Filter>
     <Filter Include="AI\ALife\server_entities">
       <UniqueIdentifier>{2d2608d6-be69-4da3-96ba-c111908f8e33}</UniqueIdentifier>
     </Filter>
@@ -2512,6 +2494,24 @@
     <Filter Include="jsonxx">
       <UniqueIdentifier>{50aafa55-2885-4ace-807f-368de3ebfa46}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Client\Objects\inventory\InventoryItem\inventory_upgrade">
+      <UniqueIdentifier>{cc270f2f-a8cd-4edb-b4f2-c535a4d03ffa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Client\Objects\inventory\InventoryItem\inventory_upgrade\upgrade_base">
+      <UniqueIdentifier>{6a970a04-f8c4-4aaa-8e5a-c4cd34d039d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Client\Objects\inventory\InventoryItem\inventory_upgrade\upgrade_group">
+      <UniqueIdentifier>{ab20e3d1-ea49-4709-b45c-7e1b2620be91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Client\Objects\inventory\InventoryItem\inventory_upgrade\upgrade">
+      <UniqueIdentifier>{6d76ce96-0403-42f5-bf9f-a6351fbf4cef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Client\Objects\inventory\InventoryItem\inventory_upgrade\upgrade_root">
+      <UniqueIdentifier>{c9148593-0e8b-41b4-98a6-cc68ff2be0d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Client\Objects\inventory\InventoryItem\inventory_upgrade\property">
+      <UniqueIdentifier>{f5e0ea33-ab64-4f60-a9bc-c712f764f078}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -3352,40 +3352,40 @@
       <Filter>AI\ALife\saved_game_wrapper</Filter>
     </ClInclude>
     <ClInclude Include="inventory_upgrade_manager.h">
-      <Filter>AI\ALife\inventory_upgrade</Filter>
+      <Filter>Core\Client\Objects\inventory\InventoryItem\inventory_upgrade</Filter>
     </ClInclude>
     <ClInclude Include="inventory_upgrade_manager_inline.h">
-      <Filter>AI\ALife\inventory_upgrade</Filter>
+      <Filter>Core\Client\Objects\inventory\InventoryItem\inventory_upgrade</Filter>
     </ClInclude>
     <ClInclude Include="inventory_upgrade_base.h">
-      <Filter>AI\ALife\inventory_upgrade\upgrade_base</Filter>
+      <Filter>Core\Client\Objects\inventory\InventoryItem\inventory_upgrade\upgrade_base</Filter>
     </ClInclude>
     <ClInclude Include="inventory_upgrade_base_inline.h">
-      <Filter>AI\ALife\inventory_upgrade\upgrade_base</Filter>
+      <Filter>Core\Client\Objects\inventory\InventoryItem\inventory_upgrade\upgrade_base</Filter>
     </ClInclude>
     <ClInclude Include="inventory_upgrade_group.h">
-      <Filter>AI\ALife\inventory_upgrade\upgrade_group</Filter>
+      <Filter>Core\Client\Objects\inventory\InventoryItem\inventory_upgrade\upgrade_group</Filter>
     </ClInclude>
     <ClInclude Include="inventory_upgrade_group_inline.h">
-      <Filter>AI\ALife\inventory_upgrade\upgrade_group</Filter>
+      <Filter>Core\Client\Objects\inventory\InventoryItem\inventory_upgrade\upgrade_group</Filter>
     </ClInclude>
     <ClInclude Include="inventory_upgrade.h">
-      <Filter>AI\ALife\inventory_upgrade\upgrade</Filter>
+      <Filter>Core\Client\Objects\inventory\InventoryItem\inventory_upgrade\upgrade</Filter>
     </ClInclude>
     <ClInclude Include="inventory_upgrade_inline.h">
-      <Filter>AI\ALife\inventory_upgrade\upgrade</Filter>
+      <Filter>Core\Client\Objects\inventory\InventoryItem\inventory_upgrade\upgrade</Filter>
     </ClInclude>
     <ClInclude Include="inventory_upgrade_root.h">
-      <Filter>AI\ALife\inventory_upgrade\upgrade_root</Filter>
+      <Filter>Core\Client\Objects\inventory\InventoryItem\inventory_upgrade\upgrade_root</Filter>
     </ClInclude>
     <ClInclude Include="inventory_upgrade_root_inline.h">
-      <Filter>AI\ALife\inventory_upgrade\upgrade_root</Filter>
+      <Filter>Core\Client\Objects\inventory\InventoryItem\inventory_upgrade\upgrade_root</Filter>
     </ClInclude>
     <ClInclude Include="inventory_upgrade_property.h">
-      <Filter>AI\ALife\inventory_upgrade\property</Filter>
+      <Filter>Core\Client\Objects\inventory\InventoryItem\inventory_upgrade\property</Filter>
     </ClInclude>
     <ClInclude Include="inventory_upgrade_property_inline.h">
-      <Filter>AI\ALife\inventory_upgrade\property</Filter>
+      <Filter>Core\Client\Objects\inventory\InventoryItem\inventory_upgrade\property</Filter>
     </ClInclude>
     <ClInclude Include="..\xrServerEntities\alife_human_brain.h">
       <Filter>AI\ALife\server_entities\human\brain</Filter>
@@ -7809,22 +7809,22 @@
       <Filter>AI\ALife\saved_game_wrapper</Filter>
     </ClCompile>
     <ClCompile Include="inventory_upgrade_manager.cpp">
-      <Filter>AI\ALife\inventory_upgrade</Filter>
+      <Filter>Core\Client\Objects\inventory\InventoryItem\inventory_upgrade</Filter>
     </ClCompile>
     <ClCompile Include="inventory_upgrade_base.cpp">
-      <Filter>AI\ALife\inventory_upgrade\upgrade_base</Filter>
+      <Filter>Core\Client\Objects\inventory\InventoryItem\inventory_upgrade\upgrade_base</Filter>
     </ClCompile>
     <ClCompile Include="inventory_upgrade_group.cpp">
-      <Filter>AI\ALife\inventory_upgrade\upgrade_group</Filter>
+      <Filter>Core\Client\Objects\inventory\InventoryItem\inventory_upgrade\upgrade_group</Filter>
     </ClCompile>
     <ClCompile Include="inventory_upgrade.cpp">
-      <Filter>AI\ALife\inventory_upgrade\upgrade</Filter>
+      <Filter>Core\Client\Objects\inventory\InventoryItem\inventory_upgrade\upgrade</Filter>
     </ClCompile>
     <ClCompile Include="inventory_upgrade_root.cpp">
-      <Filter>AI\ALife\inventory_upgrade\upgrade_root</Filter>
+      <Filter>Core\Client\Objects\inventory\InventoryItem\inventory_upgrade\upgrade_root</Filter>
     </ClCompile>
     <ClCompile Include="inventory_upgrade_property.cpp">
-      <Filter>AI\ALife\inventory_upgrade\property</Filter>
+      <Filter>Core\Client\Objects\inventory\InventoryItem\inventory_upgrade\property</Filter>
     </ClCompile>
     <ClCompile Include="alife_anomalous_zone.cpp">
       <Filter>AI\ALife\server_entities\anomalous_zone</Filter>

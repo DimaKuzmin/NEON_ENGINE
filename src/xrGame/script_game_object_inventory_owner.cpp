@@ -414,7 +414,21 @@ void CScriptGameObject::GiveMoney(int money)
 	CInventoryOwner* pOurOwner		= smart_cast<CInventoryOwner*>(&object()); VERIFY(pOurOwner);
 
 
-	pOurOwner->set_money		(pOurOwner->get_money() + money, true );
+ 
+	if (IsGameTypeSingle())
+		pOurOwner->set_money(pOurOwner->get_money() + money, true);
+	else
+	{
+		//if (smart_cast<CActorMP*>(this))
+		{
+			//Msg("Send Msg GiveMoney to [%d], money [%d]", ID(), money);
+			NET_Packet packet;
+			Game().u_EventGen(packet, GE_MONEY_ACTOR, ID());
+			packet.w_s32(money);
+			Game().u_EventSend(packet);
+		}
+
+	}
 }
 //////////////////////////////////////////////////////////////////////////
 

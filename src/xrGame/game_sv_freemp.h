@@ -3,7 +3,7 @@
 #include "game_sv_mp.h"
 #include "../xrEngine/pure_relcase.h"
 
-#define MP_SAVE_JSON
+//#define MP_SAVE_JSON
 
 class game_sv_freemp : public game_sv_mp, private pure_relcase
 {
@@ -15,8 +15,6 @@ protected:
 	xr_map<u16, u32> inv_box;
 
 public:
-
-
 									game_sv_freemp();
 	virtual							~game_sv_freemp();
 	
@@ -26,7 +24,7 @@ public:
 	virtual		bool				UseSKin() const { return false; }
 
 	virtual		LPCSTR				type_name() const { return "freemp"; };
-	void __stdcall		net_Relcase(CObject* O) {};
+	void __stdcall					net_Relcase(CObject* O) {};
 
 	// helper functions
 	void									AddMoneyToPlayer(game_PlayerState* ps, s32 amount);

@@ -6,6 +6,9 @@
 #include "Level.h"
 
 
+#include "game_sv_freemp.h"
+
+
 void xrServer::Perform_connect_spawn(CSE_Abstract* E, xrClientData* CL, NET_Packet& P)
 {
 	P.B.count = 0;
@@ -208,7 +211,7 @@ bool xrServer::NeedToCheckClient_BuildVersion		(IClient* CL)
 	return true;
 };
 
-#define MP_SAVE_JSON
+
 #include <fstream>;
 #include "..\jsonxx\jsonxx.h"
 #include <fstream>
@@ -226,6 +229,9 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 	P.r_stringZ(login);
 	P.r_stringZ(password);
 
+	Msg("Login[%s]/Pass[%s]", login.c_str(), password.c_str());
+
+
 	if (!CL->flags.bLocal)
 	{
 		string_path path_xray;
@@ -234,11 +240,10 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 #ifndef MP_SAVE_JSON
 		FS.update_path(path_xray, "$mp_saves_logins$", "logins.ltx");
 		CInifile* file = xr_new<CInifile>(path_xray, true);
+		
 		if (file->section_exist(login))
 		{
-			shared_str pass_check;
-			if (file->line_exist(login, "password"))
-				pass_check = file->r_string(login, "password");
+			shared_str pass_check = file->r_string(login, "password");
 
 			if (file->line_exist(login, "banned"))
 			{
@@ -246,13 +251,13 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 				return;
 			}
 
-			if (xr_strcmp(pass_check, password))
+			if (xr_strcmp(pass_check, password) != 0)
 			{
 				SendConnectResult(CL, 0, ecr_data_verification_failed, "Проверьте пароль.");
 				return;
 			}
-			else
-				has_login_in_file = true;
+			
+			has_login_in_file = true;
 		}
 
 #else 
@@ -284,6 +289,7 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 							if (tab.has<String>("password"))
 							{
 								LPCSTR password_file = tab.get<String>("password").c_str();
+								Msg("Pass1[%s]/Pass2[%s]", password_file, password.c_str());
 								if (xr_strcmp(password, password_file) != 0) 
 								{
 									SendConnectResult(CL, 0, ecr_data_verification_failed, "Проверьте пароль.");

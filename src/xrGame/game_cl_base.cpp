@@ -31,7 +31,9 @@ game_cl_GameState::game_cl_GameState()
 	m_u16VotingEnabled			= 0;
 	m_bServerControlHits		= true;
 
-	m_WeaponUsageStatistic		= xr_new<WeaponUsageStatistic>();
+	m_WeaponUsageStatistic		= xr_new<WeaponUsageStatistic>(); 
+
+	m_upgrade_manager			= xr_new<inventory::upgrade::Manager>();
 }
 
 game_cl_GameState::~game_cl_GameState()
@@ -44,6 +46,8 @@ game_cl_GameState::~game_cl_GameState()
 	shedule_unregister();
 	xr_delete(m_WeaponUsageStatistic);
 	xr_delete(local_player);
+
+	xr_delete					(m_upgrade_manager);
 }
 
 void	game_cl_GameState::net_import_GameTime		(NET_Packet& P)

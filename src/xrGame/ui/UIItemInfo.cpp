@@ -140,7 +140,7 @@ void CUIItemInfo::InitItemInfo(LPCSTR xml_name)
 		//UIDesc_line->SetAutoDelete		(true);
 		//xml_init.InitStatic				(uiXml, "description_line", 0, UIDesc_line);
 
-		if ( ai().get_alife() ) // (-designer)
+		//if ( ai().get_alife() ) // (-designer)
 		{
 			UIProperties					= xr_new<UIInvUpgPropertiesWnd>();
 			UIProperties->init_from_xml		("actor_menu_item.xml");

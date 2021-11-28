@@ -61,7 +61,8 @@ void BaseClient::ParseConnectionOptions(LPCSTR options, ClientConnectionOptions&
 		else
 			xr_strcpy(out.user_name, NM);
 
-		xr_strcpy(Core.UserName, out.user_name);
+		xr_strcpy(Core.UserLogin, out.user_name);
+ 
 	}
 
 	// USER PASSWORD
@@ -73,7 +74,7 @@ void BaseClient::ParseConnectionOptions(LPCSTR options, ClientConnectionOptions&
 		else
 			xr_strcpy(out.user_pass, UP);
 
-		xr_strcpy(Core.Password, UP);
+		xr_strcpy(Core.Password, out.user_pass);
 	}
 
 	// SERVER PORT

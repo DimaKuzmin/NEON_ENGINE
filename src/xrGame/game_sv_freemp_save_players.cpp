@@ -8,7 +8,6 @@
 
 #include <fstream>;
 #include "..\jsonxx\jsonxx.h"
-
 #include <fstream>
 #include <iostream>
 
@@ -24,7 +23,7 @@ bool game_sv_freemp::HasSaveFile(game_PlayerState* ps)
 	xr_strcpy(filename, ps->getName());
 	xr_strcat(filename, ".ltx");
 
-	FS.update_path(path, "$mp_saves$", filename);
+	FS.update_path(path, "$mp_saves_players$", filename);
 	CInifile* file = xr_new<CInifile>(path, true);
 
 
@@ -82,6 +81,13 @@ void game_sv_freemp::SavePlayer(game_PlayerState* ps, CInifile* file)
 				file->w_u8(itemID, "ammo_type", wpn->m_ammoType);
 				file->w_u8(itemID, "addon_State", wpn->GetAddonsState());
 				file->w_u8(itemID, "cur_scope", wpn->m_cur_scope);
+			}
+
+			if (item->has_any_upgrades())
+			{
+				string2048 upgrades;
+				item->get_upgrades(upgrades);
+				file->w_string(itemID, "upgrades", upgrades);
 			}
 		}
 
@@ -178,6 +184,20 @@ bool game_sv_freemp::LoadPlayer(game_PlayerState* ps, CInifile* file)
 					item->slot = slot;
 				}
 
+				if (file->line_exist(itemID, "upgrades"))
+				{
+					LPCSTR upgrades = file->r_string(itemID, "upgrades");
+					u32 count = _GetItemCount(upgrades, ',');
+
+					for (u32 id = 0; id != count; id++)
+					{
+						string64 upgrade;
+						_GetItem(upgrades, id, upgrade, ',');
+						item->m_upgrades.push_back(upgrade);
+					}
+				}
+
+
 				spawn_end(E, m_server->GetServerClient()->ID);
 			}
 		}
@@ -220,6 +240,14 @@ void game_sv_freemp::SaveInvBox(CSE_ALifeInventoryBox* box, CInifile* file)
 			file->w_u8(itemID, "ammo_type", wpn->m_ammoType);
 			file->w_u8(itemID, "addon_State", wpn->GetAddonsState());
 			file->w_u8(itemID, "cur_scope", wpn->m_cur_scope);
+		}
+
+
+		if (item->has_any_upgrades())
+		{
+			string2048 upgrades;
+			item->get_upgrades(upgrades);
+			file->w_string(itemID, "upgrades", upgrades);
 		}
 
 		
@@ -279,6 +307,20 @@ void game_sv_freemp::LoadInvBox(CSE_ALifeInventoryBox* box, CInifile* file)
 			{
 				u16 ammo_current = file->r_u16(itemID, "ammo_count");
 				ammo->a_elapsed = ammo_current;
+			}
+
+
+			if (file->line_exist(itemID, "upgrades"))
+			{
+				LPCSTR upgrades = file->r_string(itemID, "upgrades");
+				u32 count = _GetItemCount(upgrades, ',');
+
+				for (u32 id = 0; id != count; id++)
+				{
+					string64 upgrade;
+					_GetItem(upgrades, id, upgrade, ',');
+					item->m_upgrades.push_back(upgrade);
+				}
 			}
 
 			spawn_end(E, m_server->GetServerClient()->ID);

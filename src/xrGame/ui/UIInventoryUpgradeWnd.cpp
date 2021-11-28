@@ -148,7 +148,12 @@ void CUIInventoryUpgradeWnd::InitInventory( CInventoryItem* item, bool can_upgra
 	m_back->Show(false);
 	m_btn_repair->Enable( false );
 	
-	if ( ai().get_alife() && m_inv_item )
+	if (item && item->GetCondition() < 0.99f)
+	{
+		m_btn_repair->Enable(true);
+	}
+
+	if ( /*ai().get_alife() &&*/ m_inv_item )
 	{
 		if ( install_item( *m_inv_item, can_upgrade ) )
 		{
@@ -288,8 +293,10 @@ UIUpgrade* CUIInventoryUpgradeWnd::FindUIUpgrade( Upgrade_type const* upgr )
 	{
 		return NULL;
 	}
+
 	UI_Upgrades_type::iterator ib = m_current_scheme->cells.begin();
 	UI_Upgrades_type::iterator ie = m_current_scheme->cells.end();
+
 	for ( ; ib != ie; ++ib )
 	{
 		Upgrade_type* i_upgr = (*ib)->get_upgrade();
@@ -384,5 +391,5 @@ void CUIInventoryUpgradeWnd::set_info_cur_upgrade( Upgrade_type* upgrade )
 
 CUIInventoryUpgradeWnd::Manager_type& CUIInventoryUpgradeWnd::get_manager()
 {
-	return  ai().alife().inventory_upgrade_manager();
+	return Game().inventory_upgrade_manager();
 }

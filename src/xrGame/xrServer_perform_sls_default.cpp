@@ -23,7 +23,10 @@ void xrServer::SLS_Default	()
 #endif
 
 	string_path				fn_spawn;
-	if (FS.exist(fn_spawn, "$level$", "level.spawn")) {
+
+	if (game->Type() == eGameIDFreeMp)
+	if (FS.exist(fn_spawn, "$level$", "level.spawn")) 
+	{
 		IReader*			SP		= FS.r_open(fn_spawn);
 		NET_Packet			P;
 		u32					S_id;

@@ -24,6 +24,7 @@
 #include "../xrEngine/igame_persistent.h"
 #include "Artefact.h"
 
+
 #ifdef DEBUG
 #	include "debug_renderer.h"
 #endif
@@ -265,6 +266,16 @@ void CInventoryItem::OnEvent (NET_Packet& P, u16 type)
 			pSyncObj->set_State(state);
 
 		}break;
+	case GE_INSTALL_UPGRADE:
+	{
+		shared_str	upgrade_id;
+		P.r_stringZ(upgrade_id);
+		if (OnServer() || this->object().Remote())
+		{
+			Game().inventory_upgrade_manager().upgrade_install(*this, upgrade_id, true);
+		}
+	}break;
+	
 	}
 }
 
@@ -341,12 +352,7 @@ BOOL CInventoryItem::net_Spawn			(CSE_Abstract* DC)
 	if (pSE_InventoryItem->slot != 0)
 		m_ItemCurrPlace.value = pSE_InventoryItem->slot;
 
-
-	if ( IsGameTypeSingle() )
-	{
-		net_Spawn_install_upgrades( pSE_InventoryItem->m_upgrades );
-	}
- 
+	net_Spawn_install_upgrades( pSE_InventoryItem->m_upgrades ); 
 
 	if (GameID() != eGameIDSingle)
 		object().processing_activate();
@@ -374,7 +380,8 @@ void CInventoryItem::save(NET_Packet &packet)
 	packet.w_float			(m_fCondition);
 //--	save_data				(m_upgrades, packet);
 
-	if (object().H_Parent()) {
+	if (object().H_Parent())
+	{
 		packet.w_u8			(0);
 		return;
 	}

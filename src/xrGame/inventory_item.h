@@ -279,6 +279,7 @@ public:
 	bool	has_upgrade_group			( const shared_str& upgrade_group_id );
 	void	add_upgrade					( const shared_str& upgrade_id, bool loading );
 	bool	get_upgrades_str			( string2048& res ) const;
+	void	get_upgrades(string2048& res) const;
 
 	bool	equal_upgrades				( Upgrades_type const& other_upgrades ) const;
 

@@ -193,7 +193,7 @@ void game_sv_roleplay::RespawnPlayer(ClientID id_who, bool NoSpectator)
 		xr_strcpy(filename, ps->getName());
 		xr_strcat(filename, ".ltx");
 
-		FS.update_path(file_name, "$mp_saves$", filename);
+		FS.update_path(file_name, "$mp_saves_players$", filename);
 		
 		CInifile* file = xr_new<CInifile>(file_name, true);
 		LoadPlayer(ps, file);

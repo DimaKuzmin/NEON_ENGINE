@@ -469,7 +469,7 @@ void			CLevel::OnBuildVersionChallenge		()
 	u64 auth = FS.auth_get();
 #endif //#ifdef DEBUG
 	P.w_u64					(auth);
-	P.w_stringZ(Core.UserName);
+	P.w_stringZ(Core.UserLogin);
 	P.w_stringZ(Core.Password);
 
 	SecureSend				(P, net_flags(TRUE, TRUE, TRUE, TRUE));

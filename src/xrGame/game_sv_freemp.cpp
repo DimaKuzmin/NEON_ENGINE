@@ -177,7 +177,7 @@ void game_sv_freemp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 		string32 filename;
 		xr_strcpy(filename, ps->getName());
 		xr_strcat(filename, ".ltx");
-		FS.update_path(file_name, "$mp_saves$", filename);
+		FS.update_path(file_name, "$mp_saves_players$", filename);
 		CInifile* file = xr_new<CInifile>(file_name, true);
 		LoadPlayer(ps, file);
 #else 
@@ -289,7 +289,7 @@ void game_sv_freemp::Update()
 				xr_strcpy(filename, player.second->getName());
 				xr_strcat(filename, ".ltx");
 
-				FS.update_path(file_name, "$mp_saves$", filename);
+				FS.update_path(file_name, "$mp_saves_players$", filename);
 #ifndef MP_SAVE_JSON
 				CInifile* file = xr_new<CInifile>(file_name, false, false);
 				SavePlayer(player.second, file);

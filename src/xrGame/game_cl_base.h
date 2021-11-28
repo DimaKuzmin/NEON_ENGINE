@@ -3,6 +3,7 @@
 #include "game_base.h"
 #include "../xrCore/client_id.h"
 #include "WeaponAmmo.h"
+#include "inventory_upgrade_manager.h"
 
 class	NET_Packet;
 class	CGameObject;
@@ -17,6 +18,13 @@ struct SZoneMapEntityData{
 };
 
 struct WeaponUsageStatistic;
+
+namespace inventory {
+	namespace upgrade {
+		class Manager;
+	}
+} // namespace upgrade, inventory
+
 
 class	game_cl_GameState	: public game_GameState, public ISheduled
 {
@@ -121,4 +129,13 @@ public:
 	virtual		void				OnConnected				();
 
 	virtual		void				OnSetCurrentControlEntity(CObject *O) {};
+
+	inventory::upgrade::Manager					*m_upgrade_manager;
+
+	IC inventory::upgrade::Manager& inventory_upgrade_manager() const
+	{
+ 		VERIFY(m_upgrade_manager);
+		return						(*m_upgrade_manager);
+	};
+
 };
