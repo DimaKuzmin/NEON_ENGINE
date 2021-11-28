@@ -70,6 +70,13 @@ void CUIActorMenu::RepairEffect_CurItem()
 	UpdateConditionProgressBars();
 	SeparateUpgradeItem();
 	CUICellItem* itm = CurrentItem();
+ 
+	NET_Packet packet;
+
+	Game().u_EventGen(packet, GE_REPAIR_ITEM, item->object_id());
+	packet.w_float(1.0f);
+	Level().Send(packet, net_flags(TRUE, TRUE, FALSE, TRUE));
+
 	if(itm)
 		itm->UpdateConditionProgressBar();
 

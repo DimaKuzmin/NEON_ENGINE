@@ -283,6 +283,8 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 		R_ASSERT(Level().Objects.net_Find(E->ID) == NULL);
 	}
 
+//	Msg("net_spawn %s", this->Name());
+
 
 	setID							(E->ID);
 //	if (GameID() != eGameIDSingle)

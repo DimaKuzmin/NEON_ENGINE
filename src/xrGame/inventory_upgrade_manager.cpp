@@ -341,7 +341,7 @@ bool Manager::upgrade_install( CInventoryItem& item, shared_str const& upgrade_i
 	
 	if ( res == result_ok )
 	{
-		if ( !loading )
+		//if ( !loading )
 		{
 			item.pre_install_upgrade();
 		}

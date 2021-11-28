@@ -146,12 +146,14 @@ IC	CALifeRegistryContainer		&CALifeSimulatorBase::registry						() const
 	return						(*m_registry_container);
 }
 
+/*
 IC	inventory::upgrade::Manager	&CALifeSimulatorBase::inventory_upgrade_manager		() const
 {
 	VERIFY						(initialized());
 	VERIFY						(m_upgrade_manager);
 	return						(*m_upgrade_manager);
 }
+*/
 
 IC	CRandom32							&CALifeSimulatorBase::random				()
 {

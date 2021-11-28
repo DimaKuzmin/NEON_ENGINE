@@ -224,22 +224,24 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 
 	CInifile* file = xr_new<CInifile>(path_xray, true);
 
+	Msg("Login [%s] Pass[%s]", login.c_str(), password.c_str());
+
 	if (!CL->flags.bLocal)
 	{
-		if (file->section_exist(login))
+		if (file->section_exist(login.c_str()))
 		{
 			shared_str pass_check;
 
-			if (file->line_exist(login, "password"))
-				pass_check = file->r_string(login, "password");
+			if (file->line_exist(login.c_str(), "password"))
+				pass_check = file->r_string(login.c_str(), "password");
 
-			if (!xr_strcmp(pass_check, password))
+			if (xr_strcmp(pass_check, password))
 			{
 				SendConnectResult(CL, 0, ecr_data_verification_failed, "Проверьте пароль.");
 				return;
 			}
 
-			if (file->line_exist(login, "banned"))
+			if (file->line_exist(login.c_str(), "banned"))
 			{
 				SendConnectResult(CL, 0, ecr_data_verification_failed, "Вы забанены.");
 				return;
@@ -247,7 +249,7 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 
 			for (auto pl : Game().players)
 			{
-				if (!xr_strcmp(pl.second->getName(), login))
+				if (!xr_strcmp(pl.second->getName(), login.c_str()))
 				{
 					SendConnectResult(CL, 0, ecr_data_verification_failed, "Повторный вход с одного аккаунта.");
 					return;

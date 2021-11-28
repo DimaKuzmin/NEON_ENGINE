@@ -20,6 +20,8 @@
 #include "Level.h"
 #include "WeaponMagazinedWGrenade.h"
 
+#include "game_cl_base.h"
+
 bool CInventoryItem::has_upgrade_group( const shared_str& upgrade_group_id )
 {
 	Upgrades_type::iterator it	= m_upgrades.begin();
@@ -27,7 +29,7 @@ bool CInventoryItem::has_upgrade_group( const shared_str& upgrade_group_id )
 
 	for(; it!=it_e; ++it)
 	{
-		inventory::upgrade::Upgrade* upgrade = ai().alife().inventory_upgrade_manager().get_upgrade( *it );
+		inventory::upgrade::Upgrade* upgrade = Game().inventory_upgrade_manager().get_upgrade( *it );
 		if(upgrade->parent_group_id()==upgrade_group_id)
 			return true;
 	}
@@ -68,7 +70,7 @@ bool CInventoryItem::get_upgrades_str( string2048& res ) const
 	inventory::upgrade::Upgrade* upgr;
 	for ( ; ib != ie; ++ib )
 	{
-		upgr = ai().alife().inventory_upgrade_manager().get_upgrade( *ib );
+		upgr = Game().inventory_upgrade_manager().get_upgrade( *ib );
 		if ( !upgr ) { continue; }
 
 		LPCSTR upgr_section = upgr->section();
@@ -84,6 +86,25 @@ bool CInventoryItem::get_upgrades_str( string2048& res ) const
 		return true;
 	}
 	return false;
+}
+
+void CInventoryItem::get_upgrades(string2048& res) const
+{
+	int prop_count = 0;
+	res[0] = 0;
+	Upgrades_type::const_iterator ib = m_upgrades.begin();
+	Upgrades_type::const_iterator ie = m_upgrades.end();
+
+	for (; ib != ie; ++ib)
+	{
+		if (prop_count > 0)
+		{
+			xr_strcat(res, sizeof(res), ", ");
+		}
+		xr_strcat(res, sizeof(res), (*ib).c_str());
+		++prop_count;
+	}
+
 }
 
 bool CInventoryItem::equal_upgrades( Upgrades_type const& other_upgrades ) const
@@ -134,19 +155,14 @@ void CInventoryItem::log_upgrades()
 void CInventoryItem::net_Spawn_install_upgrades( Upgrades_type saved_upgrades ) // net_Spawn
 {
 	m_upgrades.clear_not_free();
-
-	if ( !ai().get_alife() )
-	{
-		return;
-	}
 	
-	ai().alife().inventory_upgrade_manager().init_install( *this ); // from pSettings
+	Game().inventory_upgrade_manager().init_install( *this ); // from pSettings
 
 	Upgrades_type::iterator ib = saved_upgrades.begin();
 	Upgrades_type::iterator ie = saved_upgrades.end();
 	for ( ; ib != ie ; ++ib )
 	{
-		ai().alife().inventory_upgrade_manager().upgrade_install( *this, (*ib), true );
+		Game().inventory_upgrade_manager().upgrade_install( *this, (*ib), true );
 	}
 }
 

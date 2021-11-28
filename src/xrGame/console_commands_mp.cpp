@@ -2681,20 +2681,54 @@ public:
 
 			if (file)
 			{
-				file->w_string(login, "password", password);
+				if (file->section_exist(login))
+				{
+					Msg("Ты дибил зарегал 2й раз повторно!! [%s]", login);
+				}
+				else 
+					file->w_string(login, "password", password);
 			}
 
 			file->save_as(filepath);
 		}
 		else
 		{
+			string128 login, password;
+			sscanf(args, "%s %s", &login, &password);
+
 			NET_Packet P;
 			P.w_begin(M_REMOTE_CONTROL_CMD);
 			string128 str;
-			xr_sprintf(str, "adm_register_account %s %s", Core.UserName, Core.Password);
+			xr_sprintf(str, "adm_register_account %s %s", login, password);
+
 			P.w_stringZ(str);
 			Level().Send(P, net_flags(TRUE, TRUE));
 		}
+	}
+};
+
+class CCC_give_money_self : public IConsole_Command {
+public:
+	CCC_give_money_self(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
+	virtual void Execute(LPCSTR args)
+	{
+		s32 money;
+
+		if (sscanf(args, "%u", &money) != 1)
+		{
+			Msg("Не правильные параметры комманды <money>");
+			return;
+		}
+
+		NET_Packet		P;
+		P.w_begin(M_REMOTE_CONTROL_CMD);
+		string128 str;
+		xr_sprintf(str, "sv_give_money %u %u", Game().local_svdpnid.value(), money);
+		P.w_stringZ(str);
+		Level().Send(P, net_flags(TRUE, TRUE));
+
+
 	}
 };
 
@@ -2788,6 +2822,7 @@ void register_mp_console_commands()
 	CMD1(CCC_AdmRegisterAccount,	"adm_register_account");
 	CMD1(CCC_AdmBanAccount,			"adm_ban_account");
 	CMD1(CCC_AdmUnBanAccount,		"adm_unban_account");
+	CMD1(CCC_give_money_self,		"g_money");
 
 	CMD1(CCC_MovePlayerToRPoint,	"sv_move_player_to_rpoint");
 

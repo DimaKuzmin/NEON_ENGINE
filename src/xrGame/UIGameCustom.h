@@ -152,6 +152,8 @@ public:
 
 
 	void				StartTalk(bool disable_break);
+	void				StartUpgrade(CInventoryOwner* pActorInv, CInventoryOwner* pMech);
+
 	void				StartTrade(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner);
 	void				StartCarBody(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner);
 	void				StartCarBody(CInventoryOwner* pActorInv, CInventoryBox* pBox);

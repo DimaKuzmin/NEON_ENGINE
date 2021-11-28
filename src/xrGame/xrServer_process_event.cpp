@@ -10,6 +10,10 @@
 #include "xrServer_Objects_ALife_Items.h"
 #include "xrServer_Objects_ALife_Monsters.h"
 
+#include "Level.h"
+#include "game_sv_freemp.h"
+
+
 void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 {
 #	ifdef SLOW_VERIFY_ENTITIES
@@ -262,6 +266,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 				break;
 			}
 			iitem->add_upgrade		( upgrade_id );
+			SendBroadcast(BroadcastCID, P, net_flags(TRUE, TRUE));
 		}break;
 	case GE_INV_BOX_STATUS:
 		{
@@ -362,6 +367,26 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 		{
 			SendPlayersInfo(sender);
 		}break;
+	case GE_REPAIR_ITEM:
+	{
+		float condition;
+		P.r_float(condition);
+
+		CObject* obj = Level().Objects.net_Find(destination);
+		CInventoryItem* item = smart_cast<CInventoryItem*>(obj);
+		if (item)
+			item->SetCondition(condition);
+
+	}	break;
+
+	case GE_MONEY_ACTOR:
+	{
+		s32 money = P.r_s32();
+		game_sv_freemp* freemp = smart_cast<game_sv_freemp*>(game);
+		if (freemp)
+			freemp->AddMoneyToPlayer(game->get_id(sender), money);
+	}break;
+
 	default:
 		R_ASSERT2	(0,"Game Event not implemented!!!");
 		break;

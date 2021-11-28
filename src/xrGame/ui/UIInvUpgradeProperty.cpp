@@ -20,6 +20,7 @@
 #include "inventory_upgrade.h"
 #include "inventory_upgrade_property.h"
 
+#include "Level.h"
 
 UIProperty::UIProperty()
 {
@@ -60,11 +61,7 @@ bool UIProperty::init_property( shared_str const& property_id )
 
 UIProperty::Property_type* UIProperty::get_property()
 {
-	if ( !ai().get_alife() )
-	{
-		return NULL;
-	}
-	Property_type* proper = ai().alife().inventory_upgrade_manager().get_property( m_property_id );
+	Property_type* proper = Game().inventory_upgrade_manager().get_property( m_property_id );
 	VERIFY( proper );
 	return proper;
 }
@@ -98,7 +95,7 @@ bool UIProperty::compute_value( ItemUpgrades_type const& item_upgrades )
 	ItemUpgrades_type::const_iterator ie_upg = item_upgrades.end();
 	for ( ; ib_upg != ie_upg; ++ib_upg )
 	{
-		Upgrade_type* upgr = ai().alife().inventory_upgrade_manager().get_upgrade( *ib_upg );
+		Upgrade_type* upgr = Game().inventory_upgrade_manager().get_upgrade( *ib_upg );
 		VERIFY( upgr );
 		for(u8 i = 0; i < inventory::upgrade::max_properties_count; i++)
 		{
