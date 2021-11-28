@@ -357,17 +357,13 @@ void CActor::cam_Update(float dt, float fFOV)
 		cameras[eacFirstEye]->Update	(point,dangle);
 		cameras[eacFirstEye]->f_fov		= fFOV;
 	} 
+	
 	if (Level().CurrentEntity() == this)
 	{
-		collide_camera( *cameras[eacFirstEye], _viewport_near, this );
+		collide_camera(*cameras[eacFirstEye], _viewport_near, this);
 	}
-	if( psActorFlags.test(AF_PSP) )
-	{
-		Cameras().UpdateFromCamera			(C);
-	}else
-	{
-		Cameras().UpdateFromCamera			(cameras[eacFirstEye]);
-	}
+	
+	Cameras().UpdateFromCamera			(C);
 
 	fCurAVelocity			= vPrevCamDir.sub(cameras[eacFirstEye]->vDirection).magnitude()/Device.fTimeDelta;
 	vPrevCamDir				= cameras[eacFirstEye]->vDirection;
@@ -393,10 +389,10 @@ void CActor::cam_Update(float dt, float fFOV)
 void CActor::update_camera (CCameraShotEffector* effector)
 {
 	if (!effector) return;
-	//	if (Level().CurrentViewEntity() != this) return;
-
+ 
 	CCameraBase* pACam = cam_FirstEye();
-	if (!pACam) return;
+	if (!pACam)
+		return;
 
 	if (pACam->bClampPitch)
 	{

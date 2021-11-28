@@ -493,10 +493,13 @@ void CWeapon::LoadFireParams		(LPCSTR section)
 	zoom_cam_recoil.Dispersion		= cam_recoil.Dispersion;
 	zoom_cam_recoil.DispersionInc	= cam_recoil.DispersionInc;
 
-	if ( pSettings->line_exist( section, "zoom_cam_dispersion" ) )	{
+	if ( pSettings->line_exist( section, "zoom_cam_dispersion" ) )
+	{
 		zoom_cam_recoil.Dispersion		= deg2rad( pSettings->r_float( section, "zoom_cam_dispersion" ) ); 
 	}
-	if ( pSettings->line_exist( section, "zoom_cam_dispersion_inc" ) )	{
+
+	if ( pSettings->line_exist( section, "zoom_cam_dispersion_inc" ) )	
+	{
 		zoom_cam_recoil.DispersionInc	= deg2rad( pSettings->r_float( section, "zoom_cam_dispersion_inc" ) ); 
 	}
 
@@ -1770,12 +1773,13 @@ float CWeapon::Weight() const
 
 		res			+= w*(iAmmoElapsed/bs);
 	}
+
 	return res;
 }
 
 bool CWeapon::show_crosshair()
 {
-	return !IsPending() && ( !IsZoomed() || !ZoomHideCrosshair() );
+	return !IsPending() && ( !IsZoomed() || (!ZoomHideCrosshair() || !GetHUDmode()) );
 }
 
 bool CWeapon::show_indicators()

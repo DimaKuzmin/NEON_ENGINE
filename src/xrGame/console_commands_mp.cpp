@@ -2802,6 +2802,12 @@ public:
 	}
 };
 
+extern float m_cam_offset_x;
+
+#include "cameralook.h"
+
+ 
+
 void register_mp_console_commands()
 {
 	CMD1(CCC_SpawnToInventory,		"sv_spawn_to_player_inv");
@@ -2885,11 +2891,10 @@ void register_mp_console_commands()
 	CMD1(CCC_MulDemoPlaySpeed,			"mpdemoplay_mulspeed"		);
 	CMD1(CCC_DivDemoPlaySpeed,			"mpdemoplay_divspeed"		);
 	
-	
-	
 #ifdef DEBUG
 	CMD1(CCC_DbgMakeScreenshot,			"dbg_make_screenshot"		);
 #endif
+
 	CMD4(CCC_Integer,					"draw_downloads",		&g_draw_downloads, 0, 1);
 	CMD4(CCC_Integer,					"sv_savescreenshots",	&g_sv_mp_save_proxy_screenshots, 0, 1);
 	CMD4(CCC_Integer,					"sv_saveconfigs",		&g_sv_mp_save_proxy_configs, 0, 1);
@@ -2927,7 +2932,10 @@ void register_mp_console_commands()
 
 	CMD4(CCC_Integer,		"sv_statistic_collect", &g_bCollectStatisticData, 0, 1);
 	CMD1(CCC_SaveStatistic,	"sv_statistic_save");
-//	CMD4(CCC_Integer,		"sv_statistic_save_auto", &g_bStatisticSaveAuto, 0, 1);
+
+	//CMD4(CCC_Float, "cam_2_offset", &m_cam_offset_x, -1, 1);
+	CMD4(CCC_Vector3, "cam_2_offset", &CCameraLook2::m_cam_offset, Fvector().set(-1000, -1000, -1000), Fvector().set(1000, 1000, 1000))
+
 #ifndef MASTER_GOLD
 	CMD4(CCC_AuthCheck,		"sv_no_auth_check",		&g_SV_Disable_Auth_Check, 0, 1);
 #endif // MASTER_GOLD
@@ -2938,8 +2946,8 @@ void register_mp_console_commands()
 	CMD4(CCC_Integer,		"net_dbg_dump_update_write",	&g_Dump_Update_Write, 0, 1);
 	CMD4(CCC_Integer,		"net_dbg_dump_update_read",	&g_Dump_Update_Read, 0, 1);
 
-	CMD1(CCC_ReturnToBase,	"sv_return_to_base");
-	CMD1(CCC_GetServerAddress,"get_server_address");		
+	CMD1(CCC_ReturnToBase,	    "sv_return_to_base");
+	CMD1(CCC_GetServerAddress,  "get_server_address");		
 
 #ifdef DEBUG
 	CMD4(CCC_Integer,		"sv_skip_winner_waiting",		&g_sv_Skip_Winner_Waiting, 0, 1);

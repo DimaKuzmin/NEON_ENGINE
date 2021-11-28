@@ -7,8 +7,10 @@ class CCameraLook	: public CCameraBase
 	typedef CCameraBase inherited;
 
 	Fvector2		lim_zoom;
-	float			dist, prev_d;
+	
 public:
+	float			dist, prev_d;
+
 					CCameraLook		( CObject* p, u32 flags=0);
 	virtual			~CCameraLook	( );
 	virtual void	Load			(LPCSTR section);
@@ -27,11 +29,10 @@ class CCameraLook2	: public CCameraLook
 {
 public:
 	static Fvector	m_cam_offset;
+
 protected:
 	CObject*		m_locked_enemy;
-	Fvector2		m_autoaim_inertion_yaw;
-	Fvector2		m_autoaim_inertion_pitch;
-	void			UpdateAutoAim	();
+
 public:
 					CCameraLook2	( CObject* p, u32 flags=0):CCameraLook(p, flags){m_locked_enemy=NULL;};
 	virtual			~CCameraLook2	(){}
