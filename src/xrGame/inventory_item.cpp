@@ -350,10 +350,15 @@ BOOL CInventoryItem::net_Spawn			(CSE_Abstract* DC)
 	//!!!
 	m_fCondition = pSE_InventoryItem->m_fCondition;
 
-	if (pSE_InventoryItem->slot != 0)
+	if (pSE_InventoryItem->slot > 0)
+	{
 		m_ItemCurrPlace.value = pSE_InventoryItem->slot;
-
-	net_Spawn_install_upgrades( pSE_InventoryItem->m_upgrades ); 
+	}
+			
+	if (!pSE_InventoryItem->m_upgrades.empty())
+	{
+		net_Spawn_install_upgrades(pSE_InventoryItem->m_upgrades);
+	}
 
 	if (GameID() != eGameIDSingle)
 		object().processing_activate();
@@ -362,6 +367,7 @@ BOOL CInventoryItem::net_Spawn			(CSE_Abstract* DC)
 	
 	m_just_after_spawn		= true;
 	m_activated				= false;
+
 	return							TRUE;
 }
 

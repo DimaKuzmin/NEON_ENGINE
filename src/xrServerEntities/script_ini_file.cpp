@@ -22,8 +22,20 @@ CScriptIniFile::CScriptIniFile		(LPCSTR szFileName, BOOL ReadOnly, BOOL bLoadAtS
 {
 }
 
+CScriptIniFile::CScriptIniFile(BOOL read, LPCSTR filepath, LPCSTR game_path, BOOL loadOnStart)	
+	: inherited(update_custom_path(game_path, filepath), read, loadOnStart)
+{
+}
+
 CScriptIniFile::~CScriptIniFile		()
 {
+}
+
+LPCSTR CScriptIniFile::update_custom_path(LPCSTR path, LPCSTR file_name)
+{
+	string_path			S1;
+	FS.update_path(S1, path, file_name);
+	return				(*shared_str(S1));
 }
 
 LPCSTR	CScriptIniFile::update		(LPCSTR file_name)
@@ -102,4 +114,9 @@ Fvector CScriptIniFile::r_fvector3		(LPCSTR S, LPCSTR L)
 	THROW3		(inherited::section_exist(S),"Cannot find section",S);
 	THROW3		(inherited::line_exist(S,L),"Cannot find line",L);
 	return		(inherited::r_fvector3(S,L));
+}
+
+void CScriptIniFile::save()
+{
+	inherited::save_as(inherited::fname());
 }

@@ -259,6 +259,8 @@ BOOL CGameObject::net_Spawn		(CSE_Abstract*	DC)
 	CSE_Abstract					*E = (CSE_Abstract*)DC;
 	VERIFY							(E);
 
+	//	Msg("Name %s", E->s_name.c_str() );
+
 	const CSE_Visual				*visual	= smart_cast<const CSE_Visual*>(E);
 	if (visual) {
 		cNameVisual_set				(visual_name(E));
