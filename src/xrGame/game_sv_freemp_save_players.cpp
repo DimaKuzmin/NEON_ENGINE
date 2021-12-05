@@ -43,8 +43,12 @@ void game_sv_freemp::SavePlayer(game_PlayerState* ps, CInifile* file)
 				CWeapon* wpn = smart_cast<CWeapon*>(item);
 				file->w_u16(itemID, "ammo_count", u16(wpn->GetAmmoElapsed()));
 				file->w_u8(itemID, "ammo_type", wpn->m_ammoType);
-				file->w_u8(itemID, "addon_State", wpn->GetAddonsState());
-				file->w_u8(itemID, "cur_scope", wpn->m_cur_scope);
+				
+				if (wpn->GetAddonsState() > 0)
+					file->w_u8(itemID, "addon_State", wpn->GetAddonsState());
+				
+				if (wpn->m_cur_scope > 0)
+					file->w_u8(itemID, "cur_scope", wpn->m_cur_scope);
 			}
 
 			if (item->has_any_upgrades())
@@ -58,9 +62,7 @@ void game_sv_freemp::SavePlayer(game_PlayerState* ps, CInifile* file)
 		CCustomDetector* detector = smart_cast<CCustomDetector*>(actor->inventory().ItemFromSlot(DETECTOR_SLOT));
 
 		if (detector)
-		{
 			file->w_string("detector", "section", detector->m_section_id.c_str());
-		}
 
 		file->w_u32("actor", "items_count", id);
 		file->w_u32("actor", "money", ps->money_for_round);
@@ -128,12 +130,20 @@ bool game_sv_freemp::LoadPlayer(game_PlayerState* ps, CInifile* file)
 				{
 					u16 ammo_count = file->r_u16(itemID, "ammo_count");
 					u8 ammo_type = file->r_u8(itemID, "ammo_type");
-					u8 addon_state = file->r_u8(itemID, "addon_State");
-					u8 cur_scope = file->r_u8(itemID, "cur_scope");
 					wpn->a_elapsed = ammo_count;
 					wpn->ammo_type = ammo_type;
-					wpn->m_addon_flags.flags = addon_state;
-					wpn->m_cur_scope = cur_scope;
+
+					if (file->line_exist(itemID, "addon_State"))
+					{
+						u8 addon_state = file->r_u8(itemID, "addon_State");
+						wpn->m_addon_flags.flags = addon_state;
+					}
+					
+					if (file->line_exist(itemID, "cur_scope"))
+					{
+						u8 cur_scope = file->r_u8(itemID, "cur_scope");
+						wpn->m_cur_scope = cur_scope;
+					}
 				}
 
 				if (ammo)
@@ -183,6 +193,14 @@ bool game_sv_freemp::HasSaveFile(game_PlayerState* ps)
 	xr_strcat(filename, ".ltx");
 	FS.update_path(path, "$mp_saves$", filename);
 	CInifile* file = xr_new<CInifile>(path, true);
+	
+	if (file)
+	{
+		if (file->line_exist("actor", "team"))
+		{
+			ps->team = file->r_u32("actor", "team");
+		}
+	}
 
 	return file->section_exist("actor");
 }

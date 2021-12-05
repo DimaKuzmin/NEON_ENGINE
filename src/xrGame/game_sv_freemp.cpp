@@ -165,12 +165,9 @@ void game_sv_freemp::OnTransferMoney(NET_Packet & P, ClientID const & clientID)
 
 void game_sv_freemp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 {
-	inherited::RespawnPlayer(id_who, NoSpectator);
-
- 	game_PlayerState* ps = get_id(id_who);
+	game_PlayerState* ps = get_id(id_who);
 
 	if (Game().Type() == eGameIDFreeMp)
-	if (ps && !ps->testFlag(GAME_PLAYER_MP_SAVE_LOADED))
 	{
 		string_path file_name;
 		string32 filename;
@@ -178,14 +175,23 @@ void game_sv_freemp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 		xr_strcat(filename, ".ltx");
 
 		FS.update_path(file_name, "$mp_saves$", filename);
-
-		Msg("read file path = %s", file_name);
-
+		
 		CInifile* file = xr_new<CInifile>(file_name, true);
-		LoadPlayer(ps, file);
-				
- 		ps->setFlag(GAME_PLAYER_MP_SAVE_LOADED);
- 	}
+
+		inherited::RespawnPlayer(id_who, NoSpectator);
+
+		if (ps && !ps->testFlag(GAME_PLAYER_MP_SAVE_LOADED))
+		{
+			LoadPlayer(ps, file);
+			ps->setFlag(GAME_PLAYER_MP_SAVE_LOADED);
+		}
+
+		
+	}
+	else
+	{
+		inherited::RespawnPlayer(id_who, NoSpectator);
+	}
 }
 
 void game_sv_freemp::OnPlayerReady(ClientID id_who)

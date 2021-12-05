@@ -228,7 +228,7 @@ void CInventory::InitPriorityGroupsForQSwitch()
 	STATIC_CHECK(epg_groups_count == CInventory::qs_priorities_count, groups_count_problem);
 	for (int i = epg_pistols; i < epg_groups_count; ++i)
 	{
-		m_groups[i].init_group		(teamdata_section, groups_names[i]);
+	//	m_groups[i].init_group		(teamdata_section, groups_names[i]);
 	}
 	
 	m_slot2_priorities[g_slot2_pistol_switch_priority]	= &m_groups[epg_pistols];

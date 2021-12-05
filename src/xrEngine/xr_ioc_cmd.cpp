@@ -665,6 +665,7 @@ public		:
 
 
 ENGINE_API float	psHUD_FOV=0.45f;
+ENGINE_API float	VIEWPORT_NEAR = 0.05f;
 
 //extern int			psSkeletonUpdate;
 extern int			rsDVB_Size;
@@ -732,11 +733,12 @@ void CCC_Register()
 
 
 	CMD3(CCC_Mask,		"rs_v_sync",			&psDeviceFlags,		rsVSync				);
-//	CMD3(CCC_Mask,		"rs_disable_objects_as_crows",&psDeviceFlags,	rsDisableObjectsAsCrows	);
+//	CMD3(CCC_Mask,		"rs_disable_objects_as_crows", &psDeviceFlags,	rsDisableObjectsAsCrows	);
 	CMD3(CCC_Mask,		"rs_fullscreen",		&psDeviceFlags,		rsFullscreen			);
 	CMD3(CCC_Mask,		"rs_refresh_60hz",		&psDeviceFlags,		rsRefresh60hz			);
 	CMD3(CCC_Mask,		"rs_stats",				&psDeviceFlags,		rsStatistic				);
 	CMD4(CCC_Float,		"rs_vis_distance",		&psVisDistance,		0.4f,	1.5f			);
+	CMD4(CCC_Float,		"r_viewport_near",		&VIEWPORT_NEAR,		0.01f, 1.f);
 
 	CMD3(CCC_Mask,		"rs_cam_pos",			&psDeviceFlags,		rsCameraPos				);
 #ifdef DEBUG

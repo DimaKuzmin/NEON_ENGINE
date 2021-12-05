@@ -16,7 +16,8 @@
 //#include "shader.h"
 //#include "R_Backend.h"
 
-#define VIEWPORT_NEAR  0.2f
+//#define VIEWPORT_NEAR  0.2f
+extern ENGINE_API float VIEWPORT_NEAR;
 
 #define DEVICE_RESET_PRECACHE_FRAME_COUNT 10
 

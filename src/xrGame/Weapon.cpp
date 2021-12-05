@@ -1256,19 +1256,23 @@ void CWeapon::UpdateHUDAddonsVisibility()
 {//actor only
 	if(!GetHUDmode())										return;
 
-//.	return;
+	u16 bone_id = HudItemData()->m_model->LL_BoneID(wpn_scope);
 
-	if(ScopeAttachable())
+	if (bone_id != BI_NONE)
 	{
-		HudItemData()->set_bone_visible(wpn_scope, IsScopeAttached() );
+		if (ScopeAttachable())
+		{
+			HudItemData()->set_bone_visible(wpn_scope, IsScopeAttached());
+		}
+
+		if (m_eScopeStatus == ALife::eAddonDisabled)
+		{
+			HudItemData()->set_bone_visible(wpn_scope, FALSE, TRUE);
+		}
+		else
+			if (m_eScopeStatus == ALife::eAddonPermanent)
+				HudItemData()->set_bone_visible(wpn_scope, TRUE, TRUE);
 	}
-
-	if(m_eScopeStatus==ALife::eAddonDisabled )
-	{
-		HudItemData()->set_bone_visible(wpn_scope, FALSE, TRUE );
-	}else
-		if(m_eScopeStatus==ALife::eAddonPermanent)
-			HudItemData()->set_bone_visible(wpn_scope, TRUE, TRUE );
 
 	if(SilencerAttachable())
 	{
@@ -1309,10 +1313,10 @@ void CWeapon::UpdateAddonsVisibility()
 	{
 		if(IsScopeAttached())
 		{
-			if(!pWeaponVisual->LL_GetBoneVisible		(bone_id))
-			pWeaponVisual->LL_SetBoneVisible				(bone_id,TRUE,TRUE);
+			if(!pWeaponVisual->LL_GetBoneVisible		(bone_id) && bone_id != BI_NONE)
+				pWeaponVisual->LL_SetBoneVisible				(bone_id,TRUE,TRUE);
 		}else{
-			if(pWeaponVisual->LL_GetBoneVisible				(bone_id))
+			if(pWeaponVisual->LL_GetBoneVisible				(bone_id) && bone_id != BI_NONE)
 				pWeaponVisual->LL_SetBoneVisible			(bone_id,FALSE,TRUE);
 		}
 	}
@@ -1913,17 +1917,20 @@ void CWeapon::ZoomDec()
 	float f					= GetZoomFactor()+delta;
 	clamp					(f,m_zoom_params.m_fScopeZoomFactor,min_zoom_factor);
 	SetZoomFactor			( f );
-
 }
+
 u32 CWeapon::Cost() const
 {
 	u32 res = CInventoryItem::Cost();
-	if(IsGrenadeLauncherAttached()&&GetGrenadeLauncherName().size()){
+	if(IsGrenadeLauncherAttached()&&GetGrenadeLauncherName().size())
+	{
 		res += pSettings->r_u32(GetGrenadeLauncherName(),"cost");
 	}
+	
 	if(IsScopeAttached()&&m_scopes.size()){
 		res += pSettings->r_u32(GetScopeName(),"cost");
 	}
+	
 	if(IsSilencerAttached()&&GetSilencerName().size()){
 		res += pSettings->r_u32(GetSilencerName(),"cost");
 	}
@@ -1934,7 +1941,8 @@ u32 CWeapon::Cost() const
 		float bs	= pSettings->r_float(m_ammoTypes[m_ammoType].c_str(),"box_size");
 
 		res			+= iFloor(w*(iAmmoElapsed/bs));
-	}
+	}	
+
 	return res;
 
 }
