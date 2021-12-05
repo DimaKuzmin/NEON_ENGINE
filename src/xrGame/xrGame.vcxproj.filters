@@ -2509,6 +2509,9 @@
     <Filter Include="UI\Multiplayer\Roleplay">
       <UniqueIdentifier>{da488458-c041-4176-a2e8-5994dc36ea74}</UniqueIdentifier>
     </Filter>
+    <Filter Include="jsonxx">
+      <UniqueIdentifier>{50aafa55-2885-4ace-807f-368de3ebfa46}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -7422,6 +7425,9 @@
     <ClInclude Include="ui\UISpawnMenuRP.h">
       <Filter>UI\Multiplayer\Roleplay</Filter>
     </ClInclude>
+    <ClInclude Include="..\jsonxx\jsonxx.h">
+      <Filter>jsonxx</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -11104,6 +11110,9 @@
     </ClCompile>
     <ClCompile Include="game_sv_freemp_save_players.cpp">
       <Filter>Core\Server\Games\server\freemp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\jsonxx\jsonxx.cc">
+      <Filter>jsonxx</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

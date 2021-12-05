@@ -179,11 +179,16 @@ void game_sv_freemp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 
 		FS.update_path(file_name, "$mp_saves$", filename);
 
-		Msg("read file path = %s", file_name);
-
+		//Msg("read file path = %s", file_name);
+		/*
 		CInifile* file = xr_new<CInifile>(file_name, true);
+	
+		//INI FILE
 		LoadPlayer(ps, file);
-				
+		*/
+
+		// JsonFILE 
+		LoadJson(ps, ps->getName());
  		ps->setFlag(GAME_PLAYER_MP_SAVE_LOADED);
  	}
 }
@@ -291,9 +296,11 @@ void game_sv_freemp::Update()
 
 				FS.update_path(file_name, "$mp_saves$", filename);
 
-				CInifile* file = xr_new<CInifile>(file_name, false, false);
-				SavePlayer(player.second, file);
-				file->save_as(file_name);
+				//CInifile* file = xr_new<CInifile>(file_name, false, false);
+				//SavePlayer(player.second, file);
+				//file->save_as(file_name);
+
+				SaveJson(player.second, player.second->getName());
 			}
 		}
 

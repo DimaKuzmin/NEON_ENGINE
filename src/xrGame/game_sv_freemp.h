@@ -58,4 +58,14 @@ public:
 	virtual		void				SaveInvBox(CSE_ALifeInventoryBox* box, CInifile* file);
 	virtual		void				LoadInvBox(CSE_ALifeInventoryBox* box, CInifile* file);
 
+	virtual		void				SaveJson(game_PlayerState* ps, shared_str name);
+	virtual		bool				LoadJson(game_PlayerState* ps, shared_str name);
+
+	virtual		void				SaveInventory(game_PlayerState* ps, shared_str name);
+	virtual		void				LoadInventory(game_PlayerState* ps, shared_str name);
+
+	virtual		bool				LoadPlayerPosition(game_PlayerState* ps, Fvector& position, Fvector& angle);
+
+	virtual void					assign_RP(CSE_Abstract* E, game_PlayerState* ps_who);
+
 };
