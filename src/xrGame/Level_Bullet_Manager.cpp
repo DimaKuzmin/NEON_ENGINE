@@ -128,10 +128,13 @@ CBulletManager::~CBulletManager()
 void CBulletManager::Load		()
 {
 	char const * bullet_manager_sect = "bullet_manager";
+/*
 	if (!IsGameTypeSingle())
 	{
 		bullet_manager_sect = "mp_bullet_manager";
 	}
+*/
+
 	m_fTracerWidth			= pSettings->r_float(bullet_manager_sect, "tracer_width");
 	m_fTracerLengthMax		= pSettings->r_float(bullet_manager_sect, "tracer_length_max");
 	m_fTracerLengthMin		= pSettings->r_float(bullet_manager_sect, "tracer_length_min");

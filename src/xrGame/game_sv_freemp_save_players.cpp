@@ -278,10 +278,7 @@ void game_sv_freemp::LoadInvBox(CSE_ALifeInventoryBox* box, CInifile* file)
 using namespace jsonxx;
 
 void game_sv_freemp::SaveJson(game_PlayerState* ps, shared_str name)
-{
-	string_path path;
-	FS.update_path(path, "$mp_saves_file$", ps->getName());
-  
+{ 
 	CActor* pActor = smart_cast<CActor*>(Level().Objects.net_Find(ps->GameID));
 	if (!pActor || !pActor->g_Alive()) return;
 
@@ -332,6 +329,35 @@ void game_sv_freemp::SaveJson(game_PlayerState* ps, shared_str name)
 	jsonMAIN << "money" << Number(ps->money_for_round);
 	jsonMAIN << "team" << Number(ps->team);
 	jsonMAIN << "admin" << Number(ps->testFlag(GAME_PLAYER_HAS_ADMIN_RIGHTS));
+
+
+	string_path path_name;
+
+	string256 file;
+	xr_strcat(file, ps->getName());
+	xr_strcat(file, ".json");
+
+	if (FS.path_exist("$mp_saves_file$"))
+	{
+		FS.update_path(path_name, "$mp_saves_file$", file);
+	}
+	else
+	{
+		return;
+	}
+
+	IWriter* file_W = FS.w_open(path_name);
+	if (file_W)
+		file_W->w_string(jsonMAIN.json().c_str());
+	FS.w_close(file_W);
+
+	/*
+	std::ofstream ofile(path_name);
+
+	if (ofile.is_open())
+		ofile << jsonMAIN.json().c_str();
+	ofile.close();
+	*/
 }
 
 bool game_sv_freemp::LoadJson(game_PlayerState* ps, shared_str name)
@@ -342,7 +368,7 @@ bool game_sv_freemp::LoadJson(game_PlayerState* ps, shared_str name)
 	xr_strcat(file, ps->getName());
 	xr_strcat(file, ".json");
 
-	FS.update_path(path, "$mp_saves_file$", ps->getName());
+	FS.update_path(path, "$mp_saves_file$", file);
 
 	if (!FS.path_exist(path))
 		return false;
