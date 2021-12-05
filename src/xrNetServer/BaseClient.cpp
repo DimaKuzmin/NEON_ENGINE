@@ -61,7 +61,7 @@ void BaseClient::ParseConnectionOptions(LPCSTR options, ClientConnectionOptions&
 		else
 			xr_strcpy(out.user_name, NM);
 
-		xr_strcpy(out.user_name, Core.UserName);
+		xr_strcpy(Core.UserName, out.user_name);
 	}
 
 	// USER PASSWORD

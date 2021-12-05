@@ -18,6 +18,12 @@ protected:
 public:
 						CScriptIniFile		(IReader *F, LPCSTR path=0);
 						CScriptIniFile		(LPCSTR szFileName, BOOL ReadOnly=TRUE, BOOL bLoadAtStart=TRUE, BOOL SaveAtEnd=TRUE);
+
+						CScriptIniFile(BOOL read, LPCSTR filepath, LPCSTR game_path, BOOL loadOnStart);
+						LPCSTR		update_custom_path(LPCSTR path, LPCSTR file_name);
+
+						void save();
+
 	virtual 			~CScriptIniFile		();
 			bool		line_exist			(LPCSTR S, LPCSTR L);
 			bool		section_exist		(LPCSTR S);
@@ -32,6 +38,8 @@ public:
 			int			r_s32				(LPCSTR S, LPCSTR L);
 			float		r_float				(LPCSTR S, LPCSTR L);
 			Fvector		r_fvector3			(LPCSTR S, LPCSTR L);
+
+
 			DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CScriptIniFile)

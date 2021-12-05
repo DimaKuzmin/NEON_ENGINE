@@ -22,6 +22,23 @@ CScriptIniFile::CScriptIniFile		(LPCSTR szFileName, BOOL ReadOnly, BOOL bLoadAtS
 {
 }
 
+CScriptIniFile::CScriptIniFile(BOOL read, LPCSTR filepath, LPCSTR game_path, BOOL loadOnStart)
+	: inherited(update_custom_path(game_path, filepath), read, loadOnStart)
+{
+}
+
+LPCSTR CScriptIniFile::update_custom_path(LPCSTR path, LPCSTR file_name)
+{
+	string_path			S1;
+	FS.update_path(S1, path, file_name);
+	return				(*shared_str(S1));
+}
+
+void CScriptIniFile::save()
+{
+	inherited::save_as(inherited::fname());
+}
+
 CScriptIniFile::~CScriptIniFile		()
 {
 }

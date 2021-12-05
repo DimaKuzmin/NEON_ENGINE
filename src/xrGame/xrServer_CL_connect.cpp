@@ -233,7 +233,7 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 			if (file->line_exist(login, "password"))
 				pass_check = file->r_string(login, "password");
 
-			if (!xr_strcmp(pass_check, password))
+			if (xr_strcmp(pass_check, password))
 			{
 				SendConnectResult(CL, 0, ecr_data_verification_failed, "Проверьте пароль.");
 				return;

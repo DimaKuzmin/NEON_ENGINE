@@ -57,6 +57,17 @@ CScriptIniFile *create_ini_file	(LPCSTR ini_string)
 		)
 	);
 }
+
+CScriptIniFile* create_ini(LPCSTR path, LPCSTR ini_file)
+{
+	return xr_new<CScriptIniFile>(false, ini_file, path, false);
+}
+
+CScriptIniFile* read_ini(LPCSTR path, LPCSTR ini_file)
+{
+	return xr_new<CScriptIniFile>(true, ini_file, path, true);
+}
+
 #pragma warning(pop)
 
 #pragma optimize("s",on)
@@ -78,11 +89,24 @@ void CScriptIniFile::script_register(lua_State *L)
 			.def("r_s32",			&CScriptIniFile::r_s32)
 			.def("r_float",			&CScriptIniFile::r_float)
 			.def("r_vector",		&CScriptIniFile::r_fvector3)
-			.def("r_line",			&::r_line, out_value(_4) + out_value(_5)),
+
+			.def("w_string", &CScriptIniFile::w_string)
+			.def("w_u32", &CScriptIniFile::w_u32)
+			.def("w_s32", &CScriptIniFile::w_s32)
+			.def("w_float", &CScriptIniFile::w_float)
+			.def("w_vector", &CScriptIniFile::w_fvector3)
+			.def("w_bool", &CScriptIniFile::w_bool)
+			.def("fname", &CScriptIniFile::fname)
+			.def("save", &CScriptIniFile::save)
+
+
+			.def("r_line", &::r_line, out_value(_4) + out_value(_5)),
 
 		def("system_ini",			&get_system_ini),
 #ifdef XRGAME_EXPORTS
 		def("game_ini",				&get_game_ini),
+		def("create_ini", &create_ini),
+		def("read_ini", &read_ini),
 #endif // XRGAME_EXPORTS
 		def("create_ini_file",		&create_ini_file,	adopt(result))
 	];
