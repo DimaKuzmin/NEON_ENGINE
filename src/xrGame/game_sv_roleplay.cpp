@@ -187,18 +187,20 @@ void game_sv_roleplay::RespawnPlayer(ClientID id_who, bool NoSpectator)
 
 	if (ps && !ps->testFlag(GAME_PLAYER_MP_SAVE_LOADED))
 	{
+#ifndef MP_SAVE_JSON
 		string_path file_name;
 		string32 filename;
 		xr_strcpy(filename, ps->getName());
 		xr_strcat(filename, ".ltx");
 
 		FS.update_path(file_name, "$mp_saves$", filename);
-
-		//CInifile* file = xr_new<CInifile>(file_name, true);
-		//LoadPlayer(ps, file);
-
-		LoadJson(ps, ps->getName());
 		
+		CInifile* file = xr_new<CInifile>(file_name, true);
+		LoadPlayer(ps, file);
+#else
+		LoadJson(ps);
+#endif
+
 		ps->setFlag(GAME_PLAYER_MP_SAVE_LOADED);
  	}
 

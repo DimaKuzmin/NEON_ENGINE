@@ -13,6 +13,36 @@
 #include <iostream>
 
 
+bool game_sv_freemp::HasSaveFile(game_PlayerState* ps)
+{
+#ifndef MP_SAVE_JSON
+	if (ps->GameID == get_id(server().GetServerClient()->ID)->GameID)
+		return false;
+
+	string_path path;
+	string32 filename;
+	xr_strcpy(filename, ps->getName());
+	xr_strcat(filename, ".ltx");
+
+	FS.update_path(path, "$mp_saves$", filename);
+	CInifile* file = xr_new<CInifile>(path, true);
+
+
+	return file->section_exist("actor");
+#else 
+	if (ps->GameID == get_id(server().GetServerClient()->ID)->GameID)
+		return false;
+	string_path path;
+	string32 filename = { 0 };
+	xr_strcpy(filename, ps->getName());
+	xr_strcat(filename, ".json");
+
+	return FS.exist(path, "$mp_saves_players$", filename);
+#endif
+
+}
+
+#ifndef MP_SAVE_JSON
 void game_sv_freemp::SavePlayer(game_PlayerState* ps, CInifile* file)
 {
 	CObject* obj = Level().Objects.net_Find(ps->GameID);
@@ -158,23 +188,6 @@ bool game_sv_freemp::LoadPlayer(game_PlayerState* ps, CInifile* file)
 		return false;
 }
 
-bool game_sv_freemp::HasSaveFile(game_PlayerState* ps)
-{
-	if (ps->GameID == get_id(server().GetServerClient()->ID)->GameID)
-		return false;
-
-	string_path path;
- 	string32 filename;
-	xr_strcpy(filename, ps->getName());
-	xr_strcat(filename, ".json");
-
-	FS.update_path(path, "$mp_saves$", filename);
-	CInifile* file = xr_new<CInifile>(path, true);
-
-
-	return file->section_exist("actor");
-}
-
 void game_sv_freemp::SaveInvBox(CSE_ALifeInventoryBox* box, CInifile* file)
 {
 	u32 ids = 0;
@@ -274,10 +287,11 @@ void game_sv_freemp::LoadInvBox(CSE_ALifeInventoryBox* box, CInifile* file)
 }
 
 
+#else
 //Json Save File
 using namespace jsonxx;
 
-void game_sv_freemp::SaveJson(game_PlayerState* ps, shared_str name)
+void game_sv_freemp::SaveJson(game_PlayerState* ps)
 { 
 	CActor* pActor = smart_cast<CActor*>(Level().Objects.net_Find(ps->GameID));
 	if (!pActor || !pActor->g_Alive()) return;
@@ -329,22 +343,14 @@ void game_sv_freemp::SaveJson(game_PlayerState* ps, shared_str name)
 	jsonMAIN << "money" << Number(ps->money_for_round);
 	jsonMAIN << "team" << Number(ps->team);
 	jsonMAIN << "admin" << Number(ps->testFlag(GAME_PLAYER_HAS_ADMIN_RIGHTS));
-
+	jsonMAIN << "health" << Number(pActor->GetfHealth());
 
 	string_path path_name;
 
-	string256 file;
+	string256 file = {0};
 	xr_strcat(file, ps->getName());
 	xr_strcat(file, ".json");
-
-	if (FS.path_exist("$mp_saves_file$"))
-	{
-		FS.update_path(path_name, "$mp_saves_file$", file);
-	}
-	else
-	{
-		return;
-	}
+	FS.update_path(path_name, "$mp_saves_players$", file);
 
 	IWriter* file_W = FS.w_open(path_name);
 	if (file_W)
@@ -360,18 +366,21 @@ void game_sv_freemp::SaveJson(game_PlayerState* ps, shared_str name)
 	*/
 }
 
-bool game_sv_freemp::LoadJson(game_PlayerState* ps, shared_str name)
+bool game_sv_freemp::LoadJson(game_PlayerState* ps)
 {
 	string_path path;
 	
-	string256 file;
-	xr_strcat(file, ps->getName());
-	xr_strcat(file, ".json");
+	string256 filename = {0};
+	xr_strcpy(filename, ps->getName());
+	xr_strcat(filename, ".json");
 
-	FS.update_path(path, "$mp_saves_file$", file);
+	FS.update_path(path, "$mp_saves_players$", filename);
 
-	if (!FS.path_exist(path))
-		return false;
+	SpawnItemToActor(ps->GameID, "device_pda");
+	SpawnItemToActor(ps->GameID, "device_torch");
+	SpawnItemToActor(ps->GameID, "wpn_knife");
+	SpawnItemToActor(ps->GameID, "wpn_binoc");
+
 
 	Object json;
 
@@ -388,9 +397,7 @@ bool game_sv_freemp::LoadJson(game_PlayerState* ps, shared_str name)
 	if (json.has<Number>("money"))
 	{
 		int money = json.get<Number>("money");
-
 		ps->money_for_round = money;
-		
 	}
 
 	if (json.has<Number>("team"))
@@ -416,9 +423,11 @@ bool game_sv_freemp::LoadJson(game_PlayerState* ps, shared_str name)
 				Object item = items.get<Object>(i);
 
 				std::string section = { 0 };
-				u16 slot, ammo_count, ammo_box_count = 0;
-				float					   condition = 0;
-				u8 ammo_type, addon_state, cur_scope = 0;
+				
+				float condition = 0;
+
+			 	int slot, ammo_count, ammo_box_count = 0;  //u16
+				int ammo_type, addon_state, cur_scope = 0; //u8
 
 				if (item.has<Number>("condition"))
 					condition = item.get<Number>("condition");
@@ -427,7 +436,7 @@ bool game_sv_freemp::LoadJson(game_PlayerState* ps, shared_str name)
 				if (item.has<Number>("ammo_box_count"))
 					ammo_box_count = item.get<Number>("ammo_box_count");
 				if (item.has<Number>("ammo_count"))
-					ammo_count = item.get<Number>("ammp_count");
+					ammo_count = item.get<Number>("ammo_count");
 				if (item.has<Number>("ammo_type"))
 					ammo_type = item.get<Number>("ammo_type");
 				if (item.has<Number>("addon_state"))
@@ -435,6 +444,8 @@ bool game_sv_freemp::LoadJson(game_PlayerState* ps, shared_str name)
 				if (item.has<Number>("cur_scope"))
 					cur_scope = item.get<Number>("cur_scope");
 
+				if (item.has<String>("section"))
+					section = item.get<String>("section");
 
 				if (pSettings->section_exist(section.c_str()))
 				{
@@ -470,28 +481,144 @@ bool game_sv_freemp::LoadJson(game_PlayerState* ps, shared_str name)
 	return true;
 }
 
-void game_sv_freemp::SaveInventory(game_PlayerState* ps, shared_str name)
+void game_sv_freemp::SaveInventory(CSE_ALifeInventoryBox* box, string_path pathfile)
 {
+	Array jsonInInventory;
+	Object jsonMAIN;
+
+	for (auto item_id : box->children)
+	{
+		CInventoryItem* item = smart_cast<CInventoryItem*>(Level().Objects.net_Find(item_id));
+
+		if (!item)
+			return;
+
+		if (!xr_strcmp(item->m_section_id.c_str(), "mp_players_rukzak"))
+			continue;
+
+		Object table;
+		table << "section" << String(item->m_section_id.c_str());
+ 		table << "condition" << Number(item->GetCondition());
+
+		if (item->cast_weapon_ammo())
+		{
+			CWeaponAmmo* ammo = smart_cast<CWeaponAmmo*>(item);
+			table << "ammo_box_count" << Number(ammo->m_boxCurr);
+		}
+
+		if (item->cast_weapon())
+		{
+			CWeapon* wpn = smart_cast<CWeapon*>(item);
+			table << "ammo_count" << Number(wpn->GetAmmoElapsed());
+			table << "ammo_type" << Number(wpn->m_ammoType);
+			table << "addon_state" << Number(wpn->GetAddonsState());
+			table << "cur_scope" << Number(wpn->m_cur_scope);
+		}
+
+		jsonInInventory << table;
+	}
+
+	jsonMAIN << "INVENTORY" << jsonInInventory;
+
+	IWriter* file_W = FS.w_open(pathfile);
+	if (file_W)
+		file_W->w_string(jsonMAIN.json().c_str());
+	FS.w_close(file_W);
+}
+
+void game_sv_freemp::LoadInventory(CSE_ALifeInventoryBox* box, string_path pathfile)
+{
+	Array jsonInInventory;
+	Object jsonMAIN;
+
+	std::ifstream ifile(pathfile);
+	if (ifile.is_open())
+	{
+		std::string str((std::istreambuf_iterator<char>(ifile)), std::istreambuf_iterator<char>());
+		jsonMAIN.parse(str);
+	}
+	else
+	{
+		return;
+	}
+
+	ifile.close();
+
+	if (jsonMAIN.has<Array>("INVENTORY"))
+	{
+		jsonInInventory = jsonMAIN.get<Array>("INVENTORY");
+	}
+
+	for (int i = 0; i != jsonInInventory.size(); i++)
+	{
+		Object item_tab = jsonInInventory.get<Object>(i);
+		
+		std::string section = { 0 };
+
+		float condition = 0;
+		int slot, ammo_count, ammo_box_count = 0;  //u16
+		int ammo_type, addon_state, cur_scope = 0; //u8
+
+		if (item_tab.has<Number>("condition"))
+			condition = item_tab.get<Number>("condition");
+		if (item_tab.has<Number>("ammo_box_count"))
+			ammo_box_count = item_tab.get<Number>("ammo_box_count");
+		if (item_tab.has<Number>("ammo_count"))
+			ammo_count = item_tab.get<Number>("ammo_count");
+		if (item_tab.has<Number>("ammo_type"))
+			ammo_type = item_tab.get<Number>("ammo_type");
+		if (item_tab.has<Number>("addon_state"))
+			addon_state = item_tab.get<Number>("addon_state");
+		if (item_tab.has<Number>("cur_scope"))
+			cur_scope = item_tab.get<Number>("cur_scope");
+
+		if (item_tab.has<String>("section"))
+			section = item_tab.get<String>("section");
+
+		if (pSettings->section_exist(section.c_str()))
+		{
+ 			CSE_Abstract* E = spawn_begin(section.c_str());
+
+			E->ID_Parent = box->ID;
+
+			CSE_ALifeItem* item = smart_cast<CSE_ALifeItem*>(E);
+			CSE_ALifeItemWeapon* wpn = smart_cast<CSE_ALifeItemWeapon*>(item);
+			CSE_ALifeItemAmmo* ammo = smart_cast<CSE_ALifeItemAmmo*>(item);
+		    
+			item->m_fCondition = condition;
+ 
+			if (wpn)
+			{
+				wpn->a_elapsed = ammo_count;
+				wpn->ammo_type = ammo_type;
+				wpn->m_addon_flags.flags = addon_state;
+				wpn->m_cur_scope = cur_scope;
+			}
+
+			if (ammo)
+ 				ammo->a_elapsed = ammo_box_count;
+
+			spawn_end(E, m_server->GetServerClient()->ID);
+		}
+	}
+
+	jsonMAIN << "INVENTORY" << jsonInInventory;
+
 
 }
 
-void game_sv_freemp::LoadInventory(game_PlayerState* ps, shared_str name)
+
+bool game_sv_freemp::LoadPlayerPosition(game_PlayerState* ps, Fvector& position, Fvector& angle, float& health)
 {
+	string_path path; 
+	string32 filename = { 0 };
+	xr_strcpy(filename, ps->getName());
+	xr_strcat(filename, ".json");
+	FS.update_path(path, "$mp_saves_players$", filename);
 
-}
-
-
-bool game_sv_freemp::LoadPlayerPosition(game_PlayerState* ps, Fvector& position, Fvector& angle)
-{
-	string_path path;
-	FS.update_path(path, "$mp_saves_file$", ps->getName());
-	if (!FS.path_exist(path))
-		return false;
 
 	Object json;
-
 	std::ifstream ifile(path);
-
 	if (ifile.is_open())
 	{
 		std::string str((std::istreambuf_iterator<char>(ifile)), std::istreambuf_iterator<char>());
@@ -500,29 +627,41 @@ bool game_sv_freemp::LoadPlayerPosition(game_PlayerState* ps, Fvector& position,
 
 	ifile.close();
 	
+	if (json.has<Number>("health"))
+	{
+		float health_read = json.get<Number>("health");
+		health = health_read;
+	}
+
 	if (json.has<Number>("X") && json.has<Number>("Y") && json.has<Number>("Z"))
 	{
-		position.x = json.get<Number>("X");
-		position.y = json.get<Number>("Y");
-		position.z = json.get<Number>("Z");
-		angle.set(0,0,0);
+		float x = json.get<Number>("X");
+		float y = json.get<Number>("Y");
+		float z = json.get<Number>("Z");
+
+		position.set(x,y,z);
+ 		angle.set(0,0,0);
 		return true;
 	}
-	
+
 	return false;
 }
 
 void game_sv_freemp::assign_RP(CSE_Abstract* E, game_PlayerState* ps_who)
 {
-	Fvector angle, pos;
-	
-	if (LoadPlayerPosition(ps_who, angle, pos) && !ps_who->testFlag(GAME_PLAYER_MP_SAVE_LOADED))
+	if (!HasSaveFile(ps_who))
+		return inherited::assign_RP(E, ps_who);
+
+	if (!ps_who->testFlag(GAME_PLAYER_MP_SAVE_LOADED) && E->cast_actor_mp())
 	{
+		Fvector angle, pos;
+		float health;
+		LoadPlayerPosition(ps_who, pos, angle, health);
 		E->position().set(pos);
 		E->angle().set(angle);
-	}
+ 		E->cast_actor_mp()->set_health(health);
+ 	}
 	else
 		return inherited::assign_RP(E, ps_who);
 }
-
-
+#endif

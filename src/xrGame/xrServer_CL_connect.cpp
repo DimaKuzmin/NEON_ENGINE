@@ -208,6 +208,13 @@ bool xrServer::NeedToCheckClient_BuildVersion		(IClient* CL)
 	return true;
 };
 
+#define MP_SAVE_JSON
+#include <fstream>;
+#include "..\jsonxx\jsonxx.h"
+#include <fstream>
+#include <iostream>
+using namespace jsonxx;
+
 void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 {
 	u16 Type;
@@ -219,25 +226,19 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 	P.r_stringZ(login);
 	P.r_stringZ(password);
 
-	string_path path_xray;
-	FS.update_path(path_xray, "$mp_saves_logins$", "logins.ltx");
-
-	CInifile* file = xr_new<CInifile>(path_xray, true);
-
 	if (!CL->flags.bLocal)
 	{
+		string_path path_xray;
+		bool has_login_in_file = false;
+
+#ifndef MP_SAVE_JSON
+		FS.update_path(path_xray, "$mp_saves_logins$", "logins.ltx");
+		CInifile* file = xr_new<CInifile>(path_xray, true);
 		if (file->section_exist(login))
 		{
 			shared_str pass_check;
-
 			if (file->line_exist(login, "password"))
 				pass_check = file->r_string(login, "password");
-
-			if (xr_strcmp(pass_check, password))
-			{
-				SendConnectResult(CL, 0, ecr_data_verification_failed, "Проверьте пароль.");
-				return;
-			}
 
 			if (file->line_exist(login, "banned"))
 			{
@@ -245,16 +246,69 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 				return;
 			}
 
-			for (auto pl : Game().players)
+			if (xr_strcmp(pass_check, password))
 			{
-				if (!xr_strcmp(pl.second->getName(), login))
+				SendConnectResult(CL, 0, ecr_data_verification_failed, "Проверьте пароль.");
+				return;
+			}
+			else
+				has_login_in_file = true;
+		}
+
+#else 
+		FS.update_path(path_xray, "$mp_saves_logins$", "logins.json");
+		Object jsonMAIN;
+		Array jsonArr;
+		std::ifstream ifile(path_xray);
+
+		if (ifile.is_open())
+		{
+			std::string str((std::istreambuf_iterator<char>(ifile)), std::istreambuf_iterator<char>());
+			jsonMAIN.parse(str);
+			ifile.close();
+
+			if (jsonMAIN.has<Array>("ACCOUNTS:"))
+			{
+				Msg("Find ACs");
+				jsonArr = jsonMAIN.get<Array>("ACCOUNTS:");
+				for (int i = 0; i != jsonArr.size(); i++)
 				{
-					SendConnectResult(CL, 0, ecr_data_verification_failed, "Повторный вход с одного аккаунта.");
-					return;
+					Object tab = jsonArr.get<Object>(i);
+					 
+					if (tab.has<String>("login"))
+					{
+						LPCSTR login_file = tab.get<String>("login").c_str();
+						if (xr_strcmp(login, login_file) == 0)
+						{
+							Msg("Find Login file");
+							if (tab.has<String>("password"))
+							{
+								LPCSTR password_file = tab.get<String>("password").c_str();
+								if (xr_strcmp(password, password_file) != 0) 
+								{
+									SendConnectResult(CL, 0, ecr_data_verification_failed, "Проверьте пароль.");
+									return;
+								}
+								 
+								has_login_in_file = true;
+							}
+						}
+					}
 				}
+ 			}
+		}
+#endif
+
+		for (auto pl : Game().players)
+		{
+			if (!xr_strcmp(pl.second->getName(), login))
+			{
+				SendConnectResult(CL, 0, ecr_data_verification_failed, "Повторный вход с одного аккаунта.");
+				return;
 			}
 		}
-		else
+
+		if (!has_login_in_file)
 		{
 			SendConnectResult(CL, 0, ecr_data_verification_failed, "Неверный логин");
 			return;

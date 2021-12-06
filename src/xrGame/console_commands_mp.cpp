@@ -2659,7 +2659,15 @@ public:
 		}
 	}
 };
- 
+
+#include <fstream>;
+#include "..\jsonxx\jsonxx.h"
+#include <fstream>
+#include <iostream>
+using namespace jsonxx;
+
+#define MP_SAVE_JSON
+
 class CCC_AdmRegisterAccount : public IConsole_Command {
 public:
 	CCC_AdmRegisterAccount(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
@@ -2668,23 +2676,58 @@ public:
 	{
 		if (OnServer())
 		{
-			string_path filepath;
-
-			FS.update_path(filepath, "$mp_saves_logins$", "logins.ltx");
-
-			CInifile* file = xr_new<CInifile>(filepath, false, true);
-
 			string256 tmp, login, password;
 			exclude_raid_from_args(args, tmp, sizeof(tmp));
-
 			sscanf(tmp, "%s %s", &login, &password);
 
+#ifndef MP_SAVE_JSON
+			string_path filepath;
+			FS.update_path(filepath, "$mp_saves_logins$", "logins.ltx");
+			CInifile* file = xr_new<CInifile>(filepath, false, true);
 			if (file)
-			{
 				file->w_string(login, "password", password);
+			file->save_as(filepath);
+#else
+			string_path filepath;
+			FS.update_path(filepath, "$mp_saves_logins$", "logins.json");			 
+			Object jsonMAIN;
+			Array jsonArr;
+			Object table;
+
+			table << "login" << login;
+			table << "password" << password;
+			
+			std::ifstream ifile(filepath);
+			
+			if (ifile.is_open())
+			{
+				std::string str((std::istreambuf_iterator<char>(ifile)), std::istreambuf_iterator<char>());
+				jsonMAIN.parse(str);
+				ifile.close();				 
+
+				if (jsonMAIN.has<Array>("ACCOUNTS:"))
+				{
+					Msg("Find ACs");
+					jsonArr = jsonMAIN.get<Array>("ACCOUNTS:");
+					jsonArr << table; 
+				}
+			}
+			else
+			{
+				jsonArr << table;
 			}
 
-			file->save_as(filepath);
+			jsonMAIN << "ACCOUNTS:" << jsonArr;
+			
+			IWriter* file_W = FS.w_open(filepath);
+			if (file_W)
+			{
+				file_W->w_string(jsonMAIN.json().c_str());
+				FS.w_close(file_W);
+			}
+
+#endif // !MP_SAVE_JSON
+			 
 		}
 		else
 		{
@@ -2707,19 +2750,24 @@ public:
 	{
 		if (OnServer())
 		{
+			string256 tmp, login;
+			exclude_raid_from_args(args, tmp, sizeof(tmp));
+			sscanf(tmp, "%s", &login);
+
+#ifndef MP_SAVE_JSON
 			string_path filepath;
 			FS.update_path(filepath, "$mp_saves_logins$", "logins.ltx");
 			CInifile* file = xr_new<CInifile>(filepath, false, true);
-
-			string256 tmp, login;
-			exclude_raid_from_args(args, tmp, sizeof(tmp));
-
-			sscanf(tmp, "%s", &login);
-
 			if (file && file->section_exist(login))
 				file->w_bool(login, "banned", true);
-
 			file->save_as(filepath);
+#else 
+			
+
+
+
+#endif
+
 		}
 		else
 		{
@@ -2791,8 +2839,8 @@ void register_mp_console_commands()
 
 	CMD1(CCC_MovePlayerToRPoint,	"sv_move_player_to_rpoint");
 
-	CMD1(CCC_GiveMoneyToPlayer, "sv_give_money");
-	CMD1(CCC_TransferMoney, "transfer_money");
+	CMD1(CCC_GiveMoneyToPlayer,		"sv_give_money");
+	CMD1(CCC_TransferMoney,			"transfer_money");
 
 	CMD1(CCC_Restart,				"g_restart"				);
 	CMD1(CCC_RestartFast,			"g_restart_fast"		);

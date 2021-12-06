@@ -3,6 +3,8 @@
 #include "game_sv_mp.h"
 #include "../xrEngine/pure_relcase.h"
 
+#define MP_SAVE_JSON
+
 class game_sv_freemp : public game_sv_mp, private pure_relcase
 {
 
@@ -50,22 +52,26 @@ public:
 
 	virtual		void				RespawnPlayer(ClientID id_who, bool NoSpectator);
 
+	virtual		bool				HasSaveFile(game_PlayerState* ps);
 
+#ifndef MP_SAVE_JSON
 	virtual     void				SavePlayer(game_PlayerState* ps, CInifile* file);
 	virtual     bool				LoadPlayer(game_PlayerState* ps, CInifile* file);
-	virtual		bool				HasSaveFile(game_PlayerState* ps);
+
 
 	virtual		void				SaveInvBox(CSE_ALifeInventoryBox* box, CInifile* file);
 	virtual		void				LoadInvBox(CSE_ALifeInventoryBox* box, CInifile* file);
+#else
+	virtual		void				SaveJson(game_PlayerState* ps);
+	virtual		bool				LoadJson(game_PlayerState* ps);
 
-	virtual		void				SaveJson(game_PlayerState* ps, shared_str name);
-	virtual		bool				LoadJson(game_PlayerState* ps, shared_str name);
+	virtual		void				SaveInventory(CSE_ALifeInventoryBox* box, string_path name);
+	virtual		void				LoadInventory(CSE_ALifeInventoryBox* box, string_path name);
 
-	virtual		void				SaveInventory(game_PlayerState* ps, shared_str name);
-	virtual		void				LoadInventory(game_PlayerState* ps, shared_str name);
-
-	virtual		bool				LoadPlayerPosition(game_PlayerState* ps, Fvector& position, Fvector& angle);
+	virtual		bool				LoadPlayerPosition(game_PlayerState* ps, Fvector& position, Fvector& angle, float& health);
 
 	virtual void					assign_RP(CSE_Abstract* E, game_PlayerState* ps_who);
+#endif
+
 
 };

@@ -172,24 +172,19 @@ void game_sv_freemp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 	if (Game().Type() == eGameIDFreeMp)
 	if (ps && !ps->testFlag(GAME_PLAYER_MP_SAVE_LOADED))
 	{
+#ifndef MP_SAVE_JSON
 		string_path file_name;
 		string32 filename;
 		xr_strcpy(filename, ps->getName());
 		xr_strcat(filename, ".ltx");
-
 		FS.update_path(file_name, "$mp_saves$", filename);
-
-		//Msg("read file path = %s", file_name);
-		/*
 		CInifile* file = xr_new<CInifile>(file_name, true);
-	
-		//INI FILE
 		LoadPlayer(ps, file);
-		*/
-
-		// JsonFILE 
-		LoadJson(ps, ps->getName());
- 		ps->setFlag(GAME_PLAYER_MP_SAVE_LOADED);
+#else 
+		LoadJson(ps);
+#endif
+		ps->setFlag(GAME_PLAYER_MP_SAVE_LOADED);
+		
  	}
 }
 
@@ -295,12 +290,13 @@ void game_sv_freemp::Update()
 				xr_strcat(filename, ".ltx");
 
 				FS.update_path(file_name, "$mp_saves$", filename);
-
-				//CInifile* file = xr_new<CInifile>(file_name, false, false);
-				//SavePlayer(player.second, file);
-				//file->save_as(file_name);
-
-				SaveJson(player.second, player.second->getName());
+#ifndef MP_SAVE_JSON
+				CInifile* file = xr_new<CInifile>(file_name, false, false);
+				SavePlayer(player.second, file);
+				file->save_as(file_name);
+#else
+				SaveJson(player.second);
+#endif
 			}
 		}
 
@@ -310,12 +306,6 @@ void game_sv_freemp::Update()
 			CSE_ALifeInventoryBox* box = smart_cast<CSE_ALifeInventoryBox*>(abs);
 			if (box)
 			{
-				string_path path_name;
-				string64 invbox_name;
-				xr_strcpy(invbox_name, box->name_replace());
-				xr_strcat(invbox_name, ".ltx");
-				FS.update_path(path_name, "$mp_saves_invbox$", invbox_name);
-
 				bool need_load = true;
 
 				for (auto box_id : inventory_boxes)
@@ -325,6 +315,14 @@ void game_sv_freemp::Update()
 						need_load = false;
 					}
 				}
+
+				string_path path_name;
+				string64 invbox_name;
+				xr_strcpy(invbox_name, box->name_replace());
+
+#ifndef MP_SAVE_JSON
+				xr_strcat(invbox_name, ".ltx");
+				FS.update_path(path_name, "$mp_saves_invbox$", invbox_name);
 
 				if (need_load)
 				{
@@ -338,8 +336,20 @@ void game_sv_freemp::Update()
 					SaveInvBox(box, boxFile);
 					boxFile->save_as(path_name);
 				}
+#else 
+				xr_strcat(invbox_name, ".json");
+				FS.update_path(path_name, "$mp_saves_invbox$", invbox_name);
 
-
+				if (need_load)
+				{
+					inventory_boxes.push_back(box->ID);
+					LoadInventory(box, path_name);
+				}
+				else
+				{
+					SaveInventory(box, path_name);
+				}
+#endif
 			}
 		}
 	}
