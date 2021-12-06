@@ -678,6 +678,8 @@ extern char			psNET_Name[32];
 extern Flags32		psEnvFlags;
 //extern float		r__dtex_range;
 
+ENGINE_API float	VIEWPORT_NEAR = 0.01f;
+
 extern int			g_ErrorLineCount;
 
 ENGINE_API int			ps_r__Supersample			= 1;
@@ -819,6 +821,9 @@ void CCC_Register()
 	CMD4(CCC_Integer, "sv_dedicated_server_update_rate", &g_svDedicateServerUpdateReate, 1, 1000);
 
 	CMD1(CCC_HideConsole,		"hide");
+
+	CMD4(CCC_Float, "r_viewport_near", &VIEWPORT_NEAR, 0.01f, 1.f);
+
 
 #ifdef	DEBUG
 	extern BOOL debug_destroy;
