@@ -15,9 +15,9 @@ Fvector _wpn_root_pos;
 float CalcMotionSpeed(const shared_str& anim_name)
 {
 
-	if(!IsGameTypeSingle() && (anim_name=="anm_show" || anim_name=="anm_hide") )
-		return 2.0f;
-	else
+	//if(!IsGameTypeSingle() && (anim_name=="anm_show" || anim_name=="anm_hide") )
+	//	return 2.0f;
+	//else
 		return 1.0f;
 }
 
