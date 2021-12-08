@@ -116,8 +116,8 @@ bool game_sv_freemp::LoadPlayer(game_PlayerState* ps, CInifile* file)
 		if (file->line_exist("actor", "money"))
 			ps->money_for_round = file->r_u32("actor", "money");
 
-		if (file->line_exist("actor", "team"))
-			ps->team = file->r_u32("actor", "team");
+		//if (file->line_exist("actor", "team"))
+		//	ps->team = file->r_u32("actor", "team");
 
 		SpawnItemToActor(ps->GameID, "device_pda");
 		SpawnItemToActor(ps->GameID, "device_torch");

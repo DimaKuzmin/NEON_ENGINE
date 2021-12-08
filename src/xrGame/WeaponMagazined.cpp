@@ -791,8 +791,14 @@ bool CWeaponMagazined::CanAttach(PIItem pIItem)
 		SCOPES_VECTOR_IT it = m_scopes.begin();
 		for(; it!=m_scopes.end(); it++)
 		{
-			if(pSettings->r_string((*it),"scope_name")==pIItem->object().cNameSect())
-				return true;
+			if (bUseAltScope)
+			{
+				if (*it == pIItem->object().cNameSect())
+					return true;
+			}
+			else
+				if (pSettings->r_string((*it), "scope_name") == pIItem->object().cNameSect())
+					return true;
 		}
 		return false;
 	}
@@ -819,8 +825,16 @@ bool CWeaponMagazined::CanDetach(const char* item_section_name)
 		SCOPES_VECTOR_IT it = m_scopes.begin();
 		for(; it!=m_scopes.end(); it++)
 		{
-			if(pSettings->r_string((*it),"scope_name")==item_section_name)
-				return true;
+			if (bUseAltScope)
+			{
+				if (*it == item_section_name)
+					return true;
+			}
+			else
+			{
+				if (pSettings->r_string((*it), "scope_name") == item_section_name)
+					return true;
+			}
 		}
 		return false;
 	}
@@ -853,8 +867,16 @@ bool CWeaponMagazined::Attach(PIItem pIItem, bool b_send_event)
 		SCOPES_VECTOR_IT it = m_scopes.begin();
 		for(; it!=m_scopes.end(); it++)
 		{
-			if(pSettings->r_string((*it),"scope_name")==pIItem->object().cNameSect())
-				m_cur_scope = u8(it-m_scopes.begin());
+			if (bUseAltScope)
+			{
+				if (*it == pIItem->object().cNameSect())
+					m_cur_scope = u8(it - m_scopes.begin());
+			}
+			else
+			{
+				if (pSettings->r_string((*it), "scope_name") == pIItem->object().cNameSect())
+					m_cur_scope = u8(it - m_scopes.begin());
+			}
 		}
 		m_flagsAddOnState |= CSE_ALifeItemWeapon::eWeaponAddonScope;
 		result = true;
@@ -884,7 +906,7 @@ bool CWeaponMagazined::Attach(PIItem pIItem, bool b_send_event)
 //.			pIItem->Drop					();
 			pIItem->object().DestroyObject	();
 		};
-
+		UpdateAltScope();
 		UpdateAddonsVisibility();
 		InitAddons();
 
@@ -900,8 +922,18 @@ bool CWeaponMagazined::DetachScope(const char* item_section_name, bool b_spawn_i
 	SCOPES_VECTOR_IT it = m_scopes.begin();
 	for(; it!=m_scopes.end(); it++)
 	{
-		LPCSTR iter_scope_name = pSettings->r_string((*it),"scope_name");
-		if(!xr_strcmp(iter_scope_name, item_section_name))
+		shared_str iter_scope_name = "none";
+
+		if (bUseAltScope)
+		{
+			iter_scope_name = (*it);
+		}
+		else
+		{
+			iter_scope_name = pSettings->r_string((*it), "scope_name");
+		}
+
+		if (!xr_strcmp(iter_scope_name, item_section_name))
 		{
 			m_cur_scope = NULL;
 			detached = true;
@@ -921,7 +953,7 @@ bool CWeaponMagazined::Detach(const char* item_section_name, bool b_spawn_item)
 			return true;
 		}
 		m_flagsAddOnState &= ~CSE_ALifeItemWeapon::eWeaponAddonScope;
-		
+		UpdateAltScope();
 		UpdateAddonsVisibility();
 		InitAddons();
 
@@ -973,6 +1005,7 @@ void CWeaponMagazined::InitAddons()
 		shared_str scope_tex_name;
 		if ( m_eScopeStatus == ALife::eAddonAttachable )
 		{
+			/*
 			//m_scopes[cur_scope]->m_sScopeName = pSettings->r_string(cNameSect(), "scope_name");
 			//m_scopes[cur_scope]->m_iScopeX	 = pSettings->r_s32(cNameSect(),"scope_x");
 			//m_scopes[cur_scope]->m_iScopeY	 = pSettings->r_s32(cNameSect(),"scope_y");
@@ -993,6 +1026,8 @@ void CWeaponMagazined::InitAddons()
 				createWpnScopeXML		();
 				CUIXmlInit::InitWindow	(*pWpnScopeXml, scope_tex_name.c_str(), 0, m_UIScope);
 			}
+			*/
+			LoadCurrentScopeParams(GetScopeName().c_str());
 		}
 	}
 	else
