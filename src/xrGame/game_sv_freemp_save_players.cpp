@@ -26,8 +26,19 @@ bool game_sv_freemp::HasSaveFile(game_PlayerState* ps)
 	FS.update_path(path, "$mp_saves_players$", filename);
 	CInifile* file = xr_new<CInifile>(path, true);
 
+	if (file)
+	{
+		if (file->line_exist("actor", "team"))
+		{
+			ps->team = file->r_u8("actor", "team");
+		}
+	}
 
-	return file->section_exist("actor");
+	if (file)
+		return  file->section_exist("actor");
+	else
+		return false;
+
 #else 
 	if (ps->GameID == get_id(server().GetServerClient()->ID)->GameID)
 		return false;
@@ -100,7 +111,7 @@ void game_sv_freemp::SavePlayer(game_PlayerState* ps, CInifile* file)
 
 		file->w_u32("actor", "items_count", id);
 		file->w_u32("actor", "money", ps->money_for_round);
-		file->w_u32("actor", "team", ps->team);
+		file->w_u8("actor", "team", ps->team);
 	}
 }
 
@@ -116,8 +127,8 @@ bool game_sv_freemp::LoadPlayer(game_PlayerState* ps, CInifile* file)
 		if (file->line_exist("actor", "money"))
 			ps->money_for_round = file->r_u32("actor", "money");
 
-		if (file->line_exist("actor", "team"))
-			ps->team = file->r_u32("actor", "team");
+		//if (file->line_exist("actor", "team"))
+		//	ps->team = file->r_u32("actor", "team");
 
 		SpawnItemToActor(ps->GameID, "device_pda");
 		SpawnItemToActor(ps->GameID, "device_torch");
@@ -500,7 +511,11 @@ bool game_sv_freemp::LoadJson(game_PlayerState* ps)
 					CSE_ALifeItemAmmo* ammo = smart_cast<CSE_ALifeItemAmmo*>(item);
 
 					if (item)
+					{
 						item->slot = slot;
+						item->m_fCondition = condition;
+					}
+
 
 					if (ammo)
 						ammo->a_elapsed = ammo_box_count;
@@ -627,7 +642,8 @@ void game_sv_freemp::LoadInventory(CSE_ALifeInventoryBox* box, string_path pathf
 			CSE_ALifeItemWeapon* wpn = smart_cast<CSE_ALifeItemWeapon*>(item);
 			CSE_ALifeItemAmmo* ammo = smart_cast<CSE_ALifeItemAmmo*>(item);
 		    
-			item->m_fCondition = condition;
+			if (item)
+				item->m_fCondition = condition;
  
 			if (wpn)
 			{

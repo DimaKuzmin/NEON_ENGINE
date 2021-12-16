@@ -1300,7 +1300,8 @@ void CWeapon::UpdateAddonsVisibility()
 	pWeaponVisual->CalculateBones_Invalidate				();
 
 	bone_id = pWeaponVisual->LL_BoneID					(wpn_scope);
-	if(ScopeAttachable())
+	
+	if(ScopeAttachable() && bone_id != BI_NONE)
 	{
 		if(IsScopeAttached())
 		{
@@ -1311,12 +1312,13 @@ void CWeapon::UpdateAddonsVisibility()
 				pWeaponVisual->LL_SetBoneVisible			(bone_id,FALSE,TRUE);
 		}
 	}
-	if(m_eScopeStatus==ALife::eAddonDisabled && bone_id!=BI_NONE && 
-		pWeaponVisual->LL_GetBoneVisible(bone_id) )
+
+	if(m_eScopeStatus==ALife::eAddonDisabled && bone_id!=BI_NONE &&	pWeaponVisual->LL_GetBoneVisible(bone_id) )
 	{
 		pWeaponVisual->LL_SetBoneVisible					(bone_id,FALSE,TRUE);
 //		Log("scope", pWeaponVisual->LL_GetBoneVisible		(bone_id));
 	}
+
 	bone_id = pWeaponVisual->LL_BoneID						(wpn_silencer);
 	if(SilencerAttachable())
 	{
