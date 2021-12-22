@@ -2850,6 +2850,9 @@ public:
 
 #include "cameralook.h"
 
+extern int AnimCurrent = 0;
+
+
 void register_mp_console_commands()
 {
 	CMD1(CCC_SpawnToInventory,		"sv_spawn_to_player_inv");
@@ -2872,7 +2875,12 @@ void register_mp_console_commands()
 	CMD1(CCC_AdmUnBanAccount,		"adm_unban_account");
 	CMD1(CCC_give_money_self,		"g_money");
 
-	CMD4(CCC_Vector3, "cam_2_offset", &CCameraLook2::m_cam_offset, Fvector().set(-1000, -1000, -1000), Fvector().set(1000, 1000, 1000));
+	CMD4(CCC_Integer,				"g_anim",	&AnimCurrent, 0, 32);
+															
+	CMD4(CCC_Vector3,				"cam_2_offset", 
+	&CCameraLook2::m_cam_offset, 
+	Fvector().set(-1000, -1000, -1000),
+	Fvector().set(1000, 1000, 1000));
 
 	CMD1(CCC_MovePlayerToRPoint,	"sv_move_player_to_rpoint");
 

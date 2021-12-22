@@ -563,6 +563,9 @@ bool CActor::CanJump()
 
 bool CActor::CanMove()
 {
+	if (!AnimationEnded())
+		return false;
+
 	if( conditions().IsCantWalk() )
 	{
 		if(mstate_wishful&mcAnyMove)

@@ -28,6 +28,7 @@ enum	EGameActions
 	kTORCH,
 	kNIGHT_VISION,
 	kDETECTOR,
+	kAnimationMode,
 	kWPN_1,
 	kWPN_2,
 	kWPN_3,

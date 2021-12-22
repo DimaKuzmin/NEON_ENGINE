@@ -141,6 +141,9 @@ void CActorMP::net_Import	( NET_Packet &P)
 
 	// interpolcation
 	postprocess_packet		(N_A);
+
+	//OutAnim = m_state_holder.state().OutAnimationPlayed;
+	//Msg("OutAnim[%d]", OutAnim);
 }
 
 void CActorMP::postprocess_packet	(net_update_A &N_A)

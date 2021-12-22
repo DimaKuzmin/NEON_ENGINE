@@ -2110,9 +2110,6 @@
     <Filter Include="Core\Server\Games\server\artefact_hunt">
       <UniqueIdentifier>{004326b7-5789-409f-8e66-167f1a04718a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Core\Server\Games\server\deathmatch">
-      <UniqueIdentifier>{379c1f1b-b8f9-423b-82eb-002244362d5e}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Server\Games\server\single">
       <UniqueIdentifier>{863244f4-7818-4d31-b23f-168a26788015}</UniqueIdentifier>
     </Filter>
@@ -2511,6 +2508,9 @@
     </Filter>
     <Filter Include="Core\Client\Objects\inventory\InventoryItem\inventory_upgrade\property">
       <UniqueIdentifier>{f5e0ea33-ab64-4f60-a9bc-c712f764f078}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core\Server\Games\server\deathmatch">
+      <UniqueIdentifier>{379c1f1b-b8f9-423b-82eb-002244362d5e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

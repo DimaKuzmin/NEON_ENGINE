@@ -18,6 +18,8 @@
 #include "step_manager.h"
 #include "script_export_space.h"
 
+#include "ai_sounds.h"
+
 using namespace ACTOR_DEFS;
 
 class CInfoPortion;
@@ -72,6 +74,10 @@ class	CActor:
 	,public pureRender
 #endif
 {
+
+
+
+
 	friend class CActorCondition;
 private:
 	typedef CEntityAlive	inherited;
@@ -79,11 +85,28 @@ public:
 										CActor				();
 	virtual								~CActor				();
 
+protected:
+	int oldAnim = 0;
+
+	int InputAnim = 0;
+	int OutAnim = 0;
+	int MidAnim = 0;
+
+	bool InPlay = true;
+	bool OutPlay = true;
+	bool MidPlay = true;
+
+
+
 public:
-	
+	bool CanChange = true;
+
 			bool						MpGodMode					() const				;
 			bool						MpNoClip					() const				;
 			bool						MpInvisibility				() const				;
+			bool						MpAnimationMODE() const;
+
+			bool						AnimationEnded() const;
 
 	virtual BOOL						AlwaysTheCrow				()						{ return TRUE; }
 
@@ -304,6 +327,16 @@ public:
 	SRotation				&Orientation		()			 { return r_torso; };
 
 	void					g_SetAnimation		(u32 mstate_rl);
+
+	void					SelectScriptAnimation ();
+
+	void					soundPlay();
+	void					SendAnimationToServer(MotionID motion);
+	void					SendActivateItem(shared_str item, bool activate);
+
+	void					script_anim(MotionID exit_animation, PlayCallback Callback, LPVOID CallbackParam);
+	void					ReciveAnimationPacket(NET_Packet& packet);
+	void					ReciveActivateItem(NET_Packet& packet);
 	void					g_SetSprintAnimation(u32 mstate_rl,MotionID &head,MotionID &torso,MotionID &legs);
 public:
 	virtual void			OnHUDDraw			(CCustomHUD* hud);

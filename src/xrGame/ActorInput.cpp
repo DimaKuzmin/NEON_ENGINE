@@ -47,26 +47,48 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	
 	switch (cmd)
 	{
-	case kWPN_FIRE:
-		{
-			if( (mstate_wishful & mcLookout) && CheckGameFlag(F_DISABLE_WEAPON_FIRE_WHEN_LOOKOUT)) return;
-
-			u16 slot = inventory().GetActiveSlot();
-			if(inventory().ActiveItem() && (slot==INV_SLOT_3 || slot==INV_SLOT_2) )
-				mstate_wishful &=~mcSprint;
-			//-----------------------------
-			if (OnServer())
+		case kWPN_FIRE:
 			{
-				NET_Packet P;
-				P.w_begin(M_PLAYER_FIRE); 
-				P.w_u16(ID());
-				u_EventSend(P);
-			}
-		}break;
+				if( (mstate_wishful & mcLookout) && CheckGameFlag(F_DISABLE_WEAPON_FIRE_WHEN_LOOKOUT)) return;
+
+				u16 slot = inventory().GetActiveSlot();
+				if(inventory().ActiveItem() && (slot==INV_SLOT_3 || slot==INV_SLOT_2) )
+					mstate_wishful &=~mcSprint;
+				//-----------------------------
+				if (OnServer())
+				{
+					NET_Packet P;
+					P.w_begin(M_PLAYER_FIRE); 
+					P.w_u16(ID());
+					u_EventSend(P);
+				}
+			}break;
+
+			case kAnimationMode:
+			{
+				if (OnClient())
+				{
+					game_PlayerState* ps = Game().GetPlayerByGameID(ID());
+
+					if (ps)
+					{
+						bool mode = ps->testFlag(GAME_PLAYER_MP_ANIMATION_MODE);
+						Msg("AnimMode[%s]", !mode ? "true" : "false");
+					}
+
+					NET_Packet packet;
+					Level().game->u_EventGen(packet, GE_KEY_PRESSED, this->ID());
+					Level().game->u_EventSend(packet);
+				}
+
+			}break;
+
 	default:
 		{
 		}break;
 	}
+
+
 
 	if (!g_Alive()) return;
 

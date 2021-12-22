@@ -248,6 +248,27 @@ bool CActor::MpInvisibility() const
 	return (ps && ps->testFlag(GAME_PLAYER_MP_INVIS));
 }
 
+bool CActor::MpAnimationMODE() const
+{
+	if (!g_Alive())
+		return false;
+
+	game_PlayerState* ps = Game().GetPlayerByGameID(ID());
+  
+	return (ps && ps->testFlag(GAME_PLAYER_MP_ANIMATION_MODE));
+}
+
+bool CActor::AnimationEnded() const
+{
+	if (MpAnimationMODE())
+		return false;
+
+	if (!OutPlay)
+		return false;
+
+	return CanChange;
+}
+
 void CActor::reinit	()
 {
 	character_physics_support()->movement()->CreateCharacter		();
@@ -1203,7 +1224,7 @@ void CActor::UpdateCL	()
 float	NET_Jump = 0;
 void CActor::set_state_box(u32	mstate)
 {
-		if ( mstate & mcCrouch)
+	if ( mstate & mcCrouch)
 	{
 		if (isActorAccelerated(mstate_real, IsZoomAimingMode()))
 			character_physics_support()->movement()->ActivateBox(1, true);
@@ -1282,7 +1303,10 @@ void CActor::shedule_Update	(u32 DT)
 			}
 			*/
 		}
-		g_cl_Orientate			(mstate_real,dt);
+
+		if (!pInput->iGetAsyncKeyState(DIK_LALT) && AnimationEnded())
+			g_cl_Orientate			(mstate_real,dt);
+
 		g_Orientate				(mstate_real,dt);
 
 		g_Physics				(NET_SavedAccel,NET_Jump,dt);
@@ -2031,14 +2055,36 @@ bool CActor::use_center_to_aim			() const
 bool CActor::can_attach			(const CInventoryItem *inventory_item) const
 {
 	const CAttachableItem	*item = smart_cast<const CAttachableItem*>(inventory_item);
-	if (!item || /*!item->enabled() ||*/ !item->can_be_attached())
-		return			(false);
+	
+	/*
+	if (item->item().m_section_id == "guitar_a" || item->item().m_section_id == "harmonica_a")
+	{
+ 		if (!item->enabled())
+			return false;
+	}
+	else
+	
+	{
+ 		if (!item || !item->can_be_attached())
+			return			(false);
+	}
+	*/
 
-	//����� �� ������������ ������� ������ ����
+ 
+	if (smart_cast<const  CTorch*>(inventory_item))
+	{
+		if (!item || !item->can_be_attached())
+			return			(false);
+	}
+	else 
+	{
+		if (item && !item->enabled())
+			return false;
+	}
+
 	if( m_attach_item_sections.end() == std::find(m_attach_item_sections.begin(),m_attach_item_sections.end(),inventory_item->object().cNameSect()) )
 		return false;
-
-	//���� ��� ���� �������������� ����� ������ ���� 
+	
 	if(attached(inventory_item->object().cNameSect()))
 		return false;
 

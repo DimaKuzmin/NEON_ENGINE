@@ -92,6 +92,8 @@ void CActorMP::fill_state	(actor_mp_state &state)
 
 	state.radiation					= g_Radiation()/100.0f;
 	state.physics_state_enabled		= State.enabled ? 1 : 0;
+	
+	//state.OutAnimationPlayed		= OutAnim;
 }
 
 BOOL CActorMP::net_Relevant	()

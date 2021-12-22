@@ -138,6 +138,7 @@ void CWeapon::UpdateXForm	()
 	// Calculate
 	Fmatrix					mRes;
 	Fvector					R,D,N;
+
 	D.sub					(mL.c,mR.c);	
 
 	if(fis_zero(D.magnitude())) {
@@ -428,7 +429,7 @@ void CWeapon::Load		(LPCSTR section)
 
 	bUseAltScope = bLoadAltScopesParams(section);
 
-	Msg("Load Scopes [%s]", bUseAltScope ? "true" : "false");
+//	Msg("Load Scopes [%s]", bUseAltScope ? "true" : "false");
 
 	if (!bUseAltScope)
 	{
@@ -1964,7 +1965,6 @@ u32 CWeapon::Cost() const
 
 }
 
-
 int CWeapon::GetScopeX()
 {
 	if (bUseAltScope)
@@ -1999,18 +1999,15 @@ int	CWeapon::GetScopeY()
 		return pSettings->r_s32(m_scopes[m_cur_scope], "scope_y");
 }
 
-
-
 bool CWeapon::bLoadAltScopesParams(LPCSTR section)
 {
-
-	if (!pSettings->line_exist(section, "scopes"))
+	 if (!pSettings->line_exist(section, "scopes"))
 		return false;
 
 	if (!xr_strcmp(pSettings->r_string(section, "scopes"), "none"))
 		return false;
 
-	Msg("Load AltScopes [%s]", section);
+	//Msg("Load AltScopes [%s]", section);
 
 	if (m_eScopeStatus == ALife::eAddonAttachable)
 	{
@@ -2020,7 +2017,7 @@ bool CWeapon::bLoadAltScopesParams(LPCSTR section)
 			string128 scope_section;
 			_GetItem(str, i, scope_section);
 			m_scopes.push_back(scope_section);
-			Msg("Scope [%s]", scope_section);
+			//Msg("Scope [%s]", scope_section);
 		}
 	}
 	else if (m_eScopeStatus == ALife::eAddonPermanent)
@@ -2029,58 +2026,11 @@ bool CWeapon::bLoadAltScopesParams(LPCSTR section)
 	}
 
 	return true;
-
-	/*
-	if (m_eScopeStatus == ALife::eAddonAttachable)
-	{
-		if (pSettings->line_exist(section, "scopes_sect"))
-		{
-			LPCSTR str = pSettings->r_string(section, "scopes_sect");
-			for (int i = 0, count = _GetItemCount(str); i < count; ++i)
-			{
-				string128						scope_section;
-				_GetItem(str, i, scope_section);
-				m_scopes.push_back(scope_section);
-			}
-		}
-		else
-		{
-			m_scopes.push_back(section);
-		}
-	}
-	else if (m_eScopeStatus == ALife::eAddonPermanent)
-	{
-		if (pSettings->line_exist(cNameSect(), "scope_zoom_factor"))
-			m_zoom_params.m_fScopeZoomFactor = pSettings->r_float(cNameSect(), "scope_zoom_factor");
-
-		if (pSettings->line_exist(cNameSect(), "scope_texture"))
-		{
-			shared_str scope_tex_name = pSettings->r_string(cNameSect(), "scope_texture");
-
-			if (!g_dedicated_server)
-			{
-				m_UIScope = xr_new<CUIWindow>();
-				if (!pWpnScopeXml)
-				{
-					pWpnScopeXml = xr_new<CUIXml>();
-					pWpnScopeXml->Load(CONFIG_PATH, UI_PATH, "scopes.xml");
-				}
-				CUIXmlInit::InitWindow(*pWpnScopeXml, scope_tex_name.c_str(), 0, m_UIScope);
-			}
-		}
-		else
-		{
-			if (m_UIScope)
-			{
-				xr_delete(m_UIScope);
-			}
-		}
-	} */
 }
 
 void CWeapon::LoadOriginalScopesParams(LPCSTR section)
 {
-	Msg("Load Original [%s]", section);
+	//Msg("Load Original [%s]", section);
 
 	if (m_eScopeStatus == ALife::eAddonAttachable)
 	{
@@ -2178,57 +2128,6 @@ void CWeapon::UpdateAltScope()
 	{
 		hud_sect = new_hud;
 	}
-
-	/*
-
-	if (IsScopeAttached())
-	{
-		if (m_eScopeStatus == ALife::eAddonAttachable)
-		{
-			if (pSettings->section_exist(m_scopes[m_cur_scope].c_str()))
-			{
-				if (pSettings->line_exist(m_scopes[m_cur_scope].c_str(), "wpn_visual"))
-				{
-					shared_str name = pSettings->r_string(m_scopes[m_cur_scope].c_str(), "wpn_visual");
-
-					if (name != cNameVisual())
-					{
-						this->cNameVisual_set(name);
-					}
-				}
-
-				if (pSettings->line_exist(m_scopes[m_cur_scope].c_str(), "wpn_hud"))
-				{
-					shared_str hud_name = pSettings->r_string(m_scopes[m_cur_scope].c_str(), "wpn_hud");
-
-					if (hud_name != hud_sect)
-					{
-						this->hud_sect = hud_name;
-					}
-				}
-
-			}
-		}
-	}
-
-	if (!IsScopeAttached())
-	{
-		if (pSettings->section_exist(cNameSect()))
-		{
-			shared_str name = pSettings->r_string(this->cNameSect_str(), "visual");
-			if (name != cNameVisual())
-				cNameVisual_set(name);
-
-			shared_str name_hud = pSettings->r_string(this->cNameSect_str(), "hud");
-			if (name_hud != hud_sect)
-			{
-				this->hud_sect = name_hud;
-			}
-
-		}
-	}
-
-	*/
 }
 
 const shared_str CWeapon::GetScopeName() const

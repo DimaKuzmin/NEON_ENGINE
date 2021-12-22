@@ -70,6 +70,47 @@ struct SActorSprintState
 	void Create		(IKinematicsAnimated* K);
 };
 
+struct SScript_AnimInput
+{
+	MotionID m_animation_in[32][32];
+	u32 count[32];
+};
+
+struct SScript_AnimOut
+{
+	MotionID m_animation_out[32][32];
+	u32 count[32];
+};
+
+struct SScript_AnimMiddle
+{
+	MotionID m_animation[32][32];
+	u32 count[32];
+};
+
+
+
+
+struct SActorStateAnimation
+{
+	SScript_AnimInput  in_anims;
+	SScript_AnimOut    out_anims;
+	SScript_AnimMiddle middle_anims;
+
+	bool m_animation_loop[32];
+	u32	 m_rnd_snds[32];
+	ref_sound m_sound_Animation[32][32];
+
+	shared_str m_animation_attach[32];
+
+
+
+
+	void CreateAnimationsScripted(IKinematicsAnimated* K);
+
+
+};
+
 struct SActorMotions
 {
 	MotionID			m_dead_stop;
@@ -77,8 +118,12 @@ struct SActorMotions
 	SActorState			m_crouch;
 	SActorState			m_climb;
 	SActorSprintState	m_sprint;
+
+	SActorStateAnimation m_script;
+
 	void				Create(IKinematicsAnimated* K);
 };
+
 
 //vehicle anims
 struct	SVehicleAnimCollection

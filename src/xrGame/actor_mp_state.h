@@ -26,6 +26,8 @@ struct actor_mp_state {
 	u32				inventory_active_slot			: 4;
 	u32				body_state_flags				: 15;
 	u32				physics_state_enabled			: 1;
+
+	u8				OutAnimationPlayed;
 };
 
 class actor_mp_state_holder {

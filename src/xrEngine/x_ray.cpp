@@ -43,7 +43,7 @@ XRCORE_API	LPCSTR	build_date;
 XRCORE_API	u32		build_id;
 
 #ifdef MASTER_GOLD
-#	define NO_MULTI_INSTANCES
+//#	define NO_MULTI_INSTANCES
 #endif // #ifdef MASTER_GOLD
 
 // Always request high performance GPU

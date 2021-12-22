@@ -326,6 +326,16 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 			mstate_real |= mcJump;
 			*/
 		}break;
+
+		case GE_ACTOR_ANIMATION_SCRIPT:
+		{
+			ReciveAnimationPacket(P);
+		}break;
+
+		case GE_ACTOR_ITEM_ACTIVATE:
+		{
+			ReciveActivateItem(P);
+		}	break;
 	}
 }
 

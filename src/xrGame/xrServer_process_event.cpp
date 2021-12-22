@@ -387,6 +387,35 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 			freemp->AddMoneyToPlayer(game->get_id(sender), money);
 	}break;
 
+	case GE_KEY_PRESSED:
+	{
+		Msg("GE_KEY_PRESSED [%d]", destination);
+
+		xrClientData* data = ID_to_client(sender);
+
+		if (!data)
+			break;
+
+		if (!data->ps)
+			break;
+
+		game_PlayerState* ps = data->ps;
+
+		if (ps && !ps->testFlag(GAME_PLAYER_MP_ANIMATION_MODE))
+			ps->setFlag(GAME_PLAYER_MP_ANIMATION_MODE);
+		else
+			ps->resetFlag(GAME_PLAYER_MP_ANIMATION_MODE);
+
+		game->signal_Syncronize();
+	}break;
+
+	case GE_ACTOR_ITEM_ACTIVATE:
+	case GE_ACTOR_ANIMATION_SCRIPT:
+	{
+		SendBroadcast(sender, P, net_flags(true, true));
+	}break;
+
+
 	default:
 		R_ASSERT2	(0,"Game Event not implemented!!!");
 		break;

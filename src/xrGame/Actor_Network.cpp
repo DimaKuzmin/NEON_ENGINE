@@ -914,7 +914,9 @@ void	CActor::OnChangeVisual()
 
 void	CActor::ChangeVisual			( shared_str NewVisual )
 {
-	if (!NewVisual.size()) return;
+	if (!NewVisual.size()) 
+		return;
+
 	if (cNameVisual().size() )
 	{
 		if (cNameVisual() == NewVisual) return;
@@ -925,6 +927,7 @@ void	CActor::ChangeVisual			( shared_str NewVisual )
 	g_SetAnimation(mstate_real);
 	Visual()->dcast_PKinematics()->CalculateBones_Invalidate();
 	Visual()->dcast_PKinematics()->CalculateBones(TRUE);
+	CanChange = true;
 };
 
 void ACTOR_DEFS::net_update::lerp(ACTOR_DEFS::net_update& A, ACTOR_DEFS::net_update& B, float f)

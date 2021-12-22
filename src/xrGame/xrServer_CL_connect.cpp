@@ -305,6 +305,7 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 		}
 #endif
 
+		if (Level().game)
 		for (auto pl : Game().players)
 		{
 			if (!xr_strcmp(pl.second->getName(), login))
