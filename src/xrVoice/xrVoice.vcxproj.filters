@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="VoiceMain">
+      <UniqueIdentifier>{1f23bbc5-52ab-4b93-841b-35112c7f7016}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VivoxSDK">
+      <UniqueIdentifier>{b3f96c8a-d02c-4a82-8a8e-dfc11ce4f553}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="xrVoice.h">
+      <Filter>VoiceMain</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>VoiceMain</Filter>
+    </ClInclude>
+    <ClInclude Include="vivoxclientapi\accountname.h">
+      <Filter>VivoxSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="vivoxclientapi\audiodeviceid.h">
+      <Filter>VivoxSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="vivoxclientapi\audiodevicepolicy.h">
+      <Filter>VivoxSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="vivoxclientapi\channeltransmissionpolicy.h">
+      <Filter>VivoxSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="vivoxclientapi\clientconnection.h">
+      <Filter>VivoxSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="vivoxclientapi\debugclientapieventhandler.h">
+      <Filter>VivoxSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="vivoxclientapi\easy.h">
+      <Filter>VivoxSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="vivoxclientapi\iclientapieventhandler.h">
+      <Filter>VivoxSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="vivoxclientapi\memallocators.h">
+      <Filter>VivoxSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="vivoxclientapi\types.h">
+      <Filter>VivoxSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="vivoxclientapi\uri.h">
+      <Filter>VivoxSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="vivoxclientapi\util.h">
+      <Filter>VivoxSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="vivoxclientapi\vivoxclientsdk.h">
+      <Filter>VivoxSDK</Filter>
+    </ClInclude>
+    <ClInclude Include="vivoxclientapi\windowsinvokeonuithread.h">
+      <Filter>VivoxSDK</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="xrVoice.cpp">
+      <Filter>VoiceMain</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>VoiceMain</Filter>
+    </ClCompile>
+    <ClCompile Include="vivoxclientapi\accountname.cpp">
+      <Filter>VivoxSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="vivoxclientapi\audiodeviceid.cpp">
+      <Filter>VivoxSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="vivoxclientapi\clientconnection.cpp">
+      <Filter>VivoxSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="vivoxclientapi\debugclientapieventhandler.cpp">
+      <Filter>VivoxSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="vivoxclientapi\easy.cpp">
+      <Filter>VivoxSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="vivoxclientapi\memallocators.cpp">
+      <Filter>VivoxSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="vivoxclientapi\uri.cpp">
+      <Filter>VivoxSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="vivoxclientapi\util.cpp">
+      <Filter>VivoxSDK</Filter>
+    </ClCompile>
+    <ClCompile Include="vivoxclientapi\vivoxclientsdk.cpp">
+      <Filter>VivoxSDK</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
