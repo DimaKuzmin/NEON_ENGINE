@@ -30,6 +30,8 @@ public:
 	virtual bool 	IR_UIOnKeyboardPress	(int dik);
 	virtual bool 	IR_UIOnKeyboardRelease	(int dik);
 	virtual void	SetClGame				(game_cl_GameState* g);
+
+	virtual void	Render();
 protected:
 	CUIDemoPlayControl*			m_pDemoPlayControl;
 	CUIServerInfo*				m_pServerInfo;

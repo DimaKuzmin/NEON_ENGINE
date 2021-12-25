@@ -31,6 +31,8 @@
 BOOL	b_toggle_weapon_aim		= FALSE;
 extern CUIXml*	pWpnScopeXml;
 
+ENGINE_API extern float psHUD_FOV_def;
+
 CWeapon::CWeapon()
 {
 	SetState				(eHidden);
@@ -76,6 +78,8 @@ CWeapon::CWeapon()
 	m_crosshair_inertion	= 0.f;
 	m_cur_scope				= NULL;
 	m_bRememberActorNVisnStatus = false;
+
+	m_nearwall_last_hud_fov = psHUD_FOV_def;
 }
 
 CWeapon::~CWeapon		()
@@ -427,6 +431,8 @@ void CWeapon::Load		(LPCSTR section)
 	}
 	*/
 
+	LoadModParams(section);
+
 	bUseAltScope = bLoadAltScopesParams(section);
 
 //	Msg("Load Scopes [%s]", bUseAltScope ? "true" : "false");
@@ -747,6 +753,8 @@ void CWeapon::OnH_B_Independent	(bool just_before_destroy)
 	m_zoom_params.m_bIsZoomModeNow	= false;
 	UpdateXForm					();
 
+	m_nearwall_last_hud_fov = psHUD_FOV_def;
+
 }
 
 void CWeapon::OnH_A_Independent	()
@@ -819,6 +827,8 @@ void CWeapon::OnH_B_Chield		()
 
 	OnZoomOut					();
 	m_set_next_ammoType_on_reload = undefined_ammo_type;
+
+	m_nearwall_last_hud_fov = psHUD_FOV_def;
 }
 
 extern u32 hud_adj_mode;
@@ -2140,4 +2150,50 @@ const shared_str CWeapon::GetScopeName() const
 	{
 		return pSettings->r_string(m_scopes[m_cur_scope], "scope_name");
 	}
+}
+
+#include "HUDManager.h"
+
+float CWeapon::GetHudFov()
+{
+
+	return 1.0f;
+
+	// Рассчитываем HUD FOV от бедра (с учётом упирания в стены)
+	if (ParentIsActor() && Level().CurrentViewEntity() == H_Parent())
+	{
+		// Получаем расстояние от камеры до точки в прицеле
+		collide::rq_result& RQ = HUD().GetCurrentRayQuery();
+		float dist = RQ.range;
+
+		// Интерполируем расстояние в диапазон от 0 (min) до 1 (max)
+		clamp(dist, m_nearwall_dist_min, m_nearwall_dist_max);
+		float fDistanceMod =
+			((dist - m_nearwall_dist_min) / (m_nearwall_dist_max - m_nearwall_dist_min)); // 0.f ... 1.f
+
+		// Рассчитываем базовый HUD FOV от бедра
+		float fBaseFov = psHUD_FOV_def + m_hud_fov_add_mod;
+		clamp(fBaseFov, 0.0f, FLT_MAX);
+
+		// Плавно высчитываем итоговый FOV от бедра
+		float src = m_nearwall_speed_mod * Device.fTimeDelta;
+		clamp(src, 0.f, 1.f);
+
+		float fTrgFov = m_nearwall_target_hud_fov + fDistanceMod * (fBaseFov - m_nearwall_target_hud_fov);
+		m_nearwall_last_hud_fov = m_nearwall_last_hud_fov * (1 - src) + fTrgFov * src;
+	}
+	return m_nearwall_last_hud_fov;
+	 
+}
+
+void CWeapon::LoadModParams(LPCSTR section)
+{
+	// Модификатор для HUD FOV от бедра
+	m_hud_fov_add_mod = READ_IF_EXISTS(pSettings, r_float, section, "hud_fov_addition_modifier", 0.f);
+
+	// Параметры изменения HUD FOV, когда игрок стоит вплотную к стене
+	m_nearwall_dist_min = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_min", 0.5f);
+	m_nearwall_dist_max = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_dist_max", 1.f);
+	m_nearwall_target_hud_fov = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_target_hud_fov", 0.27f);
+	m_nearwall_speed_mod = READ_IF_EXISTS(pSettings, r_float, section, "nearwall_speed_mod", 10.f);
 }

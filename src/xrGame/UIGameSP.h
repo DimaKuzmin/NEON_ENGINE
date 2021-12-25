@@ -26,9 +26,6 @@ public:
 
 	void				ChangeLevel				(GameGraph::_GRAPH_ID game_vert_id, u32 level_vert_id, Fvector pos, Fvector ang, Fvector pos2, Fvector ang2, bool b, const shared_str& message, bool b_allow_change_level);
 
-#ifdef DEBUG
-	virtual void		Render					();
-#endif
 	CChangeLevelWnd*	UIChangeLevelWnd;
 
 	SDrawStaticStruct*	m_game_objective;

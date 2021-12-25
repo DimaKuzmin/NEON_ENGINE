@@ -14,10 +14,8 @@
 #include "../xrEngine/xr_input.h"
 #include "ui_base.h"
 
-#ifdef DEBUG
-	CAttachableItem*	CAttachableItem::m_dbgItem = NULL;
-#endif
-
+CAttachableItem*	CAttachableItem::m_dbgItem = NULL;
+ 
 CPhysicsShellHolder &CAttachableItem::object	() const
 {
 	return				(item().object());
@@ -130,7 +128,7 @@ void CAttachableItem::afterDetach		()
 	object().processing_deactivate	();
 }
 
-#ifdef DEBUG
+ 
 float ATT_ITEM_MOVE_CURR = 0.01f;
 float ATT_ITEM_ROT_CURR = 0.1f;
 
@@ -139,7 +137,11 @@ float ATT_ITEM_ROT_STEP = 0.01f;
 
 void attach_adjust_mode_keyb(int dik)
 {
+
+
 	if(!CAttachableItem::m_dbgItem)	return;
+
+//	Msg("[ATTACH] key [%d]", dik);
 
 	bool b_move		= !!(pInput->iGetAsyncKeyState(DIK_LSHIFT));
 	bool b_rot		= !!(pInput->iGetAsyncKeyState(DIK_LMENU));
@@ -217,4 +219,4 @@ void attach_draw_adjust_mode()
 	xr_sprintf(_text, "attach_angle_offset IS [%3.3f][%3.3f][%3.3f]", _ang.x, _ang.y, _ang.z);
 	F->OutNext			(_text);
 }
-#endif // #ifdef DEBUG
+ 

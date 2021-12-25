@@ -7,6 +7,8 @@
 #include "Level.h"
 #include "game_cl_mp.h"
 
+#include "attachable_item.h"
+
 UIGameMP::UIGameMP() :
 	m_pDemoPlayControl(NULL),
 	m_pServerInfo(NULL),
@@ -14,6 +16,11 @@ UIGameMP::UIGameMP() :
 	m_game(NULL)
 {
 }
+
+void attach_adjust_mode_keyb(int dik);
+void attach_draw_adjust_mode();
+void hud_adjust_mode_keyb(int dik);
+void hud_draw_adjust_mode();
 
 UIGameMP::~UIGameMP()
 {
@@ -47,6 +54,12 @@ bool UIGameMP::IR_UIOnKeyboardPress(int dik)
 		m_game->AddRewardTask(0); //mp_award_massacre
 	}
 #endif
+
+//	Msg("[UIGameMP] key [%d]", dik);
+
+	hud_adjust_mode_keyb(dik);
+	attach_adjust_mode_keyb(dik);
+
 	return inherited::IR_UIOnKeyboardPress(dik);
 }
 
@@ -127,6 +140,14 @@ void UIGameMP::SetClGame(game_cl_GameState* g)
 	m_pAchivementIdicator->SetAutoDelete(true);
 	m_window->AttachChild	(m_pAchivementIdicator);
 	
+}
+
+void UIGameMP::Render()
+{
+	//Attach DEBUG
+	inherited::Render();
+	hud_draw_adjust_mode();
+	attach_draw_adjust_mode();
 }
 
 void UIGameMP::SetServerLogo(u8 const * data_ptr, u32 data_size)

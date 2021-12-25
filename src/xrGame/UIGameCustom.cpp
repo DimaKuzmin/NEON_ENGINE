@@ -131,6 +131,8 @@ void CUIGameCustom::Render()
 	m_pMessagesWnd->Draw();
 
 	DoRenderDialogs();
+
+
 }
 
 SDrawStaticStruct* CUIGameCustom::AddCustomStatic(LPCSTR id, bool bSingleInstance)
@@ -568,3 +570,5 @@ void CUIGameCustom::StartCarBody(CInventoryOwner* pActorInv, CInventoryBox* pBox
 	m_ActorMenu->SetMenuMode(mmDeadBodySearch);
 	m_ActorMenu->ShowDialog(true);
 }
+
+

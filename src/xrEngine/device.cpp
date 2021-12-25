@@ -572,7 +572,7 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 {
 	u16 fActive						= LOWORD(wParam);
 	BOOL fMinimized					= (BOOL) HIWORD(wParam);
-	BOOL bActive					= ((fActive!=WA_INACTIVE) && (!fMinimized))?TRUE:FALSE;
+	BOOL bActive = true;// ((fActive != WA_INACTIVE) && (!fMinimized)) ? TRUE : FALSE;
 	
 	if (bActive!=Device.b_is_Active)
 	{
@@ -582,19 +582,16 @@ void CRenderDevice::OnWM_Activate(WPARAM wParam, LPARAM lParam)
 		{
 			Device.seqAppActivate.Process(rp_AppActivate);
 			app_inactive_time		+= TimerMM.GetElapsed_ms() - app_inactive_time_start;
-
-#ifndef DEDICATED_SERVER
-#	ifdef INGAME_EDITOR
-			if (!editor())
-#	endif // #ifdef INGAME_EDITOR
-				ShowCursor			(FALSE);
-#endif // #ifndef DEDICATED_SERVER
-		}else	
+			ShowCursor			(FALSE);
+		}
+		else	
 		{
 			app_inactive_time_start	= TimerMM.GetElapsed_ms();
 			Device.seqAppDeactivate.Process(rp_AppDeactivate);
 			ShowCursor				(TRUE);
-		}
+		} 
+
+
 	}
 }
 

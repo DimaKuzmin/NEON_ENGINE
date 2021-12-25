@@ -72,7 +72,8 @@ extern	u64		g_qwStartGameTime;
 extern	u64		g_qwEStartGameTime;
 
 ENGINE_API
-extern	float	psHUD_FOV;
+//extern	float	psHUD_FOV;
+extern float psHUD_FOV_def;
 extern	float	psSqueezeVelocity;
 extern	int		psLUA_GCSTEP;
 
@@ -1510,6 +1511,8 @@ struct CCC_DbgBullets : public CCC_Integer {
 	}
 };
 
+#endif
+
 #include "attachable_item.h"
 #include "attachment_owner.h"
 #include "InventoryOwner.h"
@@ -1520,7 +1523,8 @@ public		:
 	CCC_TuneAttachableItem(LPCSTR N):IConsole_Command(N){};
 	virtual void	Execute	(LPCSTR args)
 	{
-		if( CAttachableItem::m_dbgItem){
+		if( CAttachableItem::m_dbgItem)
+		{
 			CAttachableItem::m_dbgItem = NULL;	
 			Msg("CCC_TuneAttachableItem switched to off");
 			return;
@@ -1534,7 +1538,8 @@ public		:
 		if(itm)
 		{
 			CAttachableItem::m_dbgItem = itm;
-		}else
+		}
+		else
 		{
 			CInventoryOwner* iowner = smart_cast<CInventoryOwner*>(obj);
 			PIItem active_item = iowner->m_inventory->ActiveItem();
@@ -1554,6 +1559,7 @@ public		:
 	}
 };
 
+#ifdef DEBUG
 class CCC_Crash : public IConsole_Command {
 public:
 	CCC_Crash(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
@@ -1855,7 +1861,7 @@ void CCC_RegisterCommands()
 
  
 	CMD4(CCC_Float, "fov", &g_fov, 5.0f, 120.0f);
-	CMD4(CCC_Float,	"hud_fov",	&psHUD_FOV,		0.1f,	1.0f);
+	CMD4(CCC_Float,	"hud_fov",	&psHUD_FOV_def,		0.1f,	1.0f);
  
 
 	
@@ -1971,11 +1977,13 @@ CMD4(CCC_Integer,			"hit_anims_tune",						&tune_hit_anims,		0, 1);
 	
 	CMD1(CCC_ShowMonsterInfo,	"ai_monster_info");
 	CMD1(CCC_DebugFonts,		"debug_fonts");
-	CMD1(CCC_TuneAttachableItem,"dbg_adjust_attachable_item");
+	
 
 
 	CMD1(CCC_ShowAnimationStats,"ai_show_animation_stats");
 #endif // DEBUG
+
+	CMD1(CCC_TuneAttachableItem, "dbg_adjust_attachable_item");
 	
 #ifndef MASTER_GOLD
 	CMD3(CCC_Mask,				"ai_ignore_actor",		&psAI_Flags,	aiIgnoreActor);

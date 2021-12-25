@@ -87,11 +87,15 @@ public:
 
 protected:
 	int oldAnim = 0;
-
 	int InputAnim = 0;
 	int OutAnim = 0;
 	int MidAnim = 0;
 
+	u32 selectedID = 0;
+	u32 sSndID = 0;
+	ref_sound selected;
+
+	bool start_sel = false;
 	bool InPlay = true;
 	bool OutPlay = true;
 	bool MidPlay = true;
@@ -331,12 +335,17 @@ public:
 	void					SelectScriptAnimation ();
 
 	void					soundPlay();
+	
+	void					ReciveSoundPlay(NET_Packet packet);
+	void					ReciveAnimationPacket(NET_Packet& packet);
+	void					ReciveActivateItem(NET_Packet& packet);
+
+	void					SendSoundPlay(u32 ID, bool Activate);
 	void					SendAnimationToServer(MotionID motion);
 	void					SendActivateItem(shared_str item, bool activate);
 
 	void					script_anim(MotionID exit_animation, PlayCallback Callback, LPVOID CallbackParam);
-	void					ReciveAnimationPacket(NET_Packet& packet);
-	void					ReciveActivateItem(NET_Packet& packet);
+
 	void					g_SetSprintAnimation(u32 mstate_rl,MotionID &head,MotionID &torso,MotionID &legs);
 public:
 	virtual void			OnHUDDraw			(CCustomHUD* hud);

@@ -4,10 +4,6 @@
 #include "level.h"
 #include "../xrEngine/xr_input.h"
 
-#ifdef DEBUG
-#include "attachable_item.h"
-#endif
-
 #include "game_cl_Single.h"
 #include "xr_level_controller.h"
 #include "actorcondition.h"
@@ -128,14 +124,6 @@ bool CUIGameSP::IR_UIOnKeyboardPress(int dik)
 
 	return false;
 }
-#ifdef DEBUG
-void CUIGameSP::Render()
-{
-	inherited::Render();
-	hud_draw_adjust_mode();
-	attach_draw_adjust_mode();
-}
-#endif
  
 extern ENGINE_API BOOL bShowPauseString;
 void CUIGameSP::ChangeLevel(	GameGraph::_GRAPH_ID game_vert_id, 

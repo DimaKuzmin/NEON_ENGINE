@@ -41,9 +41,23 @@ public:
 	bool			bLoadAltScopesParams(LPCSTR section);
 	void			LoadOriginalScopesParams(LPCSTR section);
 	void			LoadCurrentScopeParams(LPCSTR section);
+	
+	// SWM3.0 hud collision
+	float					m_hud_fov_add_mod;
+	float					m_nearwall_dist_max;
+	float					m_nearwall_dist_min;
+	float					m_nearwall_last_hud_fov;
+	float					m_nearwall_target_hud_fov;
+	float					m_nearwall_speed_mod;
+
+	float					GetHudFov();
+	void					LoadModParams(LPCSTR section);
+	
 	//обновление видимости для косточек аддонов
 	void			UpdateAltScope();
 	shared_str		GetNameWithAttachment();
+
+
 
 	// Generic
 	virtual void			Load				(LPCSTR section);

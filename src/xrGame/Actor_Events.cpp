@@ -336,6 +336,11 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 		{
 			ReciveActivateItem(P);
 		}	break;
+
+		case GE_ACTOR_SND_ACTIVATE:
+		{
+			ReciveSoundPlay(P);
+		}	break;
 	}
 }
 

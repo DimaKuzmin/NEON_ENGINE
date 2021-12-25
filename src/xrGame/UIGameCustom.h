@@ -6,6 +6,8 @@
 #include "gametype_chooser.h"
 #include "UIDialogHolder.h"
 #include "../xrEngine/CustomHUD.h"
+
+#include "attachable_item.h"
 // refs
 class CUI;
 class CTeamBaseZone;
@@ -157,6 +159,7 @@ public:
 	void				StartTrade(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner);
 	void				StartCarBody(CInventoryOwner* pActorInv, CInventoryOwner* pOtherOwner);
 	void				StartCarBody(CInventoryOwner* pActorInv, CInventoryBox* pBox);
+
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 }; // class CUIGameCustom

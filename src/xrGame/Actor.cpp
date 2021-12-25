@@ -1169,9 +1169,10 @@ void CActor::UpdateCL	()
 			psHUD_Flags.set( HUD_CROSSHAIR_RT2, B);			
 			psHUD_Flags.set( HUD_DRAW_RT, pWeapon->show_indicators() );
 
-			g_pGamePersistent->m_pGShaderConstants->hud_params.x = false; //pWeapon->IsZoomed() && pWeapon->bInZoomRightNow();
+			g_pGamePersistent->m_pGShaderConstants->hud_params.x = pWeapon->IsZoomed() && pWeapon->bInZoomRightNow(); //pWeapon->IsZoomed() && pWeapon->bInZoomRightNow();
 			g_pGamePersistent->m_pGShaderConstants->hud_params.y = false;
 			g_pGamePersistent->m_pGShaderConstants->hud_params.z = pWeapon->IsZoomed() ;
+
 
 			//Msg("Zoomed %s", pWeapon->IsZoomed() && pWeapon->bInZoomRightNow() ? "true" : "false");
  

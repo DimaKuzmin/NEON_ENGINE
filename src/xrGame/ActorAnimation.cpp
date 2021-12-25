@@ -134,7 +134,7 @@ void SAnimState::Create(IKinematicsAnimated* K, LPCSTR base0, LPCSTR base1)
 
 void SActorStateAnimation::CreateAnimationsScripted(IKinematicsAnimated* K)
 {
-	Msg("Register ActorAnimation");
+	//Msg("Register ActorAnimation");
 
 	string_path filepath;
 	FS.update_path(filepath, "$game_config$", "actor_anims.ltx");
@@ -142,7 +142,7 @@ void SActorStateAnimation::CreateAnimationsScripted(IKinematicsAnimated* K)
 	
 	if (file && file->section_exist("animations"))
 	{
-		Msg("Register ActorAnimation Finded");
+		//Msg("Register ActorAnimation Finded");
 
 		u32 count = file->r_u32("animations", "count");
 
@@ -184,7 +184,7 @@ void SActorStateAnimation::CreateAnimationsScripted(IKinematicsAnimated* K)
 						xr_strcat(path_snd, tmp);
 
 						m_sound_Animation[i][snd_i].create(path_snd, st_Effect, 0);
-						Msg("Register Snd [%d] -> sndID[%d] path[%s]", i, snd_i, path_snd);
+					//	Msg("Register Snd [%d] -> sndID[%d] path[%s]", i, snd_i, path_snd);
 					}
 				}
 
@@ -211,7 +211,7 @@ void SActorStateAnimation::CreateAnimationsScripted(IKinematicsAnimated* K)
 					MotionID motionAnim = K->ID_Cycle_Safe(anim);
 
 					in_anims.m_animation_in[i][id] = motionAnim;
-					Msg("Register ActorAnimation IN[%d] -> [%d][%s]", i, id, anim);
+					//Msg("Register ActorAnimation IN[%d] -> [%d][%s]", i, id, anim);
 				}
 
 				in_anims.count[i] = countIN;  
@@ -225,7 +225,7 @@ void SActorStateAnimation::CreateAnimationsScripted(IKinematicsAnimated* K)
 					MotionID motionAnim = K->ID_Cycle_Safe(anim);
 
 					out_anims.m_animation_out[i][id] = motionAnim;
-					Msg("Register ActorAnimation OUT[%d] -> [%d][%s]", i, id, anim);
+					//Msg("Register ActorAnimation OUT[%d] -> [%d][%s]", i, id, anim);
 				}
 
 				out_anims.count[i] = countOUT;
@@ -239,7 +239,7 @@ void SActorStateAnimation::CreateAnimationsScripted(IKinematicsAnimated* K)
 					MotionID motionAnim = K->ID_Cycle_Safe(anim);
 
 					middle_anims.m_animation[i][id] = motionAnim;
-					Msg("Register ActorAnimation MIDDLE[%d] -> [%d][%s]", i, id, anim);
+					//Msg("Register ActorAnimation MIDDLE[%d] -> [%d][%s]", i, id, anim);
 				}
 
 				
@@ -446,7 +446,7 @@ void callbackAnim(CBlend* blend)
 	if (act)
 	{
 		act->CanChange = true;
-		Msg("Unfreaze Animation change [%d]", act->ID());
+		//Msg("Unfreaze Animation change [%d]", act->ID());
 	}
 }
 
@@ -545,7 +545,9 @@ void CActor::g_SetAnimation( u32 mstate_rl )
 	
 	if (!CanChange)
 	{
-		soundPlay();
+		if (!OutPlay && Level().CurrentControlEntity() == this)
+ 			soundPlay();
+
  		return;
 	}
 
@@ -862,6 +864,9 @@ void CActor::script_anim(MotionID Animation, PlayCallback Callback, LPVOID Callb
 
 }
 
+#include "script_sound.h"
+#include "ai_sounds.h"
+
 void CActor::ReciveAnimationPacket(NET_Packet& packet)
 {
 	MotionID motion;
@@ -892,21 +897,63 @@ void CActor::ReciveActivateItem(NET_Packet& packet)
 	packet.r_stringZ(item);
 	bool activate = packet.r_u8();
 
+	Msg("Activate Item [%s] -> [%d]", item.c_str(), activate);
+
 	CInventoryItem* inv_item = this->inventory().GetItemFromInventory(item.c_str());
 	CAttachableItem* item_attach = smart_cast<CAttachableItem*>(inv_item);
 		    
 	if (item_attach)
-	{
+	{	  
 		if (this->can_attach(inv_item) && activate)
 		{
+			this->attach(inv_item);
+		}
+
+		if (activate)
+		{
 			item_attach->enable(true);
-	 		this->attach(inv_item);
 		}
 		else
 		{
 			item_attach->enable(false);
 		}
 	}
+}
+
+void CActor::ReciveSoundPlay(NET_Packet packet)
+{
+	u32 snd_id, selectedID;
+	packet.r_u32(selectedID);
+	packet.r_u32(snd_id);
+	bool activate = packet.r_u8();
+
+	Msg("Recive SND Packet [%d] / act[%d]", snd_id, activate);
+
+	if (activate)
+	{
+		if (selected._p)
+		if (!selected._feedback())
+		{
+			selected.stop();
+		}
+
+		ref_sound snd_sel = m_anims->m_script.m_sound_Animation[selectedID][snd_id];
+
+		if (!snd_sel._feedback())
+		{
+			snd_sel.play_at_pos(this, Position(), false, 0);
+			selected = snd_sel;
+		}
+	}
+	else
+	{
+		if (selected._p)
+		if (selected._feedback())
+		{
+			selected.stop();
+		}
+	}
+
 }
 
 void CActor::SendAnimationToServer(MotionID motion)
@@ -922,52 +969,51 @@ void CActor::SendActivateItem(shared_str item, bool activate)
 	NET_Packet packet;
 	u_EventGen(packet, GE_ACTOR_ITEM_ACTIVATE, this->ID());
 	packet.w_stringZ(item);
-	packet.w_u8(activate);
+	packet.w_u8(activate ? 1 : 0);
 	u_EventSend(packet, net_flags(true, true));
 }
 
-#include "script_sound.h"
-#include "ai_sounds.h"
-
-u32 selectedID = 0;	
-
-u32 sSndID = 0;
-u32 oldSndID = 0;
-
-void CActor::soundPlay()
+void CActor::SendSoundPlay(u32 ID, bool Activate)
 {
-	u32 rnd = Random.randI(1, m_anims->m_script.m_rnd_snds[selectedID]);
-
-	if (sSndID == 0)
-	{
-		sSndID = rnd;
-	}
-
-	ref_sound snd_sel = m_anims->m_script.m_sound_Animation[selectedID][sSndID];
-	ref_sound snd_old = m_anims->m_script.m_sound_Animation[selectedID][oldSndID];
-	
-	if (snd_sel._p)
-	{
-		if (!snd_old._p)
-		{
-			snd_sel.play_at_pos(this, Position(), false, 0);
-			oldSndID = sSndID;
-		}
-		else
-		{
-			if (snd_old._p && !snd_old._feedback() && snd_sel._p && !snd_sel._feedback())
-			{
-				snd_sel.play_at_pos(this, Position(), false, 0);
-				oldSndID = sSndID;
-			}
-		}
-	}
-
-
+	NET_Packet packet;
+	u_EventGen(packet, GE_ACTOR_SND_ACTIVATE, this->ID());
+	packet.w_u32(selectedID);
+	packet.w_u32(ID);
+	packet.w_u8(Activate);
+	u_EventSend(packet, net_flags(true, true));
 }
 
 
+void CActor::soundPlay()
+{
+	if (!InPlay)
+	{
+		return;
+	}
+	
+	u32 rnd = Random.randI(1, m_anims->m_script.m_rnd_snds[selectedID]);
 
+	sSndID = rnd;
+
+	if (!start_sel)
+	{
+ 		ref_sound snd_sel = m_anims->m_script.m_sound_Animation[selectedID][sSndID];
+		if (!snd_sel._feedback())
+		{
+			snd_sel.play_at_pos(this, Position(), false, 0);
+			selected = snd_sel;
+			SendSoundPlay(sSndID, 1);
+		}
+		start_sel = true;
+	}
+ 		
+	if (!selected._feedback())
+	{
+ 		selected.stop();
+  		start_sel = false;
+	}
+}
+ 
 void CActor::SelectScriptAnimation()
 {
 	if (oldAnim != AnimCurrent)
@@ -1003,7 +1049,7 @@ void CActor::SelectScriptAnimation()
 	OutPlay = false;
 	InPlay	= false;
 	
-	Msg("Anim counts INPUT[%d]", countIN);
+	//Msg("Anim counts INPUT[%d]", countIN);
 
 	MotionID script_BODY;
 	
@@ -1041,14 +1087,15 @@ void CActor::SelectScriptAnimation()
 			if (item)
 			{
 				item->enable(true);
-				 
+				SendActivateItem(attach, true);
+
 				bool att = this->can_attach(inv_item);
 				
 				if (att)
 				{		   
 					//Msg("Anim Attach Item [%s] Attached END", attach.c_str());
 					this->attach(inv_item);
-					SendActivateItem(attach, true);
+
 				}
 				else
 				{
@@ -1152,6 +1199,15 @@ void CActor::SelectScriptAnimation()
 			{
 				item->enable(false);
 				SendActivateItem(attach, false);
+			}
+		}
+
+		for (auto snd : m_anims->m_script.m_sound_Animation[selectedID])
+		{
+			if (snd._feedback())
+			{
+				snd.stop();
+				SendSoundPlay(selectedID, 0);
 			}
 		}
 	}

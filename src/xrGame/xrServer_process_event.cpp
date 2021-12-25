@@ -409,6 +409,7 @@ void xrServer::Process_event	(NET_Packet& P, ClientID sender)
 		game->signal_Syncronize();
 	}break;
 
+	case GE_ACTOR_SND_ACTIVATE:
 	case GE_ACTOR_ITEM_ACTIVATE:
 	case GE_ACTOR_ANIMATION_SCRIPT:
 	{
