@@ -636,6 +636,9 @@ bool CInventory::Action(u16 cmd, u32 flags)
 {
 	CActor *pActor = smart_cast<CActor*>(m_pOwner);
 	
+	if (pActor->MpSafeMODE() || !pActor->AnimationEnded())
+		return false;
+
 	if (pActor)
 	{
 		switch(cmd)
@@ -1366,7 +1369,8 @@ void CInventory::SetSlotsBlocked(u16 mask, bool bBlock)
 	if (bBlock)
 	{
 		TryDeactivateActiveSlot();	
-	} else
+	} 
+	else
 	{
 		TryActivatePrevSlot();
 	}
@@ -1432,18 +1436,16 @@ void CInventory::TryDeactivateActiveSlot	()
 void CInventory::BlockSlot(u16 slot_id)
 {
 	VERIFY(slot_id <= LAST_SLOT);
-	
+ 
 	++m_blocked_slots[slot_id];
 	
-	VERIFY2(m_blocked_slots[slot_id] < 5,
-		make_string("blocked slot [%d] overflow").c_str());	
+	VERIFY2(m_blocked_slots[slot_id] < 5, make_string("blocked slot [%d] overflow").c_str());	
 }
 
 void CInventory::UnblockSlot(u16 slot_id)
 {
 	VERIFY(slot_id <= LAST_SLOT);
-	VERIFY2(m_blocked_slots[slot_id] > 0,
-		make_string("blocked slot [%d] underflow").c_str());	
+	VERIFY2(m_blocked_slots[slot_id] > 0, make_string("blocked slot [%d] underflow").c_str());	
 	
 	--m_blocked_slots[slot_id];	
 }

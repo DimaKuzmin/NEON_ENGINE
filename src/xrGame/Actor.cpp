@@ -109,6 +109,7 @@ CActor::CActor() : CEntityAlive(),current_ik_cam_shift(0)
 
 	cameras[eacFreeLook]	= xr_new<CCameraLook>					(this);
 	cameras[eacFreeLook]->Load("actor_free_cam");
+
 	cameras[eacFixedLookAt]	= xr_new<CCameraFixedLook>				(this);
 	cameras[eacFixedLookAt]->Load("actor_look_cam");
 
@@ -246,6 +247,16 @@ bool CActor::MpInvisibility() const
 
 	game_PlayerState* ps = Game().GetPlayerByGameID(ID());
 	return (ps && ps->testFlag(GAME_PLAYER_MP_INVIS));
+}
+
+bool CActor::MpSafeMODE() const
+{
+	if (!g_Alive())
+		return false;
+
+	game_PlayerState* ps = Game().GetPlayerByGameID(ID());
+
+	return (ps && ps->testFlag(GAME_PLAYER_MP_SAFE_MODE));
 }
 
 bool CActor::MpAnimationMODE() const
@@ -439,7 +450,7 @@ void CActor::Load	(LPCSTR section )
 	}
  		
 
-	if (this == Level().CurrentEntity()) //--#SM+#-- ���������� ����� ���������� � ��������� [reset some render flags]
+	if (this == Level().CurrentEntity())
 	{
 		g_pGamePersistent->m_pGShaderConstants->m_blender_mode.set(0.f, 0.f, 0.f, 0.f);
 	}
@@ -863,6 +874,12 @@ void CActor::Die	(CObject* who)
 #endif // #ifdef DEBUG
 	inherited::Die		(who);
 
+
+	//ANIM MODE 
+	StopAllSNDs();
+ 
+
+
 	if (OnServer())
 	{	
 		u16 I = inventory().FirstSlot();
@@ -986,10 +1003,7 @@ void CActor::g_Physics			(Fvector& _accel, float jump, float dt)
 	if(m_hit_slowmo<0)			m_hit_slowmo = 0.f;
 
 	accel.mul					(1.f-m_hit_slowmo);
-
-	
-	
-
+   
 	if(g_Alive())
 	{
 		if(mstate_real&mcClimb&&!cameras[eacFirstEye]->bClampYaw)
@@ -1453,11 +1467,17 @@ void CActor::shedule_Update	(u32 DT)
 	if (MpInvisibility())
 		setVisible(false);
 
+	if (!AnimationEnded())
+		cam_Set(eacLookAt);
+	//else
+	//	cam_Set(eacFirstEye);
+   
+	
 
 	//��� ����� ����� ����� �����
 	collide::rq_result& RQ				= HUD().GetCurrentRayQuery();
 
-	if(!input_external_handler_installed() && RQ.O && RQ.O->getVisible() &&  RQ.range<2.0f) 
+	if(!input_external_handler_installed() && RQ.O && RQ.O->getVisible() &&  RQ.range<4.0f) 
 	{
 		m_pObjectWeLookingAt			= smart_cast<CGameObject*>(RQ.O);
 		

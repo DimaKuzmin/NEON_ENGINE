@@ -339,6 +339,8 @@ void game_sv_GameState::net_Export_Update(NET_Packet& P, ClientID id_to, ClientI
 	net_Export_GameTime			(P);
 };
 
+#include "GamePersistent.h"
+
 void game_sv_GameState::net_Export_GameTime						(NET_Packet& P)
 {
 //#pragma todo("It should be done via single message, why always pass this data?")
@@ -349,6 +351,12 @@ void game_sv_GameState::net_Export_GameTime						(NET_Packet& P)
 	//Syncronize EnvironmentGameTime 
 	P.w_u64(GetEnvironmentGameTime());
 	P.w_float(GetEnvironmentGameTimeFactor());
+
+	
+	P.w_float(GamePersistent().Environment().wfx_time);
+	P.w_stringZ(GamePersistent().Environment().PrevioslyWeather);
+	P.w_stringZ(GamePersistent().Environment().CurrentWeatherName);
+
 //#endif
 };
 

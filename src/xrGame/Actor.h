@@ -108,9 +108,13 @@ public:
 			bool						MpGodMode					() const				;
 			bool						MpNoClip					() const				;
 			bool						MpInvisibility				() const				;
+			
+
+			bool						MpSafeMODE()	  const;
 			bool						MpAnimationMODE() const;
 
 			bool						AnimationEnded() const;
+			bool old_block_state = false;
 
 	virtual BOOL						AlwaysTheCrow				()						{ return TRUE; }
 
@@ -335,7 +339,8 @@ public:
 	void					SelectScriptAnimation ();
 
 	void					soundPlay();
-	
+	void					StopAllSNDs();
+
 	void					ReciveSoundPlay(NET_Packet packet);
 	void					ReciveAnimationPacket(NET_Packet& packet);
 	void					ReciveActivateItem(NET_Packet& packet);

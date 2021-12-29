@@ -169,6 +169,12 @@ void game_sv_freemp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 
  	game_PlayerState* ps = get_id(id_who);
 
+	if (ps)
+	{
+		ps->resetFlag(GAME_PLAYER_MP_SAFE_MODE);
+		ps->resetFlag(GAME_PLAYER_MP_ANIMATION_MODE);
+	}
+
 	if (Game().Type() == eGameIDFreeMp)
 	if (ps && !ps->testFlag(GAME_PLAYER_MP_SAVE_LOADED))
 	{
@@ -184,7 +190,6 @@ void game_sv_freemp::RespawnPlayer(ClientID id_who, bool NoSpectator)
 		LoadJson(ps);
 #endif
 		ps->setFlag(GAME_PLAYER_MP_SAVE_LOADED);
-		
  	}
 }
 

@@ -9,6 +9,7 @@ struct SAnimState
 	MotionID	legs_ls;
 	MotionID	legs_rs;
 	void		Create								(IKinematicsAnimated* K, LPCSTR base0, LPCSTR base1);
+
 };
 
 struct STorsoWpn{
@@ -48,6 +49,7 @@ struct SActorState
 	SAnimState		m_walk;
 	SAnimState		m_run;
 	STorsoWpn		m_torso[_total_anim_slots_];
+
 	MotionID		m_torso_idle;
 	MotionID		m_head_idle;
 
@@ -103,12 +105,55 @@ struct SActorStateAnimation
 
 	shared_str m_animation_attach[32];
 
-
-
-
 	void CreateAnimationsScripted(IKinematicsAnimated* K);
+};
 
 
+struct SAnimStateSafe
+{
+	MotionID	legs_fwd;
+	MotionID	legs_back;
+	MotionID	legs_ls;
+	MotionID	legs_rs;
+
+	void		CreateSafe(IKinematicsAnimated* K, LPCSTR base0, LPCSTR base1);
+
+};
+
+struct SAnimStateSprintSafe
+{
+	MotionID		legs_fwd;
+ 	MotionID		legs_ls;
+	MotionID		legs_rs;
+
+	MotionID		legs_jump_fwd;
+	MotionID		legs_jump_ls;
+	MotionID		legs_jump_rs;
+
+	void		CreateSafeSprint(IKinematicsAnimated* K);
+};
+
+struct SAnimTorsoStateSafe
+{
+	enum eMovingState { eIdleSafe, eWalkSafe, eRunSafe, eSprintSafe, eTotal };
+	MotionID	torso_moving_safe[eTotal];
+
+	void CreateTorsoSafe(IKinematicsAnimated* K, LPCSTR base0, LPCSTR base1);
+};
+
+struct SAnimSafeMotions
+{	
+	SAnimStateSafe  m_safe_run;
+	SAnimStateSafe  m_safe_walk;
+	SAnimStateSprintSafe  m_safe_sprint;
+
+	MotionID		m_torso_idle;
+	MotionID		m_head_idle;
+	MotionID		m_legs_idle;
+
+	SAnimTorsoStateSafe m_safe_torso[_total_anim_slots_];
+ 
+	void CreateSafeAnims(IKinematicsAnimated* K, LPCSTR base);
 };
 
 struct SActorMotions
@@ -120,10 +165,11 @@ struct SActorMotions
 	SActorSprintState	m_sprint;
 
 	SActorStateAnimation m_script;
+	SAnimSafeMotions     m_safe_mode;
+
 
 	void				Create(IKinematicsAnimated* K);
 };
-
 
 //vehicle anims
 struct	SVehicleAnimCollection
@@ -136,6 +182,7 @@ struct	SVehicleAnimCollection
 					SVehicleAnimCollection	();
 	void			Create				(IKinematicsAnimated* K,u16 num);
 };
+
 struct SActorVehicleAnims
 {
 	static const int TYPES_NUMBER=2;

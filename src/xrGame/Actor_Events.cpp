@@ -266,9 +266,10 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 
 	case GEG_PLAYER_WEAPON_HIDE_STATE:
 		{
-			u16 State		= P.r_u16();
+			u16		State	= P.r_u16();
 			BOOL	Set		= !!P.r_u8();
-			inventory().SetSlotsBlocked	(State, !!Set);
+
+			inventory().SetSlotsBlocked(State, !!Set);
 		}break;
 	case GE_MOVE_ACTOR:
 		{
@@ -341,6 +342,11 @@ void CActor::OnEvent(NET_Packet& P, u16 type)
 		{
 			ReciveSoundPlay(P);
 		}	break;
+
+		case GE_ACTOR_HIDE_ALL_STATE:
+		{
+			inventory().Activate(NO_ACTIVE_SLOT); 
+		}break;
 	}
 }
 

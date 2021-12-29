@@ -29,6 +29,7 @@ enum	EGameActions
 	kNIGHT_VISION,
 	kDETECTOR,
 	kAnimationMode,
+	kSafeMode,
 	kWPN_1,
 	kWPN_2,
 	kWPN_3,

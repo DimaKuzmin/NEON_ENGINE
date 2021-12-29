@@ -2847,14 +2847,129 @@ public:
 	}
 };
 
+class ÑÑÑ_StartSurge : public IConsole_Command
+{
+public:
+	ÑÑÑ_StartSurge(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+
+	virtual void Execute(LPCSTR args)
+	{
+		NET_Packet P;
+		P.w_begin(M_SCRIPT_EVENT);
+		P.w_u8(8);
+		P.w_u8(1);
+		
+		Level().Send(P, net_flags());
+
+	}
+};
+
+
+class ÑÑÑ_StartFallout : public IConsole_Command
+{
+public:
+	ÑÑÑ_StartFallout(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+
+	virtual void Execute(LPCSTR args)
+	{
+		NET_Packet P;
+		P.w_begin(M_SCRIPT_EVENT);
+		P.w_u8(8);
+		P.w_u8(2);
+
+		Level().Send(P, net_flags());
+
+	}
+};
+
+class ÑÑÑ_StartPsi : public IConsole_Command
+{
+public:
+	ÑÑÑ_StartPsi(LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = true; };
+
+	virtual void Execute(LPCSTR args)
+	{
+		NET_Packet P;
+		P.w_begin(M_SCRIPT_EVENT);
+		P.w_u8(8);
+		P.w_u8(3);
+
+		Level().Send(P, net_flags());
+
+	}
+};
+
+
+#include "Inventory.h"
+#include "Weapon.h"
+
+class CCC_WEAPON_POSITION : public IConsole_Command
+{
+public:
+	CCC_WEAPON_POSITION (LPCSTR N) : IConsole_Command(N) { bEmptyArgsHandled = false; };
+
+	virtual void Execute(LPCSTR args)
+	{
+		{
+			Fvector tmp;
+			Fvector pos, ypr;
+			LPCSTR val;
+
+			sscanf(args, "%s,%f,%f,%f", val, &tmp.x, &tmp.y, &tmp.z);
+
+			if (xr_strcmp("pos", val) == 0)
+			{
+				pos = tmp;
+			}
+			else
+			{
+				ypr = tmp;
+			}
+
+			if (CActor* act = smart_cast<CActor*>(Level().CurrentControlEntity())) 
+			{
+				PIItem item = act->inventory().ActiveItem();
+				
+				if (CWeapon* w = smart_cast<CWeapon*>(item))
+				{
+					
+					
+					Msg("Pos [%f][%f][%f]", pos.x, pos.y, pos.z);
+					if (pos.x == 0 && pos.y == 0 && pos.z == 0)
+					{
+						w->m_Offset.setHPB(ypr.x, ypr.y, ypr.z);
+						ypr.mul(PI / 180.f);
+					}
+					else
+						w->m_Offset.translate_over(pos);
+
+				}
+
+			}
+
+		}
+
+	}
+};
+   
 
 #include "cameralook.h"
 
 extern int AnimCurrent = 0;
 
+extern int EnableLogging;
+
 
 void register_mp_console_commands()
 {
+	CMD1(ÑÑÑ_StartSurge,    "adm_surge");
+	CMD1(ÑÑÑ_StartFallout,  "adm_fallout");
+	CMD1(ÑÑÑ_StartPsi,		"adm_psistorm");
+
+	CMD4(CCC_Integer, "weather_logging", &EnableLogging, 0, 1);
+	CMD1(CCC_WEAPON_POSITION, "weapon_offset");
+
+
 	CMD1(CCC_SpawnToInventory,		"sv_spawn_to_player_inv");
 	CMD1(CCC_SpawnToObjWithId,		"sv_spawn_to_obj_with_id");
 	CMD1(CCC_SpawnOnPosition,		"sv_spawn_on_position"	);

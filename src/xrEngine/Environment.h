@@ -267,6 +267,8 @@ public:
     shared_str				CurrentWeatherName;
 	shared_str				CurrentCycleName;
 
+	shared_str				PrevioslyWeather;
+
 	EnvsMap					WeatherCycles;
 	EnvsMap					WeatherFXs;
 	xr_vector<CEnvModifier>	Modifiers;
@@ -312,6 +314,7 @@ public:
     shared_str				GetWeather			()					{ return CurrentWeatherName;}
 	void					ChangeGameTime		(float game_time);
 	void					SetGameTime			(float game_time, float time_factor);
+	void					SetGameTimeClient	(float game_time, float time_factor);
 
 	void					OnDeviceCreate		();
 	void					OnDeviceDestroy		();

@@ -63,6 +63,8 @@ class CUIMpServerAdm :	public CUIWindow, public CUIWndCallback
 		CUICheckButton*		m_pFriendlyNamesCheck;
 		CUICheckButton*		m_pFriendlyIndicCheck;
 		CUICheckButton*		m_pBearerCantSprintCheck;
+
+		CUI3tButton*		m_atmosfear3;
 public:
 							CUIMpServerAdm();
 							~CUIMpServerAdm();
@@ -71,6 +73,7 @@ public:
 				void		ShowChangeWeatherBtns();
 				void		ShowChangeGameTypeBtns();
 				void		ShowChangeGameLimitsBtns();
+				void		ShowAtmosfear3();
 				void		OnBackBtn();
 				bool		IsBackBtnShown() {return m_pBackBtn->IsShown();};
 };

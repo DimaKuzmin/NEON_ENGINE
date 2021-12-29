@@ -254,16 +254,26 @@ void CEnvironment::ChangeGameTime(float game_time)
 
 void CEnvironment::SetGameTime(float game_time, float time_factor)
 {
+	/*
 #ifndef _EDITOR
 	if (m_paused) {
 		g_pGameLevel->SetEnvironmentGameTimeFactor	(iFloor(fGameTime*1000.f), fTimeFactor);
 		return;
 	}
 #endif
+	*/
+	
 	if (bWFX)
 		wfx_time			-= TimeDiff(fGameTime,game_time);
+	
 	fGameTime				= game_time;  
 	fTimeFactor				= time_factor;	
+}
+
+void CEnvironment::SetGameTimeClient(float game_time, float time_factor)
+{
+	fGameTime = game_time;
+	fTimeFactor = time_factor;
 }
 
 float CEnvironment::NormalizeTime(float tm)
@@ -287,6 +297,7 @@ void CEnvironment::SetWeather(shared_str name, bool forced)
 		}
         R_ASSERT3			(it!=WeatherCycles.end(),"Invalid weather name.",*name);
 		CurrentCycleName	= it->first;
+		PrevioslyWeather = CurrentWeatherName;
 		if (forced)			{Invalidate();			}
 		if (!bWFX){
 			CurrentWeather		= &it->second;
@@ -306,6 +317,10 @@ void CEnvironment::SetWeather(shared_str name, bool forced)
 bool CEnvironment::SetWeatherFX(shared_str name)
 {
 	if (bWFX)				return false;
+
+	if (!Current[0] || !Current[1])
+		return false;
+
 	if (name.size()){
 		EnvsMapIt it		= WeatherFXs.find(name);
 		R_ASSERT3			(it!=WeatherFXs.end(),"Invalid weather effect name.",*name);
@@ -357,6 +372,7 @@ bool CEnvironment::SetWeatherFX(shared_str name)
 		FATAL				("! Empty weather effect name");
 #endif
 	}
+
 	return true;
 }
 
@@ -419,13 +435,18 @@ void CEnvironment::SelectEnvs(float gt)
 		SelectEnvs		(CurrentWeather,Current[0],Current[1],gt);
     }else{
 		bool bSelect	= false;
-		if (Current[0]->exec_time>Current[1]->exec_time){
+		if (Current[0]->exec_time>Current[1]->exec_time)
+		{
 			// terminator
 			bSelect		= (gt>Current[1]->exec_time)&&(gt<Current[0]->exec_time);
-		}else{
+		}
+		else
+		{
 			bSelect		= (gt>Current[1]->exec_time);
 		}
-		if (bSelect){
+
+		if (bSelect)
+		{
 			Current[0]	= Current[1];
 			SelectEnv	(CurrentWeather,Current[1],gt);
 #ifdef WEATHER_LOGGING
@@ -437,21 +458,25 @@ void CEnvironment::SelectEnvs(float gt)
 
 int get_ref_count(IUnknown* ii)
 {
-	if(ii){
+	if(ii)
+	{
 		ii->AddRef();
 		return ii->Release();
-	}else
+	}
+	else
 	return 0;
 }
 
 void CEnvironment::lerp		(float& current_weight)
 {
-	if (bWFX&&(wfx_time<=0.f)) StopWFX();
+	if (bWFX && (wfx_time<=0.f) )
+		StopWFX();
 
 	SelectEnvs				(fGameTime);
-    VERIFY					(Current[0]&&Current[1]);
+    VERIFY					(Current[0] && Current[1]);
 
-	current_weight			= TimeWeight(fGameTime,Current[0]->exec_time,Current[1]->exec_time);
+	current_weight			= TimeWeight(fGameTime, Current[0]->exec_time, Current[1]->exec_time);
+	
 	// modifiers
 	CEnvModifier			EM;
 	EM.far_plane			= 0;
@@ -497,6 +522,7 @@ void CEnvironment::OnFrame()
 	lerp					(current_weight);
 
 	//	Igor. Dynamic sun position. 
+	if (false)
 	if ( !::Render->is_sun_static())
 		calculate_dynamic_sun_dir();
 

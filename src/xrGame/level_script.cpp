@@ -160,12 +160,8 @@ void set_time_factor(float time_factor)
 	if (!OnServer())
 		return;
 
-#ifdef INGAME_EDITOR
-	if (Device.editor())
-		return;
-#endif // #ifdef INGAME_EDITOR
-
 	Level().Server->game->SetGameTimeFactor(time_factor);
+	Level().Server->game->SetEnvironmentGameTimeFactor(time_factor);
 }
 
 float get_time_factor()

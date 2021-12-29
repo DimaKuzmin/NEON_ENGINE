@@ -164,7 +164,12 @@ BOOL CLevel::Load_GameSpecific_After()
 		
 	BlockCheatLoad();
 
-	g_pGamePersistent->Environment().SetGameTime	(GetEnvironmentGameDayTimeSec(),game->GetEnvironmentGameTimeFactor());
+	if (OnServer())
+		g_pGamePersistent->Environment().SetGameTime(GetEnvironmentGameDayTimeSec(), game->GetEnvironmentGameTimeFactor());
+	else
+		g_pGamePersistent->Environment().SetGameTimeClient(GetEnvironmentGameDayTimeSec(), game->GetEnvironmentGameTimeFactor());
+
+	//g_pGamePersistent->Environment().SetGameTime	(GetEnvironmentGameDayTimeSec(), game->GetEnvironmentGameTimeFactor());
 
 	return TRUE;
 }

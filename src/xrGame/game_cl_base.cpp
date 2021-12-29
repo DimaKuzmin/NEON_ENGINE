@@ -50,6 +50,8 @@ game_cl_GameState::~game_cl_GameState()
 	xr_delete					(m_upgrade_manager);
 }
 
+extern int EnableLogging = 0;
+
 void	game_cl_GameState::net_import_GameTime		(NET_Packet& P)
 {
 	u64				GameTime;
@@ -64,10 +66,72 @@ void	game_cl_GameState::net_import_GameTime		(NET_Packet& P)
 	float			EnvironmentTimeFactor;
 	P.r_float		(EnvironmentTimeFactor);
 
+	float wfx_time;
+	shared_str previosly, weather_name;
+
+	P.r_float(wfx_time);
+	P.r_stringZ(previosly);
+	P.r_stringZ(weather_name);
+
+
 	u64 OldTime = Level().GetEnvironmentGameTime();
 	Level().SetEnvironmentGameTimeFactor	(GameEnvironmentTime,EnvironmentTimeFactor);
-	if (OldTime > GameEnvironmentTime)
-		GamePersistent().Environment().Invalidate();
+	
+	//if (OnServer())
+	//if (OldTime > GameEnvironmentTime)
+	//	GamePersistent().Environment().Invalidate();
+
+	if (EnableLogging == 1 && g_pGamePersistent && GamePersistent().Environment().Current[1])
+	{
+		Msg("Server previosly[%s] / weather [%s] / wfx_time [%f]", previosly.c_str(), weather_name.c_str(), wfx_time);
+
+		Msg("Client previosly[%s] / weather [%s] / wfx_time [%f]",
+			GamePersistent().Environment().PrevioslyWeather.c_str(),
+			GamePersistent().Environment().CurrentWeatherName.c_str(),
+			GamePersistent().Environment().wfx_time);
+
+		Msg("Current_0: [%s] / Current_1: [%s]", GamePersistent().Environment().Current[0]->m_identifier.c_str(), GamePersistent().Environment().Current[1]->m_identifier.c_str());
+	}
+
+	if (OnClient() && Device.dwFrame % 100 == 0 && g_pGamePersistent)
+	{
+		if (wfx_time <= 0 && GamePersistent().Environment().PrevioslyWeather.size() == 0 && previosly.size() > 0)
+		{
+			Msg("синхра рассинхры 1 игрового часа");
+			GamePersistent().Environment().Invalidate();
+			GamePersistent().Environment().SetWeather(previosly);
+			GamePersistent().Environment().SetWeather(weather_name);
+		}
+ 
+		GamePersistent().Environment().wfx_time = wfx_time;
+
+		if (wfx_time > 0)
+		{
+			if (xr_strcmp(GamePersistent().Environment().CurrentWeatherName, weather_name))
+			{
+				GamePersistent().Environment().StartWeatherFXFromTime(weather_name, wfx_time);
+				Msg("Set Weather FX [%s] from time [%f]", weather_name.c_str(), wfx_time);
+			}
+		}
+		else 
+		if (xr_strcmp(GamePersistent().Environment().CurrentWeatherName, weather_name))
+		{
+			GamePersistent().Environment().SetWeather(previosly);
+			GamePersistent().Environment().SetWeather(weather_name);
+			Msg("Set Weather [%s]", weather_name.c_str());
+		}
+
+		/*
+		if (wfx_time <= 0 && GamePersistent().Environment().PrevioslyWeather.size() > 0)
+		if (xr_strcmp(previosly.c_str(), GamePersistent().Environment().PrevioslyWeather.c_str()))
+		{
+			Msg("синхра рассинхры не совпадение с погодой сервера");
+			GamePersistent().Environment().Invalidate();
+			GamePersistent().Environment().SetWeather(previosly);
+			GamePersistent().Environment().SetWeather(weather_name);
+		}
+		*/
+	}
 }
 
 struct not_exsiting_clients_deleter

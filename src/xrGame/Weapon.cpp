@@ -108,7 +108,8 @@ void CWeapon::UpdateXForm	()
 	// Get access to entity and its visual
 	CEntityAlive*			E = smart_cast<CEntityAlive*>(H_Parent());
 	
-	if (!E) {
+	if (!E)
+	{
 		if (!IsGameTypeSingle())
 			UpdatePosition	(H_Parent()->XFORM());
 
@@ -1551,6 +1552,7 @@ void CWeapon::reload			(LPCSTR section)
 	}
 
 	m_StrapOffset			= m_Offset;
+
 	if (pSettings->line_exist(section,"strap_position") && pSettings->line_exist(section,"strap_orientation")) {
 		Fvector				pos,ypr;
 		pos					= pSettings->r_fvector3		(section,"strap_position");
@@ -2156,9 +2158,6 @@ const shared_str CWeapon::GetScopeName() const
 
 float CWeapon::GetHudFov()
 {
-
-	return 1.0f;
-
 	// Рассчитываем HUD FOV от бедра (с учётом упирания в стены)
 	if (ParentIsActor() && Level().CurrentViewEntity() == H_Parent())
 	{

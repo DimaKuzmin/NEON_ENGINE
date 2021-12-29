@@ -126,10 +126,10 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)\..\binares\$(Platform)-$(Configuration)\</OutDir>
+    <OutDir>A:\Games\OMP Engine\bins\</OutDir>
     <IntDir>$(SolutionDir)\..\intermediate\$(Platform)-$(Configuration)\$(ProjectName)\</IntDir>
-    <LibraryPath>C:\Users\dima\Documents\GitHub\neon\src\\..\binares\Win32-Release\;C:\Users\dima\Documents\GitHub\neon\src\xrVoice\SDK\Libraries\Release\Win32;$(LibraryPath)</LibraryPath>
     <IncludePath>C:\Users\dima\Documents\GitHub\neon\src\xrVoice\SDK\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(OutDir)LIBS\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>

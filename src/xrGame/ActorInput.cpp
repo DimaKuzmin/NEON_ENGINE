@@ -48,53 +48,72 @@ void CActor::IR_OnKeyboardPress(int cmd)
 	switch (cmd)
 	{
 		case kWPN_FIRE:
+		{
+			if( (mstate_wishful & mcLookout) && CheckGameFlag(F_DISABLE_WEAPON_FIRE_WHEN_LOOKOUT)) return;
+
+			u16 slot = inventory().GetActiveSlot();
+			if(inventory().ActiveItem() && (slot==INV_SLOT_3 || slot==INV_SLOT_2) )
+				mstate_wishful &=~mcSprint;
+			//-----------------------------
+			if (OnServer())
 			{
-				if( (mstate_wishful & mcLookout) && CheckGameFlag(F_DISABLE_WEAPON_FIRE_WHEN_LOOKOUT)) return;
+				NET_Packet P;
+				P.w_begin(M_PLAYER_FIRE); 
+				P.w_u16(ID());
+				u_EventSend(P);
+			}
+		}break;
 
-				u16 slot = inventory().GetActiveSlot();
-				if(inventory().ActiveItem() && (slot==INV_SLOT_3 || slot==INV_SLOT_2) )
-					mstate_wishful &=~mcSprint;
-				//-----------------------------
-				if (OnServer())
-				{
-					NET_Packet P;
-					P.w_begin(M_PLAYER_FIRE); 
-					P.w_u16(ID());
-					u_EventSend(P);
-				}
-			}break;
-
-			case kAnimationMode:
+		case kAnimationMode:
+		{
+			if (OnClient())
 			{
-				if (OnClient())
+				game_PlayerState* ps = Game().GetPlayerByGameID(ID());
+
+				if (ps)
 				{
-					game_PlayerState* ps = Game().GetPlayerByGameID(ID());
-
-					if (ps)
-					{
-						bool mode = ps->testFlag(GAME_PLAYER_MP_ANIMATION_MODE);
-						Msg("AnimMode[%s]", !mode ? "true" : "false");
-					}
-
-					NET_Packet packet;
-					Level().game->u_EventGen(packet, GE_KEY_PRESSED, this->ID());
-					Level().game->u_EventSend(packet);
+					bool mode = ps->testFlag(GAME_PLAYER_MP_ANIMATION_MODE);
+					Msg("Anim Mode[%s]", !mode ? "true" : "false");
 				}
 
-			}break;
+				NET_Packet packet;
+				Level().game->u_EventGen(packet, GE_KEY_PRESSED, this->ID());
+				packet.w_u8(1);
+				Level().game->u_EventSend(packet);
+			}
+
+		}break;
+
+		case kSafeMode:
+		{
+			if (OnClient())
+			{
+				game_PlayerState* ps = Game().GetPlayerByGameID(ID());
+
+				if (ps)
+				{
+					bool mode = ps->testFlag(GAME_PLAYER_MP_SAFE_MODE);
+					Msg("safe mode [%s]", !mode ? "true" : "false");
+				}
+
+				NET_Packet packet;
+				Level().game->u_EventGen(packet, GE_KEY_PRESSED, this->ID());
+				packet.w_u8(2);
+				Level().game->u_EventSend(packet);
+			}
+		}break;
 
 	default:
 		{
 		}break;
 	}
 
-
-
 	if (!g_Alive()) return;
 
 	if(m_holder && kUSE != cmd)
 	{
 		m_holder->OnKeyboardPress			(cmd);
+		
 		if(m_holder->allowWeapon() && inventory().Action((u16)cmd, CMD_START))		return;
 		return;
 	}else
