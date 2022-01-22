@@ -259,27 +259,6 @@ bool CActor::MpSafeMODE() const
 	return (ps && ps->testFlag(GAME_PLAYER_MP_SAFE_MODE));
 }
 
-bool CActor::MpAnimationMODE() const
-{
-	if (!g_Alive())
-		return false;
-
-	game_PlayerState* ps = Game().GetPlayerByGameID(ID());
-  
-	return (ps && ps->testFlag(GAME_PLAYER_MP_ANIMATION_MODE));
-}
-
-bool CActor::AnimationEnded() const
-{
-	if (MpAnimationMODE())
-		return false;
-
-	if (!OutPlay)
-		return false;
-
-	return CanChange;
-}
-
 void CActor::reinit	()
 {
 	character_physics_support()->movement()->CreateCharacter		();
@@ -1076,7 +1055,8 @@ void CActor::g_Physics			(Fvector& _accel, float jump, float dt)
 		}
 	}
 }
-float g_fov = 55.0f;
+
+float g_fov = 90.0f;
 
 float CActor::currentFOV()
 {
@@ -1319,7 +1299,7 @@ void CActor::shedule_Update	(u32 DT)
 			*/
 		}
 
-		if (!pInput->iGetAsyncKeyState(DIK_LALT) && AnimationEnded())
+		if (!pInput->iGetAsyncKeyState(DIK_LALT))
 			g_cl_Orientate			(mstate_real,dt);
 
 		g_Orientate				(mstate_real,dt);
@@ -1467,8 +1447,9 @@ void CActor::shedule_Update	(u32 DT)
 	if (MpInvisibility())
 		setVisible(false);
 
-	if (!AnimationEnded())
+	if (MpAnimationMODE())
 		cam_Set(eacLookAt);
+
 	//else
 	//	cam_Set(eacFirstEye);
    

@@ -445,6 +445,13 @@ bool CActor::g_LadderOrient()
 void CActor::g_cl_Orientate	(u32 mstate_rl, float dt)
 {
 	// capture camera into torso (only for FirstEye & LookAt cameras)
+
+	if (MpAnimationMODE())
+	{
+		r_torso.pitch = 0;
+		return;
+	}
+ 	
 	if (eacFreeLook!=cam_active)
 	{
 		r_torso.yaw		=	cam_Active()->GetWorldYaw	();
@@ -456,12 +463,18 @@ void CActor::g_cl_Orientate	(u32 mstate_rl, float dt)
 		r_torso.pitch	=	cam_FirstEye()->GetWorldPitch	();
 	}
 
+
+	if (MpSafeMODE())
+	{
+		r_torso.pitch = 0;
+	}
+
 	unaffected_r_torso.yaw		= r_torso.yaw;
 	unaffected_r_torso.pitch	= r_torso.pitch;
 	unaffected_r_torso.roll		= r_torso.roll;
 
-	CWeaponMagazined *pWM = smart_cast<CWeaponMagazined*>(inventory().GetActiveSlot() != NO_ACTIVE_SLOT ? 
-		inventory().ItemFromSlot(inventory().GetActiveSlot()) : NULL);
+	CWeaponMagazined *pWM = smart_cast<CWeaponMagazined*>(inventory().GetActiveSlot() != NO_ACTIVE_SLOT ? inventory().ItemFromSlot(inventory().GetActiveSlot()) : NULL);
+
 	if (pWM && pWM->GetCurrentFireMode() == 1 && eacFirstEye != cam_active)
 	{
 		Fvector dangle = weapon_recoil_last_delta();
@@ -470,10 +483,13 @@ void CActor::g_cl_Orientate	(u32 mstate_rl, float dt)
 	}
 	
 	// если есть движение - выровнять модель по камере
-	if (mstate_rl&mcAnyMove)	{
+	if (mstate_rl&mcAnyMove)	
+	{
 		r_model_yaw		= angle_normalize(r_torso.yaw);
 		mstate_real		&=~mcTurn;
-	} else {
+	}
+	else 
+	{
 		// if camera rotated more than 45 degrees - align model with it
 		float ty = angle_normalize(r_torso.yaw);
 		if (_abs(r_model_yaw-ty)>PI_DIV_4)	{
@@ -549,6 +565,9 @@ bool CActor::CanSprint()
 						&& InventoryAllowSprint()
 						;
 
+	if (MpSafeMODE())
+		return false;
+
 	return can_Sprint && (m_block_sprint_counter<=0);
 }
 
@@ -557,13 +576,17 @@ bool CActor::CanJump()
 	bool can_Jump = 
 		!character_physics_support()->movement()->PHCapture() &&((mstate_real&mcJump)==0) && (m_fJumpTime<=0.f) 
 		&& !m_bJumpKeyPressed &&!IsZoomAimingMode();
+	
+	if (MpAnimationMODE() )
+		return false;
+
 
 	return can_Jump;
 }
 
 bool CActor::CanMove()
 {
-	if (!AnimationEnded())
+	if (MpAnimationMODE())
 		return false;
 
 	if( conditions().IsCantWalk() )

@@ -2955,19 +2955,24 @@ public:
 
 #include "cameralook.h"
 
-extern int AnimCurrent = 0;
-
 extern int EnableLogging;
 
 
 void register_mp_console_commands()
 {
-	CMD1(ÑÑÑ_StartSurge,    "adm_surge");
-	CMD1(ÑÑÑ_StartFallout,  "adm_fallout");
-	CMD1(ÑÑÑ_StartPsi,		"adm_psistorm");
+//	CMD1(ÑÑÑ_StartSurge,    "adm_surge");
+//	CMD1(ÑÑÑ_StartFallout,  "adm_fallout");
+//	CMD1(ÑÑÑ_StartPsi,		"adm_psistorm");
+	CMD4(CCC_Vector3, "cam_2_offset",
 
-	CMD4(CCC_Integer, "weather_logging", &EnableLogging, 0, 1);
-	CMD1(CCC_WEAPON_POSITION, "weapon_offset");
+		&CCameraLook2::m_cam_offset,
+		Fvector().set(-1000, -1000, -1000),
+		Fvector().set(1000, 1000, 1000)
+	);
+
+//	CMD4(CCC_Integer, "weather_logging", &EnableLogging, 0, 1);
+//	CMD1(CCC_WEAPON_POSITION, "weapon_offset");
+
 
 
 	CMD1(CCC_SpawnToInventory,		"sv_spawn_to_player_inv");
@@ -2980,22 +2985,20 @@ void register_mp_console_commands()
 	CMD1(CCC_SetNoClipForPlayer,	"sv_set_no_clip"		);
 	CMD1(CCC_SetInvisForPlayer,		"sv_set_invis"			);
 	CMD1(CCC_SetGodModForPlayer,	"sv_set_god_mode"		);
+
+
+	//ADMIN COMMNADS
 	CMD1(CCC_AdmNoClip,				"adm_no_clip"			);
 	CMD1(CCC_AdmInvis,				"adm_invis"				);
 	CMD1(CCC_AdmGodMode,			"adm_god_mode"			);
 	CMD1(CCC_AdmUnlimatedAmmo,      "adm_unlimated_ammo");
-
+	CMD1(CCC_give_money_self,		"adm_money");
 	CMD1(CCC_AdmRegisterAccount,	"adm_register_account");
 	CMD1(CCC_AdmBanAccount,			"adm_ban_account");
 	CMD1(CCC_AdmUnBanAccount,		"adm_unban_account");
-	CMD1(CCC_give_money_self,		"g_money");
+	//
 
-	CMD4(CCC_Integer,				"g_anim",	&AnimCurrent, 0, 32);
-															
-	CMD4(CCC_Vector3,				"cam_2_offset", 
-	&CCameraLook2::m_cam_offset, 
-	Fvector().set(-1000, -1000, -1000),
-	Fvector().set(1000, 1000, 1000));
+ 
 
 	CMD1(CCC_MovePlayerToRPoint,	"sv_move_player_to_rpoint");
 

@@ -64,26 +64,6 @@ void CActor::IR_OnKeyboardPress(int cmd)
 			}
 		}break;
 
-		case kAnimationMode:
-		{
-			if (OnClient())
-			{
-				game_PlayerState* ps = Game().GetPlayerByGameID(ID());
-
-				if (ps)
-				{
-					bool mode = ps->testFlag(GAME_PLAYER_MP_ANIMATION_MODE);
-					Msg("Anim Mode[%s]", !mode ? "true" : "false");
-				}
-
-				NET_Packet packet;
-				Level().game->u_EventGen(packet, GE_KEY_PRESSED, this->ID());
-				packet.w_u8(1);
-				Level().game->u_EventSend(packet);
-			}
-
-		}break;
-
 		case kSafeMode:
 		{
 			if (OnClient())

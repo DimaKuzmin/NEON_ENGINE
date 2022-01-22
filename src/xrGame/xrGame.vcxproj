@@ -1837,6 +1837,7 @@
     <ClInclude Include="ui\ui_arrow.h" />
     <ClInclude Include="ui\UI_IB_Static.h" />
     <ClInclude Include="ui\xrUIXmlParser.h" />
+    <ClInclude Include="UI_AnimMode.h" />
     <ClInclude Include="ui_base.h" />
     <ClInclude Include="ui_defs.h" />
     <ClInclude Include="UsableScriptObject.h" />
@@ -2287,6 +2288,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
     <ClCompile Include="ActorAnimation.cpp" />
+    <ClCompile Include="ActorAnimation_Scripts.cpp" />
     <ClCompile Include="ActorCameras.cpp" />
     <ClCompile Include="ActorCondition.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>
@@ -5328,6 +5330,7 @@
     <ClCompile Include="ui\ui_arrow.cpp" />
     <ClCompile Include="ui\UI_IB_Static.cpp" />
     <ClCompile Include="ui\xrUIXmlParser.cpp" />
+    <ClCompile Include="UI_AnimMode.cpp" />
     <ClCompile Include="ui_base.cpp" />
     <ClCompile Include="ui_export_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">pch_script.h</PrecompiledHeaderFile>

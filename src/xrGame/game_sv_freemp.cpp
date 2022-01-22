@@ -297,8 +297,13 @@ void game_sv_freemp::Update()
 				FS.update_path(file_name, "$mp_saves_players$", filename);
 #ifndef MP_SAVE_JSON
 				CInifile* file = xr_new<CInifile>(file_name, false, false);
-				SavePlayer(player.second, file);
-				file->save_as(file_name);
+				
+				if (file)
+				{
+					SavePlayer(player.second, file);
+					file->save_as(file_name);
+				}
+
 #else
 				SaveJson(player.second);
 #endif
@@ -338,8 +343,11 @@ void game_sv_freemp::Update()
 				else
 				{
 					CInifile* boxFile = xr_new<CInifile>(path_name, false, false);
-					SaveInvBox(box, boxFile);
-					boxFile->save_as(path_name);
+					if (boxFile) 
+					{
+						SaveInvBox(box, boxFile);
+						boxFile->save_as(path_name);
+					}											
 				}
 #else 
 				xr_strcat(invbox_name, ".json");

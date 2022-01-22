@@ -2512,6 +2512,9 @@
     <Filter Include="Core\Server\Games\server\deathmatch">
       <UniqueIdentifier>{379c1f1b-b8f9-423b-82eb-002244362d5e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="UI\GameTypes\FreeMp\RP_ANIMATION_MODE">
+      <UniqueIdentifier>{8c450480-22ac-4eef-a70a-4b8bf5264677}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -7428,6 +7431,9 @@
     <ClInclude Include="..\jsonxx\jsonxx.h">
       <Filter>jsonxx</Filter>
     </ClInclude>
+    <ClInclude Include="UI_AnimMode.h">
+      <Filter>UI\GameTypes\FreeMp\RP_ANIMATION_MODE</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -11113,6 +11119,12 @@
     </ClCompile>
     <ClCompile Include="..\jsonxx\jsonxx.cc">
       <Filter>jsonxx</Filter>
+    </ClCompile>
+    <ClCompile Include="UI_AnimMode.cpp">
+      <Filter>UI\GameTypes\FreeMp\RP_ANIMATION_MODE</Filter>
+    </ClCompile>
+    <ClCompile Include="ActorAnimation_Scripts.cpp">
+      <Filter>Core\Client\Objects\actor\base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -9,16 +9,19 @@
 
 #include "ui/UIStatic.h"
 #include "ui/UIXmlInit.h"
+#include "UI_AnimMode.h"
 
 BOOL g_cl_draw_mp_statistic = FALSE;
 
 CUIGameFMP::CUIGameFMP()
 {
 	m_game = NULL;
+	m_anims = NULL;
 }
 
 CUIGameFMP::~CUIGameFMP()
 {
+	xr_delete(m_anims);
 }
 
 void CUIGameFMP::Init(int stage)
@@ -48,6 +51,10 @@ void CUIGameFMP::Init(int stage)
 		inherited::Init(stage);
 		m_window->AttachChild(m_stats);
 	}
+
+	m_anims = xr_new<CUIAMode>();
+ 	m_anims->Init();
+	m_window->AttachChild(m_anims);
 }
 
 void CUIGameFMP::SetClGame(game_cl_GameState * g)
@@ -65,7 +72,6 @@ void CUIGameFMP::HideShownDialogs()
 void _BCL CUIGameFMP::OnFrame()
 {
 	inherited::OnFrame();
-
 
 	if (g_cl_draw_mp_statistic && Level().game->local_player)
 	{
@@ -149,18 +155,26 @@ bool CUIGameFMP::IR_UIOnKeyboardPress(int dik)
 
 	switch (get_binded_action(dik))
 	{
-	case kACTIVE_JOBS:
+		case kACTIVE_JOBS:
+			{
+				if (!pActor->inventory_disabled())
+					ShowPdaMenu();			
+			} break;
+		case kINVENTORY:
+			{
+				if (!pActor->inventory_disabled())
+					ShowActorMenu();			
+			} break;
+
+		case kAnimationMode:
 		{
-			if (!pActor->inventory_disabled())
-				ShowPdaMenu();			
-		} break;
-	case kINVENTORY:
-		{
-			if (!pActor->inventory_disabled())
-				ShowActorMenu();			
-		} break;
-	default:
-		break;
+			if (!m_anims->IsShown())
+				m_anims->ShowDialog(false);
+
+		}break;
+
+		default:
+			break;
 	}
 	return false;
 }

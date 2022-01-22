@@ -29,7 +29,9 @@ void SStaticSound::Load(IReader& F)
 void SStaticSound::Update(u32 game_time, u32 global_time)
 {
 	if ((0==m_ActiveTime.x)&&(0==m_ActiveTime.y)||((int(game_time)>=m_ActiveTime.x)&&(int(game_time)<m_ActiveTime.y))){
-		if (0==m_Source._feedback()){
+	
+		if (0==m_Source._feedback())
+		{
 			if ((0==m_PauseTime.x)&&(0==m_PauseTime.y)){    
 				m_Source.play_at_pos	(0,m_Position,sm_Looped);
 				m_Source.set_volume		(m_Volume);
@@ -41,10 +43,14 @@ void SStaticSound::Update(u32 game_time, u32 global_time)
 					m_Source.play_at_pos	(0,m_Position,bFullPlay?0:sm_Looped);
 					m_Source.set_volume		(m_Volume);
 					m_Source.set_frequency	(m_Freq);
-					if (bFullPlay){
+					if (bFullPlay)
+					{
 						m_StopTime		= 0xFFFFFFFF;
+						//Msg("name %s", m_Source._g_object()->cName().c_str());
 						m_NextTime		= global_time+iFloor(m_Source.get_length_sec()*1000.0f)+Random.randI(m_PauseTime.x,m_PauseTime.y);
-					}else{
+					}
+					else
+					{
 						m_StopTime		= bFullPlay?0:global_time+Random.randI(m_PlayTime.x,m_PlayTime.y);
 						m_NextTime		= m_StopTime+Random.randI(m_PauseTime.x,m_PauseTime.y);
 					}

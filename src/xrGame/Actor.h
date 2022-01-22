@@ -85,6 +85,7 @@ public:
 										CActor				();
 	virtual								~CActor				();
 
+//Script Animation
 protected:
 	int oldAnim = 0;
 	int InputAnim = 0;
@@ -99,21 +100,35 @@ protected:
 	bool InPlay = true;
 	bool OutPlay = true;
 	bool MidPlay = true;
+	bool NEED_EXIT = false;
 
+
+	void					SelectScriptAnimation();
+	void					soundPlay();
+	void					StopAllSNDs();
+	void					ReciveSoundPlay(NET_Packet packet);
+	void					ReciveAnimationPacket(NET_Packet& packet);
+	void					ReciveActivateItem(NET_Packet& packet);
+	void					SendSoundPlay(u32 ID, bool Activate);
+	void					SendAnimationToServer(MotionID motion);
+	void					SendActivateItem(shared_str item, bool activate);
+	void					script_anim(MotionID exit_animation, PlayCallback Callback, LPVOID CallbackParam);
+
+	
+//Script Animation
 
 
 public:
-	bool CanChange = true;
+			bool CanChange = true;
 
-			bool						MpGodMode					() const				;
-			bool						MpNoClip					() const				;
-			bool						MpInvisibility				() const				;
-			
-
-			bool						MpSafeMODE()	  const;
+			bool						MpGodMode					() const;
+			bool						MpNoClip					() const;
+			bool						MpInvisibility				() const;
+			bool						MpSafeMODE					() const;
 			bool						MpAnimationMODE() const;
 
-			bool						AnimationEnded() const;
+
+
 			bool old_block_state = false;
 
 	virtual BOOL						AlwaysTheCrow				()						{ return TRUE; }
@@ -298,7 +313,7 @@ protected:
 protected:
 	BOOL					m_bAnimTorsoPlayed;
 	static void				AnimTorsoPlayCallBack(CBlend* B);
-
+	void					g_SetSprintAnimation(u32 mstate_rl, MotionID& head, MotionID& torso, MotionID& legs);
 	// Rotation
 	SRotation				r_torso;
 	float					r_torso_tgt_roll;
@@ -336,22 +351,9 @@ public:
 
 	void					g_SetAnimation		(u32 mstate_rl);
 
-	void					SelectScriptAnimation ();
 
-	void					soundPlay();
-	void					StopAllSNDs();
 
-	void					ReciveSoundPlay(NET_Packet packet);
-	void					ReciveAnimationPacket(NET_Packet& packet);
-	void					ReciveActivateItem(NET_Packet& packet);
 
-	void					SendSoundPlay(u32 ID, bool Activate);
-	void					SendAnimationToServer(MotionID motion);
-	void					SendActivateItem(shared_str item, bool activate);
-
-	void					script_anim(MotionID exit_animation, PlayCallback Callback, LPVOID CallbackParam);
-
-	void					g_SetSprintAnimation(u32 mstate_rl,MotionID &head,MotionID &torso,MotionID &legs);
 public:
 	virtual void			OnHUDDraw			(CCustomHUD* hud);
 			BOOL			HUDview				( )const ;

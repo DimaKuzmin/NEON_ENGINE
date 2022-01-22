@@ -94,9 +94,12 @@ void CCameraLook2::OnActivate( CCameraBase* old_cam )
 {
 	CCameraLook::OnActivate( old_cam );
 }
+#include "actor_mp_client.h"
 
 void CCameraLook2::Update(Fvector& point, Fvector&)
 {  
+
+
 	Fmatrix mR;
 	mR.setHPB						(-yaw,-pitch,-roll);
 
@@ -106,13 +109,28 @@ void CCameraLook2::Update(Fvector& point, Fvector&)
 	Fmatrix							a_xform;
 	a_xform.setXYZ					(0, -yaw, 0);
 	a_xform.translate_over			(point);
-	Fvector _off = m_cam_offset;
-	//_off.set(m_cam_offset_x, 0.2f, 0.1f);
+	
+	
+
+	Fvector _off;
+	
+	CActorMP* actorMP = smart_cast<CActorMP*>(Level().CurrentControlEntity());
+
+	if (actorMP)
+	{
+		if (actorMP->MpAnimationMODE())
+			_off = Fvector3().set(0, 0.23, -1);
+		else
+			_off = m_cam_offset;
+	}
+ 
 
 	a_xform.transform_tiny			(_off);
 	vPosition.set					(_off);
 
 	dist = 1.4f;
+
+
 
 	UpdateDistance(_off);
 }
