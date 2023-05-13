@@ -112,6 +112,10 @@ void game_sv_freemp::SavePlayer(game_PlayerState* ps, CInifile* file)
 		file->w_u32("actor", "items_count", id);
 		file->w_u32("actor", "money", ps->money_for_round);
 		file->w_u8("actor", "team", ps->team);
+
+		file->w_fvector3("actor", "pos", actor->Position());
+		file->w_fvector3("actor", "angle", actor->Direction());
+		file->w_float("actor", "health", actor->GetfHealth());
 	}
 }
 
@@ -339,6 +343,39 @@ void game_sv_freemp::LoadInvBox(CSE_ALifeInventoryBox* box, CInifile* file)
 	}
 }
 
+bool game_sv_freemp::LoadPlayerPosition(game_PlayerState* ps, Fvector& pos, Fvector& angle, float& health)
+{
+	string_path file_name;
+	string32 filename;
+	xr_strcpy(filename, ps->getName());
+	xr_strcat(filename, ".ltx");
+	FS.update_path(file_name, "$mp_saves_players$", filename);
+
+	CInifile* file = xr_new<CInifile>(file_name);
+
+	if (file->line_exist("actor", "pos"))
+	{
+		pos = file->r_fvector3("actor", "pos");
+	}
+	else
+		return false;
+
+	if (file->line_exist("actor", "angle"))
+	{
+		angle = file->r_fvector3("actor", "angle");
+	}
+	else
+		return false;
+
+	if (file->line_exist("actor", "health"))
+	{
+		health = file->r_float("actor", "health");
+	}
+	else
+		return false;
+
+	return true;
+}
 
 #else
 //Json Save File
@@ -665,7 +702,6 @@ void game_sv_freemp::LoadInventory(CSE_ALifeInventoryBox* box, string_path pathf
 
 }
 
-
 bool game_sv_freemp::LoadPlayerPosition(game_PlayerState* ps, Fvector& position, Fvector& angle, float& health)
 {
 	string_path path; 
@@ -704,6 +740,9 @@ bool game_sv_freemp::LoadPlayerPosition(game_PlayerState* ps, Fvector& position,
 
 	return false;
 }
+#endif
+
+
 
 void game_sv_freemp::assign_RP(CSE_Abstract* E, game_PlayerState* ps_who)
 {
@@ -714,7 +753,9 @@ void game_sv_freemp::assign_RP(CSE_Abstract* E, game_PlayerState* ps_who)
 	{
 		Fvector angle, pos;
 		float health;
+		
 		LoadPlayerPosition(ps_who, pos, angle, health);
+
 		E->position().set(pos);
 		E->angle().set(angle);
  		E->cast_actor_mp()->set_health(health);
@@ -722,4 +763,4 @@ void game_sv_freemp::assign_RP(CSE_Abstract* E, game_PlayerState* ps_who)
 	else
 		return inherited::assign_RP(E, ps_who);
 }
-#endif
+

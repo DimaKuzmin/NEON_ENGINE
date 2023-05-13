@@ -49,13 +49,12 @@ public:
 	virtual		void				OnTransferMoney(NET_Packet &P, ClientID const & clientID);
 
 	virtual		void				RespawnPlayer(ClientID id_who, bool NoSpectator);
-
+	
 	virtual		bool				HasSaveFile(game_PlayerState* ps);
-
+	
 #ifndef MP_SAVE_JSON
 	virtual     void				SavePlayer(game_PlayerState* ps, CInifile* file);
 	virtual     bool				LoadPlayer(game_PlayerState* ps, CInifile* file);
-
 
 	virtual		void				SaveInvBox(CSE_ALifeInventoryBox* box, CInifile* file);
 	virtual		void				LoadInvBox(CSE_ALifeInventoryBox* box, CInifile* file);
@@ -65,11 +64,11 @@ public:
 
 	virtual		void				SaveInventory(CSE_ALifeInventoryBox* box, string_path name);
 	virtual		void				LoadInventory(CSE_ALifeInventoryBox* box, string_path name);
-
-	virtual		bool				LoadPlayerPosition(game_PlayerState* ps, Fvector& position, Fvector& angle, float& health);
-
-	virtual void					assign_RP(CSE_Abstract* E, game_PlayerState* ps_who);
 #endif
+	
+	virtual		bool				LoadPlayerPosition(game_PlayerState* ps, Fvector& pos, Fvector& angle, float& health);
+	virtual void					assign_RP(CSE_Abstract* E, game_PlayerState* ps_who);
+
 
 
 };
