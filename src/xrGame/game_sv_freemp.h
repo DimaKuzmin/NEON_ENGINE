@@ -3,7 +3,7 @@
 #include "game_sv_mp.h"
 #include "../xrEngine/pure_relcase.h"
 
-//#define MP_SAVE_JSON
+#define MP_SAVE_JSON
 
 class game_sv_freemp : public game_sv_mp, private pure_relcase
 {
