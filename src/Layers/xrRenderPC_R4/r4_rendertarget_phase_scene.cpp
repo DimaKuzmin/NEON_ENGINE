@@ -20,7 +20,7 @@ void	CRenderTarget::phase_scene_prepare	()
 			(
 				ps_r2_ls_flags.test(R2FLAG_SOFT_PARTICLES|R2FLAG_DOF) ||
 				( (ps_r_sun_shafts>0) && (fValue>=0.0001) ) ||
-				(ps_r_ssao>0)
+				(ps_r_ssao>0 || RImplementation.o.hbao_plus)
 			)
 		)
 	{

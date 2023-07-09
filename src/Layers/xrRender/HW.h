@@ -65,6 +65,14 @@ public:
 	DXGI_SWAP_CHAIN_DESC	m_ChainDesc;	//	DevPP equivalent
 	bool					m_bUsePerfhud;
 	D3D_FEATURE_LEVEL		FeatureLevel;
+
+	GFSDK_SSAO_Context_D3D* pSSAO;
+
+#ifdef USE_DX11
+	ID3DTexture2D* pDepthStencil;
+	ID3DShaderResourceView* pBaseDepthReadSRV;
+#endif
+
 #elif defined(USE_DX10)
 public:
 	IDXGIAdapter*			m_pAdapter;	//	pD3D equivalent

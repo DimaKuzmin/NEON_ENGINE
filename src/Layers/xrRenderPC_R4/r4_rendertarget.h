@@ -111,6 +111,7 @@ public:
 	ref_texture					t_noise				[TEX_jitter_count];
 	ID3DTexture2D*			t_noise_surf_mipped;
 	ref_texture					t_noise_mipped;
+
 private:
 	// OCCq
 
@@ -123,6 +124,9 @@ private:
 	ref_shader					s_ssao_msaa[8];
 	ref_shader					s_hdao_cs;
 	ref_shader					s_hdao_cs_msaa;
+	// HBAO				
+	ref_rt						rt_HBAO_plus_normal; // world-space normal
+
 
 	// Accum
 	ref_shader					s_accum_mask	;
@@ -298,6 +302,8 @@ public:
 	void						phase_combine			();
 	void						phase_combine_volumetric();
 	void						phase_pp				();
+
+	void						phase_hbao_plus();
 
 	virtual void				set_blur				(float	f)		{ param_blur=f;						}
 	virtual void				set_gray				(float	f)		{ param_gray=f;						}

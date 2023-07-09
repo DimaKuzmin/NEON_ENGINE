@@ -49,6 +49,9 @@
 #define		r2_jitter_mipped	"$user$jitter_mipped"			// --- dither
 #define		r2_sunmask			"sunmask"
 
+//HBAO
+#define		r2_RT_HBAO_plus_normal		"$user$ssao_normal"	// DX11 only
+
 #define		JITTER(a) r2_jitter #a
 
 const		float				SMAP_near_plane		= .1f	;

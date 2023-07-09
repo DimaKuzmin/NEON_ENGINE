@@ -10,9 +10,10 @@
 #include "../xrRender/HW.h"
 #include "../../xrEngine/XR_IOConsole.h"
 #include "../../Include/xrAPI/xrAPI.h"
-
+ 
 #include "StateManager\dx10SamplerStateCache.h"
 #include "StateManager\dx10StateCache.h"
+
 
 #ifndef _EDITOR
 void	fill_vid_mode_list			(CHW* _hw);
@@ -392,6 +393,23 @@ void CHW::CreateDevice( HWND m_hWnd, bool move_window )
 	R_CHK(R);
 
 	_SHOW_REF	("* CREATE: DeviceREF:",HW.pDevice);
+
+#ifdef USE_DX11
+	
+	//if (ps_r_ssao == SSAO_HBAO_PLUS)
+	{
+		GFSDK_SSAO_CustomHeap CustomHeap;
+		CustomHeap.new_ = ::operator new;
+		CustomHeap.delete_ = ::operator delete;
+		GFSDK_SSAO_CreateContext_D3D11(pDevice, &pSSAO, &CustomHeap, GFSDK_SSAO_Version());
+
+		if (pSSAO)
+		{
+			Msg("*pSSAO HAS CONTEXT");
+		}
+	}
+#endif
+ 
 	/*
 	switch (GPU)
 	{
@@ -454,7 +472,15 @@ void CHW::DestroyDevice()
 
 #ifdef USE_DX11
 	_RELEASE				(pContext);
+
+	if (pSSAO)
+		_RELEASE(pSSAO);
+
+	pDepthStencil->Release();
+
 #endif
+
+
 
 #ifndef USE_DX11
 	_RELEASE				(HW.pDevice1);
@@ -1011,14 +1037,60 @@ void CHW::UpdateViews()
 	ID3DTexture2D *pBuffer;
 	R = m_pSwapChain->GetBuffer( 0, __uuidof( ID3DTexture2D ), (LPVOID*)&pBuffer );
 	R_CHK(R);
-
 	R = pDevice->CreateRenderTargetView( pBuffer, NULL, &pBaseRT);
-	pBuffer->Release();
 	R_CHK(R);
+
+	pBuffer->Release();
+
 
 	//	Create Depth/stencil buffer
 	//	HACK: DX10: hard depth buffer format
 	//R_CHK	(pDevice->GetDepthStencilSurface	(&pBaseZB));
+
+#ifdef USE_DX11
+	D3D_TEXTURE2D_DESC descDepth;
+	descDepth.Width = sd.BufferDesc.Width;
+	descDepth.Height = sd.BufferDesc.Height;
+	descDepth.MipLevels = 1;
+	descDepth.ArraySize = 1;
+	descDepth.Format = DXGI_FORMAT_R24G8_TYPELESS; // DXGI_FORMAT_D24_UNORM_S8_UINT;
+	descDepth.SampleDesc.Count = 1;
+	descDepth.SampleDesc.Quality = 0;
+	descDepth.Usage = D3D_USAGE_DEFAULT;
+	descDepth.BindFlags = D3D_BIND_DEPTH_STENCIL | D3D_BIND_SHADER_RESOURCE;;
+	descDepth.CPUAccessFlags = 0;
+	descDepth.MiscFlags = 0;
+	R = pDevice->CreateTexture2D( &descDepth,       // Texture desc
+		NULL,                  // Initial data
+		&pDepthStencil ); // [out] Texture
+	R_CHK(R);
+
+	//	Create Depth/stencil view
+	//R = pDevice->CreateDepthStencilView( pDepthStencil, NULL, &pBaseZB );
+	//R_CHK(R);
+	D3D_DEPTH_STENCIL_VIEW_DESC dsvDesc = {};
+	dsvDesc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	dsvDesc.Flags = 0;
+	dsvDesc.ViewDimension = D3D_DSV_DIMENSION_TEXTURE2D;
+	dsvDesc.Texture2D.MipSlice = 0;
+	R_CHK(pDevice->CreateDepthStencilView(pDepthStencil, &dsvDesc, &pBaseZB)); // read & wtire DSV
+
+
+
+	// Shader resource view
+	D3D_SHADER_RESOURCE_VIEW_DESC depthSRVDesc = {};
+	depthSRVDesc.Format = DXGI_FORMAT_R24_UNORM_X8_TYPELESS;
+	depthSRVDesc.ViewDimension = D3D_SRV_DIMENSION_TEXTURE2D;
+	depthSRVDesc.Texture2D.MipLevels = 1;
+	depthSRVDesc.Texture2D.MostDetailedMip = 0; // No MIP
+	R_CHK(pDevice->CreateShaderResourceView(pDepthStencil, &depthSRVDesc, &pBaseDepthReadSRV)); // read SRV
+
+	if (pBaseDepthReadSRV)
+	{
+		Msg("* Shader Resource: pBaseDepthReadSRV Created");
+	}
+
+#else 
 	ID3DTexture2D* pDepthStencil = NULL;
 	D3D_TEXTURE2D_DESC descDepth;
 	descDepth.Width = sd.BufferDesc.Width;
@@ -1029,18 +1101,20 @@ void CHW::UpdateViews()
 	descDepth.SampleDesc.Count = 1;
 	descDepth.SampleDesc.Quality = 0;
 	descDepth.Usage = D3D_USAGE_DEFAULT;
-	descDepth.BindFlags = D3D_BIND_DEPTH_STENCIL;
+	descDepth.BindFlags = D3D_BIND_DEPTH_STENCIL | D3D_BIND_SHADER_RESOURCE;;
 	descDepth.CPUAccessFlags = 0;
 	descDepth.MiscFlags = 0;
-	R = pDevice->CreateTexture2D( &descDepth,       // Texture desc
+	R = pDevice->CreateTexture2D(&descDepth,       // Texture desc
 		NULL,                  // Initial data
-		&pDepthStencil ); // [out] Texture
+		&pDepthStencil); // [out] Texture
 	R_CHK(R);
 
 	//	Create Depth/stencil view
-	R = pDevice->CreateDepthStencilView( pDepthStencil, NULL, &pBaseZB );
+	R = pDevice->CreateDepthStencilView(pDepthStencil, NULL, &pBaseZB);
 	R_CHK(R);
-
 	pDepthStencil->Release();
+#endif 
+
+
 }
 #endif

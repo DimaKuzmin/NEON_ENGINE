@@ -17,6 +17,7 @@
 #include <D3D11.h>
 #include <D3Dx11core.h>
 #include <D3DCompiler.h>
+#include "GFSDK/GFSDK_SSAO.h"
 
 #include "../xrRender/xrD3DDefs.h"
 
@@ -45,6 +46,8 @@
 #include "../xrRender/blenders\blender_clsid.h"
 #include "../xrRender/xrRender_console.h"
 #include "r4.h"
+
+
 
 IC	void	jitter(CBlender_Compile& C)
 {

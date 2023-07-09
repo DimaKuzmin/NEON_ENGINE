@@ -285,6 +285,8 @@ void					CRender::create					()
 	o.ssao_half_data	= ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_HALF_DATA) && o.ssao_opt_data && (ps_r_ssao != 0);
 	o.ssao_hdao			= ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_HDAO) && (ps_r_ssao != 0);
 	o.ssao_hbao			= !o.ssao_hdao && ps_r2_ls_flags_ext.test(R2FLAGEXT_SSAO_HBAO) && (ps_r_ssao != 0);
+	o.hbao_plus			= ps_r2_ls_flags_ext.test(R2FLAGEXT_HBAO_PLUS);
+
 
 	//	TODO: fix hbao shader to allow to perform per-subsample effect!
 	o.hbao_vectorized = false;
@@ -1103,7 +1105,17 @@ HRESULT	CRender::shader_compile			(
 		defines[def_it].Definition	=	"1";
 		def_it						++;
 	}
-	sh_name[len]='0'+char(o.ssao_blur_on); ++len;
+	sh_name[len] = '0' + char(o.ssao_blur_on); ++len;
+
+	if (o.hbao_plus) 
+	{
+		Msg("* Define Shader: USE_HBAO_PLUS");
+		defines[def_it].Name = "USE_HBAO_PLUS";
+		defines[def_it].Definition = "1";
+		def_it++;
+	}
+	sh_name[len] = '0' + char(o.hbao_plus); ++len;
+
 
     if (o.ssao_hdao)
     {
@@ -1114,7 +1126,8 @@ HRESULT	CRender::shader_compile			(
 		sh_name[len]='0'; ++len;
 		sh_name[len]='0'; ++len;
     }
-	else {
+	else
+	{
 		sh_name[len]='0'; ++len;
 		sh_name[len]='0'+char(o.ssao_hbao); ++len;
 		sh_name[len]='0'+char(o.ssao_half_data); ++len;
@@ -1450,7 +1463,7 @@ HRESULT	CRender::shader_compile			(
 	HRESULT		_result = E_FAIL;
 
 	string_path	folder_name, folder;
-	xr_strcpy		( folder, "r3\\objects\\r4\\" );
+	xr_strcpy		( folder, "r3\\objects_new\\r4\\" );
 	xr_strcat		( folder, name );
 	xr_strcat		( folder, "." );
 
@@ -1465,7 +1478,9 @@ HRESULT	CRender::shader_compile			(
 	FS.file_list	( m_file_set, folder_name, FS_ListFiles | FS_RootOnly, "*");
 
 	string_path temp_file_name, file_name;
-	if ( !match_shader_id(name, sh_name, m_file_set, temp_file_name) ) {
+	
+	if ( !match_shader_id(name, sh_name, m_file_set, temp_file_name) ) 
+	{
 		string_path file;
 		xr_strcpy		( file, "shaders_cache\\r4\\" );
 		xr_strcat		( file, name );
@@ -1475,12 +1490,13 @@ HRESULT	CRender::shader_compile			(
 		xr_strcat		( file, sh_name );
 		FS.update_path	( file_name, "$app_data_root$", file);
 	}
-	else {
+	else 
+	{
 		xr_strcpy		( file_name, folder_name );
 		xr_strcat		( file_name, temp_file_name );
 	}
 
-	if (FS.exist(file_name))
+	if (FS.exist(file_name) && false)
 	{
 		IReader* file = FS.r_open(file_name);
 		if (file->length()>4)
@@ -1573,7 +1589,7 @@ static inline bool match_shader		( LPCSTR const debug_shader_id, LPCSTR const fu
 
 static inline bool match_shader_id	( LPCSTR const debug_shader_id, LPCSTR const full_shader_id, FS_FileSet const& file_set, string_path& result )
 {
-#if 0
+#if 1
 	strcpy_s					( result, "" );
 	return						false;
 #else // #if 1

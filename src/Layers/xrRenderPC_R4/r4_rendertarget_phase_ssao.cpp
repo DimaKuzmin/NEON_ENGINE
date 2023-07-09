@@ -157,3 +157,61 @@ void CRenderTarget::phase_downsamp	()
 	if (RImplementation.o.ssao_half_data)
 		set_viewport(HW.pContext, float(Device.dwWidth), float(Device.dwHeight));
 }
+
+
+void CRenderTarget::phase_hbao_plus()
+{
+	PIX_EVENT(render_hbao_plus);
+	u32 bias = 0;
+	
+	// Fill VB
+	float	scale_X = float(Device.dwWidth) * 0.5f / float(TEX_jitter);
+	float	scale_Y = float(Device.dwHeight) * 0.5f / float(TEX_jitter);
+
+	float _w = float(Device.dwWidth) * 0.5f;
+	float _h = float(Device.dwHeight) * 0.5f;
+
+
+	FVF::TL* pv = (FVF::TL*)RCache.Vertex.Lock(4, g_combine->vb_stride, bias);
+	pv->set(-1, 1, 0, 1, 0, 0, scale_Y);	pv++;
+	pv->set(-1, -1, 0, 0, 0, 0, 0);	pv++;
+	pv->set(1, 1, 1, 1, 0, scale_X, scale_Y);	pv++;
+	pv->set(1, -1, 1, 0, 0, scale_X, 0);	pv++;
+	RCache.Vertex.Unlock(4, g_combine->vb_stride);
+
+	u_setrt(rt_HBAO_plus_normal, 0, 0);
+	 
+	RCache.set_Stencil(FALSE);
+	RCache.set_Element(s_ssao->E[2]);
+	RCache.set_Geometry(g_combine);
+	RCache.Render(D3DPT_TRIANGLELIST, bias, 0, 4, 0, 2);
+
+	GFSDK_SSAO_InputData_D3D Input;
+	Input.NormalData.Enable = true;
+	Input.NormalData.pFullResNormalTextureSRV = rt_HBAO_plus_normal->pTexture->get_SRView();
+	Input.NormalData.WorldToViewMatrix.Data = GFSDK_SSAO_Float4x4((const GFSDK_SSAO_FLOAT*)&RCache.get_xform_view());
+
+	Input.DepthData.DepthTextureType = GFSDK_SSAO_HARDWARE_DEPTHS;
+	Input.DepthData.ProjectionMatrix.Data = GFSDK_SSAO_Float4x4((const GFSDK_SSAO_FLOAT*)&RCache.get_xform_project());
+	Input.DepthData.MetersToViewSpaceUnits = 1.0;
+
+	if (RImplementation.o.dx10_msaa)
+		Input.DepthData.pFullResDepthTextureSRV = rt_MSAADepth->pTexture->get_SRView();
+	else
+		Input.DepthData.pFullResDepthTextureSRV = HW.pBaseDepthReadSRV;
+
+	GFSDK_SSAO_Parameters Params;
+	Params.StepCount = GFSDK_SSAO_STEP_COUNT_4;
+	Params.Radius = 1.7;
+	Params.Bias = 0.1;
+	Params.PowerExponent = 1;
+	Params.Blur.Enable = true;
+	Params.Blur.Radius = GFSDK_SSAO_BLUR_RADIUS_4;
+	Params.Blur.Sharpness = 32;
+	Params.DepthStorage = GFSDK_SSAO_FP16_VIEW_DEPTHS;
+
+	GFSDK_SSAO_Output_D3D Output;
+	Output.pRenderTargetView = rt_ssao_temp->pRT;
+
+	HW.pSSAO->RenderAO(HW.pContext, Input, Params, Output);
+}

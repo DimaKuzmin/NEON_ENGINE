@@ -257,6 +257,12 @@ typedef	ID3D11ShaderReflectionConstantBuffer			ID3DShaderReflectionConstantBuffe
 typedef	ID3D11ShaderReflectionVariable					ID3DShaderReflectionVariable;
 typedef	ID3D11ShaderReflectionType						ID3DShaderReflectionType;
 
+ 
+
+typedef GFSDK_SSAO_Context_D3D11		GFSDK_SSAO_Context_D3D;
+typedef GFSDK_SSAO_InputData_D3D11		GFSDK_SSAO_InputData_D3D;
+typedef GFSDK_SSAO_Output_D3D11			GFSDK_SSAO_Output_D3D;
+
 
 #define	IID_ID3DShaderReflection	IID_ID3D11ShaderReflection
 

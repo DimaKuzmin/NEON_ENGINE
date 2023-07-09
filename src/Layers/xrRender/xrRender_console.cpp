@@ -15,11 +15,13 @@ xr_token							qpreset_token							[ ]={
 };
 
 u32			ps_r_ssao_mode			=	2;
-xr_token							qssao_mode_token						[ ]={
+xr_token							qssao_mode_token						[]=
+{
 	{ "disabled",					0											},
 	{ "default",					1											},
 	{ "hdao",						2											},
 	{ "hbao",						3											},
+	{ "hbao_plus",					4,											},
 	{ 0,							0											}
 };
 
@@ -38,7 +40,7 @@ xr_token							qssao_token									[ ]={
 	{ "st_opt_low",					1												},
 	{ "st_opt_medium",				2												},
 	{ "st_opt_high",				3												},
-#if defined(USE_DX10) || defined(USE_DX11)
+ #if defined(USE_DX10) || defined(USE_DX11)
 	{ "st_opt_ultra",				4												},
 #endif
 	{ 0,							0												}
@@ -360,6 +362,7 @@ public:
 				ps_r_ssao = 0;
 				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HBAO, 0);
 				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HDAO, 0);
+				ps_r2_ls_flags_ext.set(R2FLAGEXT_HBAO_PLUS, 0);
 				break;
 			}
 			case 1:
@@ -371,6 +374,7 @@ public:
 				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HBAO, 0);
 				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HDAO, 0);
 				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HALF_DATA, 0);
+				ps_r2_ls_flags_ext.set(R2FLAGEXT_HBAO_PLUS, 0);
 				break;
 			}
 			case 2:
@@ -383,6 +387,7 @@ public:
 				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HDAO, 1);
 				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_OPT_DATA, 0);
 				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HALF_DATA, 0);
+				ps_r2_ls_flags_ext.set(R2FLAGEXT_HBAO_PLUS, 0);
 				break;
 			}
 			case 3:
@@ -394,8 +399,21 @@ public:
 				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HBAO, 1);
 				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HDAO, 0);
 				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_OPT_DATA, 1);
+				ps_r2_ls_flags_ext.set(R2FLAGEXT_HBAO_PLUS, 0);
 				break;
 			}
+			case 4: 
+			{	 
+				ps_r_ssao == 0;
+
+				ps_r2_ls_flags_ext.set(R2FLAGEXT_HBAO_PLUS, 1);
+
+				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_OPT_DATA, 0);
+				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HALF_DATA, 0);
+				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HBAO, 0);
+				ps_r2_ls_flags_ext.set(R2FLAGEXT_SSAO_HDAO, 0);
+
+			}break;
 		}
 	}
 };
