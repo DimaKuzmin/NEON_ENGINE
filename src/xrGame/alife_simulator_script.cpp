@@ -258,7 +258,12 @@ void CALifeSimulator__release					(CALifeSimulator *self, CSE_Abstract *object, 
 	THROW								(object);
 	CSE_ALifeObject						*alife_object = smart_cast<CSE_ALifeObject*>(object);
 	THROW								(alife_object);
-	if (!alife_object->m_bOnline) {
+
+	if (!object)
+		return;
+
+	if (alife_object &&!alife_object->m_bOnline)
+	{
 		self->release					(object,true);
 		return;
 	}
@@ -373,10 +378,10 @@ void CALifeSimulator::script_register			(lua_State *L)
 
 		STORY_PAIRS::const_iterator	I = story_ids.begin();
 		STORY_PAIRS::const_iterator	E = story_ids.end();
-		for ( ; I != E; ++I)
-			instance.enum_		("_story_ids")[luabind::value(*(*I).first,(*I).second)];
+		for (; I != E; ++I)
+			instance = std::move(instance).enum_("_story_ids")[luabind::value(*(*I).first, (*I).second)];
 
-		luabind::module			(L)[instance];
+		luabind::module(L)[std::move(instance)];
 	}
 
 	{
@@ -395,10 +400,10 @@ void CALifeSimulator::script_register			(lua_State *L)
 
 		SPAWN_STORY_PAIRS::const_iterator	I = spawn_story_ids.begin();
 		SPAWN_STORY_PAIRS::const_iterator	E = spawn_story_ids.end();
-		for ( ; I != E; ++I)
-			instance.enum_		("_spawn_story_ids")[luabind::value(*(*I).first,(*I).second)];
+		for (; I != E; ++I)
+			instance = std::move(instance).enum_("_spawn_story_ids")[luabind::value(*(*I).first, (*I).second)];
 
-		luabind::module			(L)[instance];
+		luabind::module(L)[std::move(instance)];
 	}
 }
 

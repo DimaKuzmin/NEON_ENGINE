@@ -100,7 +100,7 @@ void CScriptIniFile::script_register(lua_State *L)
 			.def("save", &CScriptIniFile::save)
 
 
-			.def("r_line", &::r_line, out_value(_4) + out_value(_5)),
+			.def("r_line", &::r_line, out_value<4>() + out_value<5>()),
 
 		def("system_ini",			&get_system_ini),
 #ifdef XRGAME_EXPORTS
@@ -108,6 +108,6 @@ void CScriptIniFile::script_register(lua_State *L)
 		def("create_ini", &create_ini),
 		def("read_ini", &read_ini),
 #endif // XRGAME_EXPORTS
-		def("create_ini_file",		&create_ini_file,	adopt(result))
+		def("create_ini_file",		&create_ini_file,	adopt<result>())
 	];
 }

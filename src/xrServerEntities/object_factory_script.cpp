@@ -62,7 +62,7 @@ void CObjectFactory::register_script_class			(LPCSTR unknown_class, LPCSTR clsid
 }
 
 #ifndef NO_XR_GAME
-	ENGINE_API	bool g_dedicated_server;
+extern 	ENGINE_API	bool g_dedicated_server;
 #endif // NO_XR_GAME
 
 void CObjectFactory::register_script_classes()
@@ -82,10 +82,10 @@ void CObjectFactory::register_script	() const
 
 	const_iterator				I = clsids().begin(), B = I;
 	const_iterator				E = clsids().end();
-	for ( ; I != E; ++I)
-		instance.enum_			("_clsid")[luabind::value(*(*I)->script_clsid(),int(I - B))];
+	for (; I != E; ++I)
+		instance = std::move(instance).enum_("_clsid")[luabind::value(*(*I)->script_clsid(), int(I - B))];
 
-	luabind::module				(ai().script_engine().lua())[instance];
+	luabind::module				(ai().script_engine().lua())[std::move(instance)];
 }
 
 #pragma optimize("s",on)
