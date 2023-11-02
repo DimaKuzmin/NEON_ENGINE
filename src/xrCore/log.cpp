@@ -19,10 +19,21 @@ static BOOL 				no_log			= TRUE;
 #endif // PROFILE_CRITICAL_SECTIONS
 xr_vector<shared_str>*		LogFile			= NULL;
 static LogCallback			LogCB			= 0;
+IWriter * writer_log = 0;
+
+CTimer dwTimerLog;
 
 void FlushLog			()
 {
-	if (!no_log){
+	if (writer_log && dwTimerLog.GetElapsed_ms() > 500)
+	{
+		dwTimerLog.Start();
+		writer_log->flush();
+	}
+
+	/* 
+	if (!no_log)
+	{
 		logCS.Enter			();
 		IWriter *f			= FS.w_open(logFName);
         if (f) {
@@ -34,6 +45,7 @@ void FlushLog			()
         }
 		logCS.Leave			();
     }
+	*/
 }
 
 void AddOne				(const char *split) 
@@ -53,6 +65,12 @@ void AddOne				(const char *split)
 		shared_str			temp = shared_str(split);
 //		DUMP_PHASE;
 		LogFile->push_back	(temp);
+	}
+
+	if (writer_log)
+	{
+		writer_log->w_string(split);
+		writer_log->flush();
 	}
 
 	//exec CallBack
@@ -176,6 +194,8 @@ void InitLog()
 	R_ASSERT			(LogFile==NULL);
 	LogFile				= xr_new< xr_vector<shared_str> >();
 	LogFile->reserve	(1000);
+
+	dwTimerLog.Start();
 }
 
 void CreateLog			(BOOL nl)
@@ -192,6 +212,16 @@ void CreateLog			(BOOL nl)
         }
         FS.w_close		(f);
     }
+
+	if (!writer_log)
+	{
+		writer_log = FS.w_open(logFName);
+
+		for (auto str : *LogFile)
+			writer_log->w_string(str.c_str());
+
+
+	}
 }
 
 void CloseLog(void)
@@ -199,4 +229,6 @@ void CloseLog(void)
 	FlushLog		();
  	LogFile->clear	();
 	xr_delete		(LogFile);
+
+	FS.w_close(writer_log);
 }

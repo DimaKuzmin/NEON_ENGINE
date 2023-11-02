@@ -52,7 +52,7 @@ CUIAMode::~CUIAMode()
 void CUIAMode::Init()
 {
     CUIXml uiXML_Anims;
-    uiXML_Anims.Load(CONFIG_PATH, UI_PATH, "ui_MOD.xml");
+    uiXML_Anims.Load(CONFIG_PATH, UI_PATH, "ui_animations.xml");
 
     frame_animations = UIHelper::CreateStatic(uiXML_Anims, "background_static", this);
     UIHelper::CreateTextWnd(uiXML_Anims, "caption", frame_animations);
@@ -63,7 +63,7 @@ void CUIAMode::Init()
     frame_animations->AttachChild(list_anims);
 
     string_path file_path;
-    FS.update_path(file_path, "$game_config$", "actor_anims.ltx");
+    FS.update_path(file_path, "$game_config$", "alife\\actor_anims.ltx");
 
     if (FS.exist(file_path))
     {
@@ -84,7 +84,7 @@ void CUIAMode::Init()
                     {
                         LPCSTR name_desc = file->r_string(name, "anim_descr");
                         text[count] = UIHelper::CreateTextWnd(uiXML_Anims, "caption_text", 0);
-                        text[count]->SetText(name_desc);
+                        text[count]->SetTextST(name_desc);
 
                         list_anims->AddWindow(text[count], true);
                     }
