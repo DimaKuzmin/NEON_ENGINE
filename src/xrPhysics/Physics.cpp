@@ -256,9 +256,18 @@ IC static int CollideIntoGroup(dGeomID o1, dGeomID o2,dJointGroupID jointGroup,C
 			}
 		}
 
-
 		if	(pushing_neg)
-			surface.mu=dInfinity;
+		#ifdef _M_X64
+			surface.mu = FLT_MAX;
+		#else
+					surface.mu = dInfinity;
+		#endif
+		
+
+		//if	(pushing_neg)
+		//	surface.mu=dInfinity;
+
+
 		if	(do_collide && collided_contacts<MAX_CONTACTS)
 		{
 			++collided_contacts;
