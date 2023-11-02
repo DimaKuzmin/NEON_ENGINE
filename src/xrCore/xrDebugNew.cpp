@@ -24,8 +24,8 @@ extern bool shared_str_initialized;
         static BOOL			bException	= TRUE;
     #   define USE_BUG_TRAP
 #else
-    #   define USE_BUG_TRAP
-    #	define DEBUG_INVOKE	__asm int 3
+   // #   define USE_BUG_TRAP
+    #	define DEBUG_INVOKE	DebugBreak	() //__asm int 3
         static BOOL			bException	= FALSE;
 #endif
 
@@ -708,9 +708,11 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 #ifndef USE_BUG_TRAP
 	void _terminate		()
 	{
-		if (strstr(GetCommandLine(),"-silent_error_mode"))
+		//if (strstr(GetCommandLine(),"-silent_error_mode"))
 			exit				(-1);
 
+
+		/*
 		string4096				assertion_info;
 		
 		Debug.gather_info			(
@@ -747,6 +749,7 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		
 		exit					(-1);
 	//	FATAL					("Unexpected application termination");
+	*/
 	}
 #endif // USE_BUG_TRAP
 

@@ -2488,9 +2488,6 @@
     <Filter Include="UI\Multiplayer\Roleplay">
       <UniqueIdentifier>{da488458-c041-4176-a2e8-5994dc36ea74}</UniqueIdentifier>
     </Filter>
-    <Filter Include="jsonxx">
-      <UniqueIdentifier>{50aafa55-2885-4ace-807f-368de3ebfa46}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Core\Client\Objects\inventory\InventoryItem\inventory_upgrade">
       <UniqueIdentifier>{cc270f2f-a8cd-4edb-b4f2-c535a4d03ffa}</UniqueIdentifier>
     </Filter>
@@ -2514,6 +2511,9 @@
     </Filter>
     <Filter Include="UI\GameTypes\FreeMp\RP_ANIMATION_MODE">
       <UniqueIdentifier>{8c450480-22ac-4eef-a70a-4b8bf5264677}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="jsonxx">
+      <UniqueIdentifier>{50aafa55-2885-4ace-807f-368de3ebfa46}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
