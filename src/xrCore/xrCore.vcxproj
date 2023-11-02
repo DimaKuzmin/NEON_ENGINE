@@ -288,6 +288,12 @@
       <DataExecutionPrevention>
       </DataExecutionPrevention>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /Y "$(SolutionDir)..\SDK\binaries\x64\GameNetworkingSockets.dll" "$(OutDir)GameNetworkingSockets.dll"
+copy /Y "$(SolutionDir)..\SDK\binaries\x64\libcrypto-3-x64.dll" "$(OutDir)libcrypto-3-x64.dll"
+copy /Y "$(SolutionDir)..\SDK\binaries\x64\libprotobuf.dll" "$(OutDir)libprotobuf.dll"
+</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Mixed|Win32'">
     <ClCompile>
