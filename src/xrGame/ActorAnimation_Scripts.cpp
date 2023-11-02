@@ -297,7 +297,7 @@ void CActor::SelectScriptAnimation()
 		}
 	}
 
-	//Msg("Selected [%d] UI_SEL [%d]", oldAnim, ANIM_SELECTED);
+	Msg("Selected [%d] UI_SEL [%d]", oldAnim, ANIM_SELECTED);
 
 	u32 selectedAnimation = oldAnim;
 
