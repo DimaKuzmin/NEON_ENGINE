@@ -33,7 +33,7 @@ bool CActor::MpAnimationMODE() const
 void SActorStateAnimation::CreateAnimationsScripted(IKinematicsAnimated* K)
 {
 	string_path filepath;
-	FS.update_path(filepath, "$game_config$", "actor_anims.ltx");
+	FS.update_path(filepath, "$game_config$", "alife\\actor_anims.ltx");
 	CInifile* file = xr_new<CInifile>(filepath, true, true);
 
 	if (file && file->section_exist("animations"))
@@ -282,9 +282,9 @@ void CActor::SelectScriptAnimation()
 	if (!CanChange)
 		return;
 
-	//Msg("In [%d] [%s]", InputAnim, InPlay ? "true" : "false");
-	//Msg("Mid [%d] [%s]", MidAnim, MidPlay ? "true" : "false");
-	//Msg("Out [%d] [%s]", OutAnim, OutPlay ? "true" : "false");
+	Msg("In [%d] [%s]", InputAnim, InPlay ? "true" : "false");
+	Msg("Mid [%d] [%s]", MidAnim, MidPlay ? "true" : "false");
+	Msg("Out [%d] [%s]", OutAnim, OutPlay ? "true" : "false");
 
 	if (oldAnim != ANIM_SELECTED)
 	{
