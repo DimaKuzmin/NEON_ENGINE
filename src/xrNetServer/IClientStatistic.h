@@ -32,7 +32,7 @@ public:
 	IClientStatistic(CTimer* timer) { ZeroMemory(this, sizeof(*this)); device_timer = timer; dwBaseTime = TimeGlobal(device_timer); }
 
 	void	Update(DPN_CONNECTION_INFO& CI);
-	void	Update(SteamNetworkingQuickConnectionStatus& status);
+	void	Update(SteamNetConnectionRealTimeStatus_t& status);
 
 	IC u32	getPing() { return dwRoundTripLatencyMS; }
 	IC u32	getBPS() { return dwThroughputBPS; }

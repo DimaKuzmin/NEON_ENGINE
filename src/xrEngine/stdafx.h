@@ -65,9 +65,6 @@ extern ENGINE_API CInifile *pGameIni;
 #pragma comment( lib, "xrCDB.lib"	)
 #pragma comment( lib, "xrSound.lib"	)
 
-#include "lua/library_linkage.h"
-#include "luabind/library_linkage.h"
-
 #pragma comment( lib, "xrAPI.lib"	)
 
 #pragma comment( lib, "winmm.lib"		)
@@ -81,7 +78,7 @@ extern ENGINE_API CInifile *pGameIni;
 #endif
 
 #if	!defined(DEBUG) || defined(FORCE_NO_EXCEPTIONS)
-#	define LUABIND_NO_EXCEPTIONS
+//#	define LUABIND_NO_EXCEPTIONS
 #	define BOOST_NO_EXCEPTIONS
 #endif
 

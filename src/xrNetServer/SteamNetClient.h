@@ -4,6 +4,7 @@
 #pragma warning(push)
 #pragma warning(disable:4995)
 #include "GameNetworkingSockets/steam/steamnetworkingsockets.h"
+#include "GameNetworkingSockets/steam/isteamnetworkingutils.h"
 #pragma warning(pop)
 
 class XRNETSERVER_API SteamNetClient : public BaseClient
