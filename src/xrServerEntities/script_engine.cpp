@@ -165,25 +165,146 @@ void CScriptEngine::unload				()
 	*m_last_no_file			= 0;
 }
 
+#include <sstream>
+
+void LogLuaVariable(lua_State* L, const char* Name, int Level, bool bOpenTable, int Index /*= -1*/)
+{
+	int LuaType = lua_type(L, Index);
+	if (LuaType == -1 || LuaType == LUA_TFUNCTION)
+		return;
+
+	const char* TypeName = lua_typename(L, LuaType);
+
+	char TabBuffer[32];
+	ZeroMemory(TabBuffer, sizeof(TabBuffer));
+	std::memset(TabBuffer, '\t', Level);
+
+	auto LuaLogTable = [](lua_State* l, const char* S, int level, int index /*= -1*/) {
+		if (lua_istable(l, index))
+		{
+			lua_pushnil(l);  /* first key */
+			while (lua_next(l, index - 1) != 0) {
+				char sname[256];
+				char sFullName[256];
+				sprintf(sname, "%s", lua_tostring(l, index - 1));
+				sprintf(sFullName, "%s.%s", S, sname);
+				LogLuaVariable(l, sFullName, level + 1, false, index);
+
+				lua_pop(l, 1);  /* removes `value'; keeps `key' for next iteration */
+			}
+		}
+	};
+
+	
+	char* lua_types[9] =
+	{
+		"LUA_TNIL", 
+		"LUA_TBOOLEAN", 
+		"LUA_TLIGHTUSERDATA",
+		"LUA_TNUMBER",
+		"LUA_TSTRING", 
+		"LUA_TTABLE",
+		"LUA_TFUNCTION", 
+		"LUA_TUSERDATA", 
+		"LUA_TTHREAD" 
+	};
+
+
+	switch (LuaType) 
+	{
+		case LUA_TNUMBER: {
+			Msg("%s %s %s : %.02f", TabBuffer, TypeName, Name, lua_tonumber(L, Index));
+			break;
+		}
+		case LUA_TBOOLEAN: {
+			Msg("%s %s %s : %.02f", TabBuffer, TypeName, Name, lua_toboolean(L, Index) == 1 ? TEXT("true") : TEXT("false"));
+			break;
+		}
+		case LUA_TSTRING: {
+			Msg("%s %s %s : %s", TabBuffer, TypeName, Name, lua_tostring(L, Index));
+			break;
+		}
+		case LUA_TTABLE: {
+			if (bOpenTable) {
+				Msg("%s %s %s : Table", TabBuffer, TypeName, Name);
+
+				LuaLogTable(L, Name, Level + 1, Index);
+			} else {
+				Msg("%s %s %s : Table [...]", TabBuffer, TypeName, Name);
+			}
+			break;
+		}
+		case LUA_TUSERDATA: {
+			void* UserDataPtr = lua_touserdata(L, Index);
+			const luabind::detail::object_rep* obj = static_cast<luabind::detail::object_rep*>(UserDataPtr);
+			const luabind::detail::class_rep* objectClass = obj->crep();
+
+			if (objectClass != nullptr) {
+				std::stringstream ss;
+				ss << UserDataPtr;
+				Msg("%s Userdata: %s(%s:0x%s)", TabBuffer, Name, objectClass->name(), ss.str().c_str());
+			} else {
+				Msg("%s Userdata: %s", TabBuffer, Name);
+			}
+
+			return;
+			break;
+		}
+		default: 
+		{
+			if (LuaType == -1)
+				Msg("--- None Type");
+			else 
+				Msg("[not available]: Type[%s]", lua_types[LuaType]);
+			break;
+		}
+	}
+}
+
 
 void printLuaTraceback(lua_State* L)
 {
-	lua_Debug ar;
+	lua_Debug lua_debug;
 	int level = 0;
 	Msg("--- CallStack: ");
-	
-	while (lua_getstack(L, level, &ar))
-	{
-		lua_getinfo(L, "Slnt", &ar);
+	const char* LocalVarName;
 
-		std::string functionName = ar.name ? ar.name : "(unknown)";
-		std::string source = ar.source ? ar.source : "(unknown)";
-		int line = ar.currentline;
+	while (lua_getstack(L, level, &lua_debug))
+	{
+		lua_getinfo(L, "Slnt", &lua_debug);
+
+		std::string functionName = lua_debug.name ? lua_debug.name : "(unknown)";
+		std::string source = lua_debug.source ? lua_debug.source : "(unknown)";
+		int line = lua_debug.currentline;
 
 		Msg("[%d] %s (%s : %d)", level, functionName.c_str(), source.c_str(), line);
 
+		level++;		
+	}
+   
+	level=0;
+
+	while(lua_getstack(L, level, &lua_debug))
+	{
+		bool bPringName = true;
+		int Iter = 1;
+	 
+		//if (false)
+		while ( (LocalVarName = lua_getlocal(L, &lua_debug, Iter++)) != NULL) 
+		{
+			if (bPringName) 
+			{
+				Msg("Local variables[%d]:", level);
+				bPringName = false;
+			}
+			LogLuaVariable(L, LocalVarName, 1, true, -1);
+
+			lua_pop(L, 1);  
+		}
+
 		level++;
 	}
+
 
 	Msg("--- Callstack End");
 }
@@ -191,6 +312,7 @@ void printLuaTraceback(lua_State* L)
 
 int CScriptEngine::lua_panic			(lua_State *L)
 {
+	Msg("--- Callstack for lua_panic");
 	printLuaTraceback(L);
 	print_output	(L,"PANIC",LUA_ERRRUN);
 	return			(0);
@@ -199,6 +321,7 @@ int CScriptEngine::lua_panic			(lua_State *L)
 
 void CScriptEngine::lua_error			(lua_State *L)
 {
+	Msg("--- Callstack for lua_error");
 	printLuaTraceback(L);
 
 	print_output			(L,"",LUA_ERRRUN);
@@ -213,6 +336,7 @@ void CScriptEngine::lua_error			(lua_State *L)
 
 int  CScriptEngine::lua_pcall_failed	(lua_State *L)
 {
+	Msg("--- Callstack for lua_pcall_failed");
 	printLuaTraceback(L);
 
 	print_output			(L,"",LUA_ERRRUN);
@@ -228,6 +352,7 @@ int  CScriptEngine::lua_pcall_failed	(lua_State *L)
 
 void lua_cast_failed					(lua_State *L, LUABIND_TYPE_INFO info)
 {
+	Msg("--- Callstack for lua_cast_failed");
 	printLuaTraceback(L);
 
 	CScriptEngine::print_output	(L,"",LUA_ERRRUN);

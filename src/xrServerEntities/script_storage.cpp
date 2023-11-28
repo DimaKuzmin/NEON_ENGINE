@@ -430,7 +430,7 @@ void CScriptStorage::print_stack		()
 }
 #endif // #ifdef PRINT_CALL_STACK
 
-void printLuaTraceback(lua_State* L);
+//void printLuaTraceback(lua_State* L);
 
 int __cdecl CScriptStorage::script_log	(ScriptStorage::ELuaMessageType tLuaMessageType, LPCSTR caFormat, ...)
 {
@@ -451,7 +451,7 @@ int __cdecl CScriptStorage::script_log	(ScriptStorage::ELuaMessageType tLuaMessa
 #	endif // #ifndef ENGINE_BUILD
 #endif // #ifdef PRINT_CALL_STACK
 
-	printLuaTraceback(ai().script_engine().lua());
+	//printLuaTraceback(ai().script_engine().lua());
 
 	return			(result);
 }
